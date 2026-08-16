@@ -95,8 +95,12 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       (int viewId) {
         final element = web.document.createElement('div') as web.HTMLDivElement;
         element.id = _containerId;
+        element.style.position = 'absolute';
+        element.style.top = '0';
+        element.style.left = '0';
         element.style.width = '100%';
         element.style.height = '100%';
+        element.style.overflow = 'hidden';
         return element;
       },
     );
@@ -106,17 +110,24 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
 
   Future<void> _initWebMap() async {
     final appKey = AuthRepository.instance.appKey;
+    debugPrint(
+        '[TMapWebWidget] _initWebMap starting for viewId=$_viewId, appKey=$appKey');
     if (appKey.isEmpty || appKey == 'YOUR_TMAP_APP_KEY_HERE') {
+      debugPrint(
+          '[TMapWebWidget] AppKey is empty or placeholder, aborting init.');
       return;
     }
 
     try {
       await TMapWebLoader.loadScript(appKey);
+      debugPrint(
+          '[TMapWebLoader] loadScript completed, initializing map in DOM...');
 
       // 콜백 객체 생성
       final callbacks = JSObject();
 
       final onMapCreatedFn = (JSString _) {
+        debugPrint('[TMapWebWidget] Map JS onMapCreated callback triggered!');
         if (!mounted) return;
         setState(() => _isMapInitialized = true);
         _syncAllOverlays();

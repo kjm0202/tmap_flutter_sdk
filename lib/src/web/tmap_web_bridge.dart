@@ -35,13 +35,13 @@ class TMapWebBridge {
     var maxAttempts = 30;
     var tryInit = function() {
       var container = document.getElementById(containerId);
-      if (!container) {
+      if (!container || (container.offsetWidth === 0 && container.offsetHeight === 0)) {
         if (maxAttempts-- > 0) {
           setTimeout(tryInit, 100);
         } else {
-          console.error("[tmap_web_bridge] Container element not found:", containerId);
+          console.warn("[tmap_web_bridge] Container element has 0 size, attempting map creation anyway:", containerId);
         }
-        return;
+        if (!container) return;
       }
 
       if (typeof Tmapv3 === 'undefined' || !Tmapv3.Map) {
@@ -54,23 +54,31 @@ class TMapWebBridge {
       }
 
       try {
-        var center = options.center ? new Tmapv3.LatLng(options.center[0], options.center[1]) : new Tmapv3.LatLng(37.5665, 126.9780);
-        var mapType = Tmapv3.Map.MapType.ROAD;
-        if (options.mapType === 'HYBRID') mapType = Tmapv3.Map.MapType.HYBRID;
-        else if (options.mapType === 'PUBLIC') mapType = Tmapv3.Map.MapType.PUBLIC;
-        else if (options.mapType === 'NIGHT') mapType = Tmapv3.Map.MapType.NIGHT;
+        var center = (options.center && options.center.length >= 2)
+            ? new Tmapv3.LatLng(options.center[0], options.center[1])
+            : new Tmapv3.LatLng(37.5665, 126.9780);
 
-        var map = new Tmapv3.Map(containerId, {
+        var mapOptions = {
           center: center,
           zoom: options.zoom || 16,
-          minZoom: options.minZoom || 7,
-          maxZoom: options.maxZoom || 19,
-          bearing: options.bearing || 0,
-          pitch: options.pitch || 0,
-          mapType: mapType,
           width: "100%",
           height: "100%"
-        });
+        };
+
+        if (options.minZoom) mapOptions.minZoom = options.minZoom;
+        if (options.maxZoom) mapOptions.maxZoom = options.maxZoom;
+        if (options.bearing !== undefined) mapOptions.bearing = options.bearing;
+        if (options.pitch !== undefined) mapOptions.pitch = options.pitch;
+
+        if (typeof Tmapv3 !== 'undefined' && Tmapv3.Map && Tmapv3.Map.MapType) {
+          if (options.mapType === 'HYBRID') mapOptions.mapType = Tmapv3.Map.MapType.HYBRID;
+          else if (options.mapType === 'PUBLIC') mapOptions.mapType = Tmapv3.Map.MapType.PUBLIC;
+          else if (options.mapType === 'NIGHT') mapOptions.mapType = Tmapv3.Map.MapType.NIGHT;
+          else mapOptions.mapType = Tmapv3.Map.MapType.ROAD;
+        }
+
+        console.log("[tmap_web_bridge] Creating Tmapv3.Map on container:", containerId);
+        var map = new Tmapv3.Map(containerId, mapOptions);
 
         var state = {
           map: map,
@@ -86,24 +94,29 @@ class TMapWebBridge {
 
         window.tmap_instances[viewId] = state;
 
-        map.on("Click", function(e) {
-          if (state.callbacks.onMapTap && e && e.latLng) {
-            state.callbacks.onMapTap(e.latLng.lat(), e.latLng.lng());
-          }
-        });
+        if (map && map.on) {
+          map.on("Click", function(e) {
+            if (state.callbacks.onMapTap && e && e.latLng) {
+              state.callbacks.onMapTap(e.latLng.lat(), e.latLng.lng());
+            }
+          });
 
-        map.on("Idle", function() {
-          if (state.callbacks.onCameraIdle) {
-            var c = map.getCenter();
-            state.callbacks.onCameraIdle(c.lat(), c.lng(), map.getZoom(), map.getBearing(), map.getPitch());
-          }
-        });
+          map.on("Idle", function() {
+            if (state.callbacks.onCameraIdle) {
+              var c = map.getCenter();
+              state.callbacks.onCameraIdle(c.lat(), c.lng(), map.getZoom(), map.getBearing(), map.getPitch());
+            }
+          });
+        }
+
+        console.log("[tmap_web_bridge] Tmapv3.Map successfully created for viewId:", viewId);
 
         if (state.callbacks.onMapCreated) {
           state.callbacks.onMapCreated(viewId);
         }
       } catch (err) {
-        console.error("[tmap_web_bridge] Failed to initialize Tmapv3.Map:", err);
+        var errText = "" + (err ? (err.stack || err.message || err.toString()) : "unknown error");
+        console.error("[tmap_web_bridge] Failed to initialize Tmapv3.Map:", errText);
       }
     };
     tryInit();
