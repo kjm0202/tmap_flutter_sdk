@@ -16,8 +16,8 @@ class TMapWebLoader {
     if (jsWindow.hasProperty('Tmapv3'.toJS).toDart) {
       final tmapObj = jsWindow.getProperty('Tmapv3'.toJS);
       if (tmapObj != null &&
-          tmapObj is JSObject &&
-          tmapObj.hasProperty('Map'.toJS).toDart) {
+          tmapObj.isA<JSObject>() &&
+          (tmapObj as JSObject).hasProperty('Map'.toJS).toDart) {
         debugPrint('[TMapWebLoader] Tmapv3.Map already loaded and ready.');
         return;
       }
@@ -32,9 +32,10 @@ class TMapWebLoader {
     debugPrint('[TMapWebLoader] Loading TMAP SDK for appKey: $appKey');
 
     // 1. Tmapvector 전역 객체 설정 (SK TMAP SDK 요구사항)
-    final domain = 'https://toptmaptile1.tmap.co.kr/scriptSDKV3/';
+    const domain = 'https://toptmaptile1.tmap.co.kr/scriptSDKV3/';
     final tmapVectorObj = JSObject();
-    tmapVectorObj.setProperty('_getScriptLocation'.toJS, (() => domain.toJS).toJS);
+    tmapVectorObj.setProperty(
+        '_getScriptLocation'.toJS, (() => domain.toJS).toJS);
     tmapVectorObj.setProperty('VERSION_NUMBER'.toJS, 1.0.toJS);
     jsWindow.setProperty('Tmapvector'.toJS, tmapVectorObj);
 
@@ -89,8 +90,8 @@ class TMapWebLoader {
       if (hasTmap) {
         final tmapObj = jsWindow.getProperty('Tmapv3'.toJS);
         if (tmapObj != null &&
-            tmapObj is JSObject &&
-            tmapObj.hasProperty('Map'.toJS).toDart) {
+            tmapObj.isA<JSObject>() &&
+            (tmapObj as JSObject).hasProperty('Map'.toJS).toDart) {
           timer.cancel();
           debugPrint(
               '[TMapWebLoader] Tmapv3.Map found and ready! (after $attempts polls)');
