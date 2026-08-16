@@ -344,6 +344,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   @override
   void didUpdateWidget(TMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (kIsWeb) return;
 
     if (widget.center != oldWidget.center && widget.center != null) {
       final center = widget.center;

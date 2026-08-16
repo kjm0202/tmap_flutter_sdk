@@ -32,58 +32,81 @@ class TMapWebBridge {
   window.tmap_instances = window.tmap_instances || {};
 
   window.tmap_init = function(viewId, containerId, options, callbacks) {
-    var container = document.getElementById(containerId);
-    if (!container) return;
+    var maxAttempts = 30;
+    var tryInit = function() {
+      var container = document.getElementById(containerId);
+      if (!container) {
+        if (maxAttempts-- > 0) {
+          setTimeout(tryInit, 100);
+        } else {
+          console.error("[tmap_web_bridge] Container element not found:", containerId);
+        }
+        return;
+      }
 
-    var center = options.center ? new Tmapv3.LatLng(options.center[0], options.center[1]) : new Tmapv3.LatLng(37.5665, 126.9780);
-    var mapType = Tmapv3.Map.MapType.ROAD;
-    if (options.mapType === 'HYBRID') mapType = Tmapv3.Map.MapType.HYBRID;
-    else if (options.mapType === 'PUBLIC') mapType = Tmapv3.Map.MapType.PUBLIC;
-    else if (options.mapType === 'NIGHT') mapType = Tmapv3.Map.MapType.NIGHT;
+      if (typeof Tmapv3 === 'undefined' || !Tmapv3.Map) {
+        if (maxAttempts-- > 0) {
+          setTimeout(tryInit, 100);
+        } else {
+          console.error("[tmap_web_bridge] Tmapv3 SDK not loaded!");
+        }
+        return;
+      }
 
-    var map = new Tmapv3.Map(containerId, {
-      center: center,
-      zoom: options.zoom || 16,
-      minZoom: options.minZoom || 7,
-      maxZoom: options.maxZoom || 19,
-      bearing: options.bearing || 0,
-      pitch: options.pitch || 0,
-      mapType: mapType,
-      width: "100%",
-      height: "100%"
-    });
+      try {
+        var center = options.center ? new Tmapv3.LatLng(options.center[0], options.center[1]) : new Tmapv3.LatLng(37.5665, 126.9780);
+        var mapType = Tmapv3.Map.MapType.ROAD;
+        if (options.mapType === 'HYBRID') mapType = Tmapv3.Map.MapType.HYBRID;
+        else if (options.mapType === 'PUBLIC') mapType = Tmapv3.Map.MapType.PUBLIC;
+        else if (options.mapType === 'NIGHT') mapType = Tmapv3.Map.MapType.NIGHT;
 
-    var state = {
-      map: map,
-      markers: {},
-      infoWindows: {},
-      polylines: {},
-      polygons: {},
-      circles: {},
-      rectangles: {},
-      clusterer: null,
-      callbacks: callbacks || {}
+        var map = new Tmapv3.Map(containerId, {
+          center: center,
+          zoom: options.zoom || 16,
+          minZoom: options.minZoom || 7,
+          maxZoom: options.maxZoom || 19,
+          bearing: options.bearing || 0,
+          pitch: options.pitch || 0,
+          mapType: mapType,
+          width: "100%",
+          height: "100%"
+        });
+
+        var state = {
+          map: map,
+          markers: {},
+          infoWindows: {},
+          polylines: {},
+          polygons: {},
+          circles: {},
+          rectangles: {},
+          clusterer: null,
+          callbacks: callbacks || {}
+        };
+
+        window.tmap_instances[viewId] = state;
+
+        map.on("Click", function(e) {
+          if (state.callbacks.onMapTap && e && e.latLng) {
+            state.callbacks.onMapTap(e.latLng.lat(), e.latLng.lng());
+          }
+        });
+
+        map.on("Idle", function() {
+          if (state.callbacks.onCameraIdle) {
+            var c = map.getCenter();
+            state.callbacks.onCameraIdle(c.lat(), c.lng(), map.getZoom(), map.getBearing(), map.getPitch());
+          }
+        });
+
+        if (state.callbacks.onMapCreated) {
+          state.callbacks.onMapCreated(viewId);
+        }
+      } catch (err) {
+        console.error("[tmap_web_bridge] Failed to initialize Tmapv3.Map:", err);
+      }
     };
-
-    window.tmap_instances[viewId] = state;
-
-    // 이벤트 리스너 등록
-    map.on("Click", function(e) {
-      if (state.callbacks.onMapTap && e && e.latLng) {
-        state.callbacks.onMapTap(e.latLng.lat(), e.latLng.lng());
-      }
-    });
-
-    map.on("Idle", function() {
-      if (state.callbacks.onCameraIdle) {
-        var c = map.getCenter();
-        state.callbacks.onCameraIdle(c.lat(), c.lng(), map.getZoom(), map.getBearing(), map.getPitch());
-      }
-    });
-
-    if (state.callbacks.onMapCreated) {
-      state.callbacks.onMapCreated(viewId);
-    }
+    tryInit();
   };
 
   window.tmap_setCenter = function(viewId, lat, lng) {

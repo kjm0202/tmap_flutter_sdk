@@ -170,7 +170,10 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   @override
   void didUpdateWidget(TMapWebWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!_isMapInitialized) return;
+    if (!_isMapInitialized) {
+      _initWebMap();
+      return;
+    }
 
     if (widget.center != oldWidget.center && widget.center != null) {
       TMapWebBridge.setCenter(_viewId, widget.center!);
