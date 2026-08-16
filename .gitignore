@@ -47,3 +47,6 @@ migrate_working_dir/
 **/ios/**/GeneratedPluginRegistrant.m
 **/ios/**/Frameworks
 **/ios/**/Pods
+
+# FVM Version Cache
+.fvm/

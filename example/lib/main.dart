@@ -7,7 +7,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // TMAP JavaScript AppKey 초기화
-  // SK OpenAPI 포털(https://openapi.sk.com)에서 발급받은 AppKey를 입력하세요.
+  // SK OpenAPI 포털(https://openapi.sk.com)에서 발급받은 AppKey를 입력하거나,
+  // 앱 실행 후 상단 열쇠(🔑) 아이콘을 눌러 키를 설정할 수 있습니다.
   AuthRepository.initialize(
     appKey: 'YOUR_TMAP_APP_KEY_HERE',
   );
