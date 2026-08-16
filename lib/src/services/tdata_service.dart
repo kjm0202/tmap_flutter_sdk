@@ -307,15 +307,17 @@ class TDataService {
   static Future<Map<String, dynamic>?> _post(
       Uri uri, Map<String, dynamic> bodyJson, String appKey) async {
     try {
-      final response = await _httpClient.post(
-        uri,
-        headers: {
-          'appKey': appKey,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(bodyJson),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _httpClient
+          .post(
+            uri,
+            headers: {
+              'appKey': appKey,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode(bodyJson),
+          )
+          .timeout(const Duration(seconds: 10));
 
       final body = utf8.decode(response.bodyBytes);
 

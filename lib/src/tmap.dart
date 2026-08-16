@@ -37,6 +37,8 @@ import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
 import 'tmap_controller.dart';
+import 'web/tmap_web_stub.dart'
+    if (dart.library.js_interop) 'web/tmap_web_widget.dart';
 
 /// TMAP Vector Map (v3) Flutter 위젯입니다.
 class TMap extends StatefulWidget {
@@ -196,7 +198,9 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeWebView();
+    if (!kIsWeb) {
+      _initializeWebView();
+    }
   }
 
   @override
@@ -208,7 +212,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed && _isMapReady) {
+    if (state == AppLifecycleState.resumed && _isMapReady && !kIsWeb) {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) {
           _mapController.relayout();
@@ -233,12 +237,10 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     final WebViewController controller =
         WebViewController.fromPlatformCreationParams(params);
 
-    if (!kIsWeb) {
-      controller
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000));
-      _addJavaScriptChannels(controller);
-    }
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000));
+    _addJavaScriptChannels(controller);
 
     controller.loadHtmlString(
       _loadMap(),
@@ -261,6 +263,31 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return TMapWebWidget(
+        center: widget.center,
+        zoom: widget.zoom,
+        minZoom: widget.minZoom,
+        maxZoom: widget.maxZoom,
+        bearing: widget.bearing,
+        pitch: widget.pitch,
+        mapType: widget.mapType,
+        markers: widget.markers,
+        clusterer: widget.clusterer,
+        infoWindows: widget.infoWindows,
+        labels: widget.labels,
+        polylines: widget.polylines,
+        polygons: widget.polygons,
+        circles: widget.circles,
+        rectangles: widget.rectangles,
+        customOverlays: widget.customOverlays,
+        onMapCreated: widget.onMapCreated,
+        onMapTap: widget.onMapTap,
+        onMarkerTap: widget.onMarkerTap,
+        onCameraIdle: widget.onCameraIdle,
+      );
+    }
+
     return WebViewWidget(
       controller: _mapController.webViewController,
       gestureRecognizers: widget.gestureRecognizers,
