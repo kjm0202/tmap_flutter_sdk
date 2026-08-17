@@ -1,6 +1,6 @@
 name: tmap_flutter_sdk
 description: A Flutter plugin for TMAP (SK Open API) Vector Map v3. Supports 3D camera control, markers, clustering, geometries, route planning, and POI search.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/kjm0202/tmap_flutter_sdk
 issue_tracker: https://github.com/kjm0202/tmap_flutter_sdk/issues
 
@@ -14,6 +14,11 @@ topics:
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: '>=3.27.4'
+
+platforms:
+  android:
+  ios:
+  web:
 
 dependencies:
   flutter:

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+* Fix platform support detection for pub.dev by explicitly declaring `platforms` (`android`, `ios`, `web`) in `pubspec.yaml`.
+* Fix Markdown strikethrough formatting issue in `README.md`.
+
 ## 0.1.0
 
 * Initial release of `tmap_flutter_sdk`.
