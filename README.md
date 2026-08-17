@@ -8,7 +8,7 @@
 
 Flutter 환경에서 **TMAP Vector Map v3**와 **TMAP OpenAPI**를 손쉽게 사용할 수 있는 Flutter 지도 플러그인입니다.
 
-`webview_flutter`와 JavaScript SDK를 이용하여 구현하였으며 **Web 플랫폼에서의 구현은 아직 실험 단계이기 때문에 다소 불안정할 수 있습니다.**
+`webview_flutter`와 JavaScript SDK를 이용하여 구현하였으며 **Web 플랫폼에서의 구현은 아직 실험 단계이기 때문에 다소 불안정할 수 있습니다.** Flutter SDK 3.27 이상에서 작동합니다.
 
 ## ✨ 주요 기능
 
@@ -291,7 +291,7 @@ Future<void> searchNearbyPlaces(TMapController controller) async {
 
 A Flutter map plugin that allows you to easily use **TMAP Vector Map v3** and **TMAP OpenAPI** in Flutter applications.
 
-Implemented using `webview_flutter` and the JavaScript SDK. 
+Implemented using `webview_flutter` and the JavaScript SDK. Compatible with Flutter SDK 3.27 or above.
 
 Note that **Web platform implementation is currently experimental and may be unstable.**
 
