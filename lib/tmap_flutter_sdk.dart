@@ -16,6 +16,7 @@ export 'src/constants/zoom_type.dart';
 // Models
 export 'src/models/address_info.dart';
 export 'src/models/auto_complete_item.dart';
+export 'src/models/auto_complete_v2_item.dart';
 export 'src/models/lat_lng.dart';
 export 'src/models/bounds.dart';
 export 'src/models/lat_lng_bounds.dart';
