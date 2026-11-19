@@ -202,6 +202,12 @@ class TDataService {
       if (json != null) {
         final coordInfo = json['coordinateInfo'];
         if (coordInfo is Map) {
+          final coordType = coordInfo['coordType'];
+          if (coordType is String &&
+              coordType.isNotEmpty &&
+              coordType != 'WGS84GEO') {
+            return null;
+          }
           final coordinates = coordInfo['coordinate'];
           final List<dynamic> coordList;
           if (coordinates is List) {
@@ -249,6 +255,33 @@ class TDataService {
           'apis.openapi.sk.com', '/tmap/geo/reversegeocoding', params);
       final json = await _get(uri, appKey);
       if (json != null) {
+        if (json.containsKey('addressInfo')) {
+          if (json['addressInfo'] is! Map<String, dynamic>) return null;
+        } else {
+          const addressFields = {
+            'fullAddress',
+            'city_do',
+            'gu_gun',
+            'legalDong',
+            'eup_myun',
+            'adminDong',
+            'roadName',
+            'buildingIndex',
+            'buildingName',
+            'bunji',
+            'zipCode',
+            'roadPostcode',
+            'postcode',
+            'lat',
+            'lon',
+            'latitude',
+            'longitude',
+            'roadCoord',
+            'legalDongCoord',
+            'adminDongCoord',
+          };
+          if (!json.keys.any(addressFields.contains)) return null;
+        }
         return TDataResponse(requestId: '', success: true, data: json)
             .toAddressInfo();
       }
@@ -315,6 +348,11 @@ class TDataService {
   // HTTP 내부 통신 헬퍼
   // ========================================
 
+  static Map<String, dynamic>? _decodeBody(String body) {
+    final json = jsonDecode(body) as Map<String, dynamic>;
+    return json['error'] == null ? json : null;
+  }
+
   static Future<Map<String, dynamic>?> _get(Uri uri, String appKey) async {
     try {
       final response = await _httpClient.get(
@@ -330,7 +368,7 @@ class TDataService {
           '[TDataService] GET status: ${response.statusCode}, response snippet: ${body.length > 200 ? body.substring(0, 200) : body}');
 
       if (response.statusCode == 200) {
-        return jsonDecode(body) as Map<String, dynamic>;
+        return _decodeBody(body);
       } else {
         debugPrint(
             '[TDataService] GET $uri failed: ${response.statusCode} - $body');
@@ -362,7 +400,7 @@ class TDataService {
       final body = utf8.decode(response.bodyBytes);
 
       if (response.statusCode == 200) {
-        return jsonDecode(body) as Map<String, dynamic>;
+        return _decodeBody(body);
       } else {
         developer.log('POST $uri failed: ${response.statusCode} - $body',
             name: 'TDataService');

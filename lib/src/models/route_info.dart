@@ -40,6 +40,7 @@ class RouteInfo {
     String? responseCoordType = 'WGS84GEO',
   }) {
     final isEpsg3857 = responseCoordType == 'EPSG3857';
+    final isWgs84 = responseCoordType == 'WGS84GEO';
     final features = (json['features'] as List<dynamic>?) ?? <dynamic>[];
     final pathPoints = <LatLng>[];
     final guides = <RouteGuidePoint>[];
@@ -67,8 +68,16 @@ class RouteInfo {
         final type = geometry['type'] as String? ?? '';
         final coordinates = geometry['coordinates'];
 
+        if (type == 'Point' &&
+            isWgs84 &&
+            (coordinates is! List || coordinates.length < 2)) {
+          throw const FormatException('Invalid WGS84 guide coordinate');
+        }
+        if (type == 'LineString' && isWgs84 && coordinates is! List) {
+          throw const FormatException('Invalid WGS84 line coordinates');
+        }
         if (type == 'Point' && coordinates is List && coordinates.length >= 2) {
-          final point = _toLatLng(coordinates, isEpsg3857);
+          final point = _toLatLng(coordinates, isEpsg3857, isWgs84);
           final description = properties?['description'] as String? ?? '';
           final name = properties?['name'] as String? ?? '';
           guides.add(RouteGuidePoint(
@@ -79,7 +88,9 @@ class RouteInfo {
         } else if (type == 'LineString' && coordinates is List) {
           for (final coord in coordinates) {
             if (coord is List && coord.length >= 2) {
-              pathPoints.add(_toLatLng(coord, isEpsg3857));
+              pathPoints.add(_toLatLng(coord, isEpsg3857, isWgs84));
+            } else if (isWgs84) {
+              throw const FormatException('Invalid WGS84 line coordinate');
             }
           }
         }
@@ -101,7 +112,16 @@ class RouteInfo {
 
   /// Reads one `[x, y]` pair, decoding `[xEastMetres, yNorthMetres]` when
   /// [isEpsg3857] and otherwise keeping `[longitude, latitude]` as is.
-  static LatLng _toLatLng(List<dynamic> coord, bool isEpsg3857) {
+  static LatLng _toLatLng(List<dynamic> coord, bool isEpsg3857, bool isWgs84) {
+    if (isWgs84 &&
+        (coord[0] is! num ||
+            coord[1] is! num ||
+            !(coord[0] as num).isFinite ||
+            !(coord[1] as num).isFinite ||
+            (coord[0] as num).abs() > 180 ||
+            (coord[1] as num).abs() > 90)) {
+      throw const FormatException('Invalid WGS84 coordinate');
+    }
     final x = (coord[0] as num).toDouble();
     final y = (coord[1] as num).toDouble();
     if (!isEpsg3857) return LatLng(y, x);

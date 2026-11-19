@@ -52,11 +52,34 @@ class AddressInfo {
   factory AddressInfo.fromJson(Map<String, dynamic> json) {
     final addrInfo = (json['addressInfo'] as Map<String, dynamic>?) ?? json;
 
-    final lat =
-        (addrInfo['lat'] as num? ?? addrInfo['latitude'] as num?)?.toDouble();
-    final lng =
-        (addrInfo['lon'] as num? ?? addrInfo['longitude'] as num?)?.toDouble();
-    final point = (lat != null && lng != null) ? LatLng(lat, lng) : null;
+    LatLng? coordinate(dynamic value) {
+      if (value is! Map) return null;
+      double? parse(dynamic number) {
+        if (number is num) return number.toDouble();
+        if (number is String) return double.tryParse(number.trim());
+        return null;
+      }
+
+      final lat = parse(value['lat'] ?? value['latitude']);
+      final lon = parse(value['lon'] ?? value['longitude']);
+      if (lat == null ||
+          lon == null ||
+          !lat.isFinite ||
+          !lon.isFinite ||
+          lat.abs() > 90 ||
+          lon.abs() > 180) {
+        return null;
+      }
+      return LatLng(lat, lon);
+    }
+
+    String? nonempty(dynamic value) =>
+        value is String && value.trim().isNotEmpty ? value : null;
+
+    final point = coordinate(addrInfo) ??
+        coordinate(addrInfo['roadCoord']) ??
+        coordinate(addrInfo['legalDongCoord']) ??
+        coordinate(addrInfo['adminDongCoord']);
 
     return AddressInfo(
       fullAddress: addrInfo['fullAddress'] as String? ?? '',
@@ -70,7 +93,10 @@ class AddressInfo {
       buildingIndex: addrInfo['buildingIndex'] as String?,
       buildingName: addrInfo['buildingName'] as String?,
       bunji: addrInfo['bunji'] as String?,
-      zipCode: addrInfo['zipCode'] as String?,
+      zipCode: nonempty(addrInfo['zipCode']) ??
+          nonempty(addrInfo['roadPostcode']) ??
+          nonempty(addrInfo['postcode']) ??
+          (addrInfo['zipCode'] is String ? addrInfo['zipCode'] as String : null),
       point: point,
     );
   }

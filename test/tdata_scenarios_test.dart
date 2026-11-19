@@ -101,6 +101,65 @@ void main() {
   });
 
   group('TDataService regression tests', () {
+    test('HTTP 200 body errors reject all service results', () async {
+      final fixturesAndCalls =
+          <(Map<String, dynamic>, Future<Object?> Function())>[
+            (
+              _poiFixture,
+              () => TDataService.searchPoi(searchKeyword: 'fixture'),
+            ),
+            (
+              _poiFixture,
+              () => TDataService.searchPoiAround(center: const LatLng(0, 0)),
+            ),
+            (
+              _autoCompleteSuggestionsFixture,
+              () => TDataService.getAutoCompleteSearch(keyword: 'fixture'),
+            ),
+            (
+              _routeFixture,
+              () => TDataService.getRoutePlan(
+                start: const LatLng(0, 0),
+                end: const LatLng(1, 1),
+              ),
+            ),
+            (
+              _routeFixture,
+              () => TDataService.getRoutePlanPedestrian(
+                start: const LatLng(0, 0),
+                end: const LatLng(1, 1),
+              ),
+            ),
+            (
+              _geoCoordinateListFixture,
+              () => TDataService.getGeoFromAddress(address: 'fixture'),
+            ),
+            (
+              {
+                'addressInfo': {'fullAddress': 'result'},
+              },
+              () => TDataService.getAddressFromGeo(point: const LatLng(0, 0)),
+            ),
+          ];
+
+      for (final (fixture, call) in fixturesAndCalls) {
+        for (final error in [
+          <String, Object>{'code': 'fixture'},
+          '',
+          false,
+          0,
+        ]) {
+          _setCanned({...fixture, 'error': error});
+          final result = await _run(call);
+          expect(result == null || (result is List && result.isEmpty), isTrue);
+        }
+        _setCanned({...fixture, 'error': null});
+        final result = await _run(call);
+        expect(result, isNotNull);
+        if (result is List) expect(result, isNotEmpty);
+      }
+    });
+
     test('searchPoi returns parsed PoiItem list', () async {
       _setCanned(_poiFixture);
 

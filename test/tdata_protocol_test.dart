@@ -3,6 +3,112 @@ import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 
 void main() {
   group('TDataProtocol Tests', () {
+    group('response failure envelopes', () {
+      final data = <String, dynamic>{
+        'searchPoiInfo': {
+          'pois': {
+            'poi': [
+              {'id': '1', 'name': 'result', 'lat': 37.5, 'lon': 127.0},
+            ],
+          },
+        },
+        'response': {
+          'suggestions': ['result'],
+        },
+        'features': [
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [127.0, 37.5],
+            },
+            'properties': {'totalDistance': 12},
+          },
+        ],
+        'addressInfo': {'fullAddress': 'result'},
+      };
+
+      void expectRejected(TDataResponse response) {
+        expect(response.toPoiList(), isEmpty);
+        expect(response.toAutoCompleteList(), isEmpty);
+        expect(response.toRouteInfo(), isNull);
+        expect(response.toAddressInfo(), isNull);
+      }
+
+      void expectAccepted(TDataResponse response) {
+        expect(response.toPoiList().single.name, 'result');
+        expect(response.toAutoCompleteList().single.keyword, 'result');
+        expect(response.toRouteInfo()!.totalDistance, 12);
+        expect(response.toAddressInfo()!.fullAddress, 'result');
+      }
+
+      test(
+        'missing or false success and nonempty wrapper error reject data',
+        () {
+          for (final json in [
+            {'data': data},
+            {'success': false, 'data': data},
+            {'success': true, 'error': 'failure', 'data': data},
+          ]) {
+            final response = TDataResponse.fromJson(json);
+            expectRejected(response);
+            expect(identical(response.data, data), isTrue);
+          }
+        },
+      );
+
+      test('any non-null body error rejects without changing raw data', () {
+        for (final error in [
+          <String, Object>{'code': 'fixture'},
+          '',
+          false,
+          0,
+        ]) {
+          final body = {...data, 'error': error};
+          final before = Map<String, dynamic>.from(body);
+          final response = TDataResponse(
+            requestId: 'x',
+            success: true,
+            data: body,
+          );
+          expectRejected(response);
+          expect(identical(response.data, body), isTrue);
+          expect(identical((response.data as Map)['error'], error), isTrue);
+          expect(body, before);
+        }
+      });
+
+      test(
+        'success accepts missing or null body error and empty wrapper error',
+        () {
+          for (final body in [
+            data,
+            {...data, 'error': null},
+          ]) {
+            final response = TDataResponse(
+              requestId: 'x',
+              success: true,
+              error: '',
+              data: body,
+            );
+            expectAccepted(response);
+            expect(identical(response.data, body), isTrue);
+          }
+          final suggestions = ['result'];
+          final raw = TDataResponse(
+            requestId: 'x',
+            success: true,
+            data: suggestions,
+          );
+          expect(raw.toAutoCompleteList().single.keyword, 'result');
+          expect(identical(raw.data, suggestions), isTrue);
+          expectRejected(
+            TDataResponse(requestId: 'x', success: false, data: suggestions),
+          );
+        },
+      );
+    });
+
     test('Parse POI response', () {
       final json = {
         'requestId': 'req_1',

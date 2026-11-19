@@ -37,7 +37,13 @@ class TDataResponse {
     );
   }
 
+  bool get _failed =>
+      !success ||
+      (error != null && error!.isNotEmpty) ||
+      (data is Map && (data as Map)['error'] != null);
+
   RouteInfo? toRouteInfo() {
+    if (_failed) return null;
     if (data is Map<String, dynamic>) {
       return RouteInfo.fromJson(data as Map<String, dynamic>);
     }
@@ -45,6 +51,7 @@ class TDataResponse {
   }
 
   List<PoiItem> toPoiList() {
+    if (_failed) return [];
     final list = <PoiItem>[];
     if (data is Map<String, dynamic>) {
       final searchPoiInfo = (data as Map<String, dynamic>)['searchPoiInfo'];
@@ -66,6 +73,7 @@ class TDataResponse {
   }
 
   AddressInfo? toAddressInfo() {
+    if (_failed) return null;
     if (data is Map<String, dynamic>) {
       return AddressInfo.fromJson(data as Map<String, dynamic>);
     }
@@ -73,6 +81,7 @@ class TDataResponse {
   }
 
   List<AutoCompleteItem> toAutoCompleteList() {
+    if (_failed) return [];
     final list = <AutoCompleteItem>[];
     if (data is Map<String, dynamic>) {
       final mapData = data as Map<String, dynamic>;
