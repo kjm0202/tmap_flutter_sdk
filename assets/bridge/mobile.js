@@ -70,6 +70,7 @@ function initTmap() {
   };
 
   map = new Tmapv3.Map("map_div", options);
+  installAndroidTouchZoomRecovery(map, document.getElementById("map_div"), config.maxZoom);
   tmapBridge.applyNaviControl(map, config.naviControl ?? false);
   tmapBridge.applyScaleBar(map, config.scaleBar ?? false);
 
@@ -534,4 +535,85 @@ function clearMarker(id) {
 
 function clearAllMarkers() {
   tmapBridge.clearAllMarkers(markers, markerDragListeners);
+}
+
+function installAndroidTouchZoomRecovery(map, container, maxZoom) {
+  if (typeof navigator === 'undefined' || !navigator.userAgent.toLowerCase().includes('android')) return;
+  if (typeof map.vsmMap !== 'function') return;
+  var vsmMap = map.vsmMap();
+  if (!container || !vsmMap) return;
+  var canvas = vsmMap.getCanvas();
+  var cam = vsmMap.getCamera();
+  var ray = vsmMap.getTransform();
+  var interactive = vsmMap.getInteractive();
+  if (!interactive) return;
+
+  var startingZoom = null;
+  var pending = null;
+
+  var clear = function() {
+    startingZoom = null;
+    pending = null;
+  };
+
+  map.on('ZoomStart', function() {
+    pending = null;
+    startingZoom = map.getZoom();
+  });
+
+  map.on('ZoomEnd', function() {
+    if (pending && Math.abs(map.getZoom() - pending.start) < 0.001) {
+      pending.ended = true;
+    } else {
+      pending = null;
+    }
+    startingZoom = null;
+  });
+
+  container.addEventListener('mousedown', function(e) {
+    if (startingZoom !== null && cam.isMoving() && e.isTrusted && e.button === 0 && e.detail === 2 && e.target === canvas && e.sourceCapabilities?.firesTouchEvents === true) {
+      var rect = canvas.getBoundingClientRect();
+      pending = { start: startingZoom, x: e.clientX - rect.left, y: e.clientY - rect.top, ended: false, matched: false };
+    } else {
+      pending = null;
+    }
+  }, true);
+
+  container.addEventListener('dblclick', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var curX = e.clientX - rect.left;
+    var curY = e.clientY - rect.top;
+
+    if (e.target === canvas && pending && pending.ended && Math.abs(curX - pending.x) < 5 && Math.abs(curY - pending.y) < 5 && e.sourceCapabilities?.firesTouchEvents === true) {
+      pending.matched = true;
+    } else {
+      pending = null;
+    }
+  }, true);
+
+  map.on('DoubleClick', function() {
+    if (pending && pending.matched) {
+      var scheduled = pending;
+      requestAnimationFrame(function() {
+        if (pending !== scheduled) return;
+        pending = null;
+        var interactive = vsmMap.getInteractive();
+        if (!cam.isMoving() && Math.abs(map.getZoom() - scheduled.start) < 0.001 && interactive.zoom && interactive.touch && interactive.doubleClick) {
+          var limit = Math.min(maxZoom, (typeof ray.getMaxZoom === 'function') ? ray.getMaxZoom() : maxZoom);
+          if (limit > scheduled.start) {
+            cam.easeTo({
+              zoom: Math.min(scheduled.start + 1, limit),
+              pivot: ray.screenPointToLngLat({ x: scheduled.x, y: scheduled.y })
+            });
+          }
+        }
+      });
+    }
+  });
+
+  map.on('DragStart', clear);
+  container.addEventListener('pointerdown', clear, true);
+  container.addEventListener('wheel', clear, true);
+  container.addEventListener('pointermove', clear, true);
+  container.addEventListener('pointercancel', clear, true);
 }

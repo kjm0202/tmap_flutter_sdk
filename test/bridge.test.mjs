@@ -170,6 +170,9 @@ for (const platform of ['web', 'mobile']) {
   });
 }
 
+
+
+
 test('disposing a web map cancels initialization while its container is missing', () => {
   const host = load('web');
   const timers = new Set();
@@ -423,3 +426,97 @@ for (const platform of ['web', 'mobile']) {
     assert.equal(Object.keys(platform === 'web' ? state.clusterDragListeners : host.clusterMarkerDragListeners).length, 0);
   });
 }
+
+test('installAndroidTouchZoomRecovery exercises all scenarios', () => {
+  const host = load('mobile');
+
+  const exercise = (mode, {
+    moving = true,
+    zoomEnabled = true,
+    maxZoom = 19,
+    firesTouchEvents = true,
+    isTrusted = true,
+    currentRawZoom = 16.0012,
+    expectEase = false
+  } = {}) => {
+    const sdk = {}, dom = {}, fns = [], frames = [];
+    const emit = (tb, k, ...x) => (tb[k] || []).forEach(f => f(...x));
+
+    let publicZoom = 16;
+
+    const cam = {
+      getZoom: () => mode === 'native-reached17-before-frame' ? publicZoom : currentRawZoom,
+      isMoving: () => moving,
+      easeTo: o => fns.push(o),
+    };
+
+    const transform = {
+      screenPointToLngLat: p => ({projected: p}),
+      getMaxZoom: () => maxZoom,
+    };
+
+    const interactive = {
+      zoom: zoomEnabled,
+      doubleClick: true,
+      touch: true,
+    };
+
+    const renderer = {
+      getCanvas: () => host,
+      getCamera: () => cam,
+      getTransform: () => transform,
+      getInteractive: () => interactive,
+    };
+
+    const map = {
+      on: (k, f) => (sdk[k] ??= []).unshift(f),
+      getZoom: () => mode === 'native-reached17-before-frame' ? publicZoom : 16,
+      vsmMap: () => renderer,
+    };
+
+    host.addEventListener = (k, f) => (dom[k] ??= []).push(f);
+    host.contains = () => true;
+    host.getBoundingClientRect = () => ({left: 7, top: 9});
+    host.navigator = {userAgent: 'Android'};
+    host.requestAnimationFrame = f => frames.push(f);
+    host.installAndroidTouchZoomRecovery(map, host, maxZoom);
+
+    const ev = {
+      isTrusted,
+      target: host,
+      clientX: 485,
+      clientY: 480,
+      button: 0,
+      detail: 2,
+      sourceCapabilities: {firesTouchEvents},
+    };
+
+    emit(sdk, 'ZoomStart');
+    emit(dom, 'mousedown', ev);
+
+    moving = false;
+    emit(sdk, 'ZoomEnd');
+
+    emit(dom, 'dblclick', ev);
+    emit(sdk, 'DoubleClick', {});
+
+    if (mode === 'native-reached17-before-frame') {
+      publicZoom = 17;
+    }
+
+    while (frames.length) frames.shift()();
+
+    if (expectEase) {
+      assert.equal(fns.length, 1, `${mode}: should ease`);
+      assert.equal(fns[0].zoom, 17, `${mode}: zoom level`);
+    } else {
+      assert.equal(fns.length, 0, `${mode}: should not ease`);
+    }
+  };
+
+  exercise('recovered', {expectEase: true});
+  exercise('native-reached17-before-frame', {currentRawZoom: 17, expectEase: false});
+  exercise('disabled', {zoomEnabled: false});
+  exercise('max16', {maxZoom: 16});
+  exercise('real-mouse', {firesTouchEvents: false});
+});
