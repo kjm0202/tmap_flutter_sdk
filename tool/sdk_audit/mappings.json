@@ -1,0 +1,506 @@
+{
+  "schemaVersion": 1,
+  "policy": "Mappings are structural candidates only. A matching name, comment, bridge string or one passing scenario never grants full support. Only real public Dart declarations are mapped; unmapped official contracts remain explicit.",
+  "documentAliases": {
+    "Tmapv3.Tdata": "Tmapv3.extension.TData",
+    "Tmapv3.TData": "Tmapv3.extension.TData"
+  },
+  "reviewedMemberAliases": [
+    {
+      "reviewId": "U043",
+      "from": "Tmapv3.extension.TData#getPOIDataFromLonLatson",
+      "to": "Tmapv3.extension.TData#getPOIDataFromLonLatJson"
+    },
+    {
+      "reviewId": "U046",
+      "from": "Tmapv3.extension.TData#getPOIDataFromIdson",
+      "to": "Tmapv3.extension.TData#getPOIDataFromIdJson"
+    }
+  ],
+  "reviewedStaticDispatchAliases": [
+    {
+      "reviewId": "STATIC-DISPATCH-001",
+      "from": "Tmapv3.util.Projection#convertBesselGEOToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertBesselGEOToWGS84GEO"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-002",
+      "from": "Tmapv3.util.Projection#convertBesselTMToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertBesselTMToWGS84GEO"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-003",
+      "from": "Tmapv3.util.Projection#convertEPSG3857ToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertEPSG3857ToWGS84GEO"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-004",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToBesselGEO",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToBesselGEO"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-005",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToBesselTM",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToBesselTM"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-006",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToEPSG3857",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToEPSG3857"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-007",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToKatec",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToKatec"
+    },
+    {
+      "reviewId": "STATIC-DISPATCH-008",
+      "from": "Tmapv3.asset.Icon#get",
+      "to": "Tmapv3.asset.Icon.get"
+    }
+  ],
+  "classCandidates": {
+    "Map": [
+      "TMap",
+      "TMapController"
+    ],
+    "MarkerCluster": [
+      "Clusterer",
+      "TMapController"
+    ],
+    "Marker": [
+      "Marker",
+      "TMapController"
+    ],
+    "InfoWindow": [
+      "InfoWindow",
+      "TMapController"
+    ],
+    "Label": [
+      "Label",
+      "TMapController"
+    ],
+    "Polyline": [
+      "Polyline",
+      "TMapController"
+    ],
+    "Polygon": [
+      "Polygon",
+      "TMapController"
+    ],
+    "Circle": [
+      "Circle",
+      "TMapController"
+    ],
+    "Rectangle": [
+      "Rectangle",
+      "TMapController"
+    ],
+    "Point": [
+      "Point"
+    ],
+    "Size": [
+      "Size"
+    ],
+    "LatLng": [
+      "LatLng"
+    ],
+    "LatLngBounds": [
+      "LatLngBounds"
+    ],
+    "TData": [
+      "TDataService",
+      "TMapController",
+      "TDataResponse"
+    ],
+    "Bounds": [],
+    "HeatMap": [],
+    "Drawing": [],
+    "DotMap": [],
+    "SquareMap": [],
+    "XML": [],
+    "KML": [],
+    "GeoJSON": [],
+    "Html": [],
+    "Util": [],
+    "Projection": [],
+    "GroundOverlay": [],
+    "MapObject": [
+      "BaseDraw"
+    ]
+  },
+  "memberCandidates": {
+    "Tmapv3.base.Point#getX": [
+      "Point.x"
+    ],
+    "Tmapv3.base.Point#getY": [
+      "Point.y"
+    ],
+    "Tmapv3.base.Point#toString": [
+      "Point.toString"
+    ],
+    "Tmapv3.base.Point#equals": [
+      "Point.=="
+    ],
+    "Tmapv3.base.LatLng#lat": [
+      "LatLng.latitude"
+    ],
+    "Tmapv3.base.LatLng#lng": [
+      "LatLng.longitude"
+    ],
+    "Tmapv3.base.LatLng#toString": [
+      "LatLng.toString"
+    ],
+    "Tmapv3.base.LatLng#equals": [
+      "LatLng.=="
+    ],
+    "Tmapv3.base.Size#getWidth": [
+      "Size.width"
+    ],
+    "Tmapv3.base.Size#getHeight": [
+      "Size.height"
+    ],
+    "Tmapv3.base.Size#toString": [
+      "Size.toString"
+    ],
+    "Tmapv3.base.Size#equals": [
+      "Size.=="
+    ],
+    "Tmapv3.base.LatLngBounds#getSouthWest": [
+      "LatLngBounds.southWest"
+    ],
+    "Tmapv3.base.LatLngBounds#getNorthEast": [
+      "LatLngBounds.northEast"
+    ],
+    "Tmapv3.base.LatLngBounds#getCenter": [
+      "LatLngBounds.center"
+    ],
+    "Tmapv3.base.LatLngBounds#contains": [
+      "LatLngBounds.contains"
+    ],
+    "Tmapv3.base.LatLngBounds#toString": [
+      "LatLngBounds.toString"
+    ],
+    "Tmapv3.base.LatLngBounds#equals": [
+      "LatLngBounds.=="
+    ],
+    "Tmapv3.Map#setCenter": [
+      "TMapController.setCenter"
+    ],
+    "Tmapv3.Map#setZoom": [
+      "TMapController.setZoom"
+    ],
+    "Tmapv3.Map#zoomIn": [
+      "TMapController.zoomIn"
+    ],
+    "Tmapv3.Map#zoomOut": [
+      "TMapController.zoomOut"
+    ],
+    "Tmapv3.Map#zoomToMaxExtent": [
+      "TMapController.zoomToMaxExtent"
+    ],
+    "Tmapv3.Map#panTo": [
+      "TMapController.panTo"
+    ],
+    "Tmapv3.Map#panBy": [
+      "TMapController.panBy"
+    ],
+    "Tmapv3.Map#setBearing": [
+      "TMapController.setBearing"
+    ],
+    "Tmapv3.Map#setPitch": [
+      "TMapController.setPitch"
+    ],
+    "Tmapv3.Map#setMapType": [
+      "TMapController.setMapType"
+    ],
+    "Tmapv3.Map#fitBounds": [
+      "TMapController.fitBounds"
+    ],
+    "Tmapv3.Map#relayout": [
+      "TMapController.relayout"
+    ],
+    "Tmapv3.Map!click": [
+      "TMap.onMapTap"
+    ],
+    "Tmapv3.Map!dblclick": [
+      "TMap.onMapDoubleTap"
+    ],
+    "Tmapv3.Map!longtap": [
+      "TMap.onMapLongTap"
+    ],
+    "Tmapv3.Map!zoomend": [
+      "TMap.onZoomChangeCallback"
+    ],
+    "Tmapv3.Map!rotatestart": [
+      "TMap.onBearingChangeCallback"
+    ],
+    "Tmapv3.Map!rotateend": [
+      "TMap.onBearingChangeCallback"
+    ],
+    "Tmapv3.Map!rotate": [
+      "TMap.onBearingChangeCallback"
+    ],
+    "Tmapv3.Map!pitchstart": [
+      "TMap.onPitchChangeCallback"
+    ],
+    "Tmapv3.Map!pitchend": [
+      "TMap.onPitchChangeCallback"
+    ],
+    "Tmapv3.Map!pitch": [
+      "TMap.onPitchChangeCallback"
+    ],
+    "Tmapv3.Map!idle": [
+      "TMap.onCameraIdle"
+    ],
+    "Tmapv3.Map!dragend": [
+      "TMap.onDragChangeCallback"
+    ],
+    "Tmapv3.Map!dragstart": [
+      "TMap.onDragChangeCallback"
+    ],
+    "Tmapv3.Map!drag": [
+      "TMap.onDragChangeCallback"
+    ],
+    "Tmapv3.Map!TouchStart": [
+      "TMap.onMapTap"
+    ],
+    "Tmapv3.Map!TouchEnd": [
+      "TMap.onMapTap"
+    ],
+    "Tmapv3.extension.TData#getRoutePlan": [
+      "TDataService.getRoutePlan",
+      "TMapController.getRoutePlan"
+    ],
+    "Tmapv3.extension.TData#getRoutePlanPedestrian": [
+      "TDataService.getRoutePlanPedestrian",
+      "TMapController.getRoutePlanPedestrian"
+    ],
+    "Tmapv3.extension.TData#getPOIDataFromSearch": [
+      "TDataService.searchPoi",
+      "TMapController.searchPoi"
+    ],
+    "Tmapv3.extension.TData#getPOIDataFromSearchAround": [
+      "TDataService.searchPoiAround",
+      "TMapController.searchPoiAround"
+    ],
+    "Tmapv3.extension.TData#getGeoFromAddress": [
+      "TDataService.getGeoFromAddress",
+      "TMapController.getGeoFromAddress"
+    ],
+    "Tmapv3.extension.TData#getAddressFromGeo": [
+      "TDataService.getAddressFromGeo",
+      "TMapController.getAddressFromGeo"
+    ],
+    "Tmapv3.extension.TData#getAutoCompleteSearch": [
+      "TDataService.getAutoCompleteSearch",
+      "TMapController.getAutoCompleteSearch"
+    ],
+    "Tmapv3.shape.Circle#getCenter": [
+      "Circle.center"
+    ],
+    "Tmapv3.shape.Circle#getRadius": [
+      "Circle.radius"
+    ],
+    "Tmapv3.shape.Rectangle#getBounds": [
+      "Rectangle.bounds"
+    ],
+    "Tmapv3.shape.Polyline#getPath": [
+      "Polyline.points"
+    ],
+    "Tmapv3.shape.Polygon#getPath": [
+      "Polygon.points"
+    ],
+    "Tmapv3.mapobject.Marker#getPosition": [
+      "Marker.position"
+    ],
+    "Tmapv3.mapobject.Marker#getTitle": [
+      "Marker.title"
+    ],
+    "Tmapv3.mapobject.Marker#getIcon": [
+      "Marker.icon"
+    ],
+    "Tmapv3.mapobject.Marker#getVisible": [
+      "Marker.visible"
+    ],
+    "Tmapv3.mapobject.Marker#getDraggable": [
+      "Marker.draggable"
+    ],
+    "Tmapv3.mapobject.Marker#getZIndex": [
+      "Marker.zIndex"
+    ],
+    "Tmapv3.mapobject.InfoWindow#getPosition": [
+      "InfoWindow.position"
+    ],
+    "Tmapv3.mapobject.InfoWindow#getContent": [
+      "InfoWindow.content"
+    ],
+    "Tmapv3.mapobject.InfoWindow#getVisible": [
+      "InfoWindow.visible"
+    ],
+    "Tmapv3.mapobject.Label#getPosition": [
+      "Label.position"
+    ],
+    "Tmapv3.mapobject.Label#getContent": [
+      "Label.content"
+    ],
+    "Tmapv3.extension.MarkerCluster#getMarkers": [
+      "Clusterer.markers"
+    ],
+    "Tmapv3.extension.TData#getRoutePlanJson": [
+      "TDataService.getRoutePlan",
+      "TMapController.getRoutePlan"
+    ],
+    "Tmapv3.extension.TData#getRoutePlanForPeopleJson": [
+      "TDataService.getRoutePlanPedestrian",
+      "TMapController.getRoutePlanPedestrian"
+    ],
+    "Tmapv3.extension.TData#getPOIDataFromSearchJson": [
+      "TDataService.searchPoi",
+      "TMapController.searchPoi"
+    ],
+    "Tmapv3.extension.TData#getPOIDataFromLonLatJson": [
+      "TDataService.searchPoiAround",
+      "TMapController.searchPoiAround"
+    ],
+    "Tmapv3.extension.TData#getAddressFromGeoJson": [
+      "TDataService.getAddressFromGeo",
+      "TMapController.getAddressFromGeo"
+    ],
+    "Tmapv3.extension.TData#getAutoCompleteSearchJson": [
+      "TDataService.getAutoCompleteSearch",
+      "TMapController.getAutoCompleteSearch"
+    ],
+    "Tmapv3.extension.MarkerCluster#destroy": [
+      "TMapController.clearMarkerClusterer"
+    ]
+  },
+  "futureVsJsCallbackMappings": {
+    "Tmapv3.extension.TData#getRoutePlan": {
+      "dartCounterparts": [
+        "TDataService.getRoutePlan",
+        "TMapController.getRoutePlan"
+      ],
+      "model": "Future<RouteInfo?>",
+      "jsSignature": "getRoutePlan(params, callbacks)",
+      "preserved": {
+        "value": "Parsed RouteInfo model (totalDistance, totalTime, totalFare, taxiFare, path coordinates, guidePoints)",
+        "failure": "Network errors and empty responses map to null / thrown Dart exception",
+        "timing": "Asynchronous Future resolution when full HTTP response is received and decoded"
+      },
+      "missing": {
+        "value": "Raw XMLHttpRequest response headers and unparsed raw JSON response tree",
+        "failure": "Low-level JS error event object structure and XMLHttpRequest status code access",
+        "timing": "Synchronous callback handler registration lifecycle and potential intermediate streaming/progress"
+      }
+    },
+    "Tmapv3.extension.TData#getRoutePlanPedestrian": {
+      "dartCounterparts": [
+        "TDataService.getRoutePlanPedestrian",
+        "TMapController.getRoutePlanPedestrian"
+      ],
+      "model": "Future<RouteInfo?>",
+      "jsSignature": "getRoutePlanPedestrian(params, callbacks)",
+      "preserved": {
+        "value": "Parsed pedestrian RouteInfo model (path, distance, time, guidePoints)",
+        "failure": "Network or parse failure propagates as null / Dart exception",
+        "timing": "Asynchronous Future resolution upon response receipt"
+      },
+      "missing": {
+        "value": "Raw JSON response payload and HTTP headers",
+        "failure": "Direct JS onError callback object",
+        "timing": "Synchronous callback registration"
+      }
+    },
+    "Tmapv3.extension.TData#getPOIDataFromSearch": {
+      "dartCounterparts": [
+        "TDataService.searchPoi",
+        "TMapController.searchPoi"
+      ],
+      "model": "Future<List<PoiItem>>",
+      "jsSignature": "getPOIDataFromSearch(params, callbacks)",
+      "preserved": {
+        "value": "Typed List<PoiItem> with POI names, addresses, coordinates, phone numbers, and biz categories",
+        "failure": "Empty list or exception on failure",
+        "timing": "Asynchronous Future completion"
+      },
+      "missing": {
+        "value": "Raw pagination metadata (totalCount, page, count) and vendor-specific attributes",
+        "failure": "Specific API error codes delivered via JS callback",
+        "timing": "Immediate callback handler setup timing"
+      }
+    },
+    "Tmapv3.extension.TData#getPOIDataFromSearchAround": {
+      "dartCounterparts": [
+        "TDataService.searchPoiAround",
+        "TMapController.searchPoiAround"
+      ],
+      "model": "Future<List<PoiItem>>",
+      "jsSignature": "getPOIDataFromSearchAround(params, callbacks)",
+      "preserved": {
+        "value": "Typed List<PoiItem> matching radius/category around specified coordinate",
+        "failure": "Empty list or exception on failure",
+        "timing": "Asynchronous Future completion"
+      },
+      "missing": {
+        "value": "Raw pagination metadata and vendor attributes",
+        "failure": "Detailed API error payload",
+        "timing": "Immediate callback handler setup timing"
+      }
+    },
+    "Tmapv3.extension.TData#getGeoFromAddress": {
+      "dartCounterparts": [
+        "TDataService.getGeoFromAddress",
+        "TMapController.getGeoFromAddress"
+      ],
+      "model": "Future<LatLng?>",
+      "jsSignature": "getGeoFromAddress(params, callbacks)",
+      "preserved": {
+        "value": "LatLng coordinate (latitude, longitude) of resolved address",
+        "failure": "null return on address resolution failure or network error",
+        "timing": "Asynchronous Future resolution"
+      },
+      "missing": {
+        "value": "Multi-match alternative candidates and granular address element hierarchy",
+        "failure": "Geocoder service specific error codes",
+        "timing": "Synchronous callback registration"
+      }
+    },
+    "Tmapv3.extension.TData#getAddressFromGeo": {
+      "dartCounterparts": [
+        "TDataService.getAddressFromGeo",
+        "TMapController.getAddressFromGeo"
+      ],
+      "model": "Future<AddressInfo?>",
+      "jsSignature": "getAddressFromGeo(params, callbacks)",
+      "preserved": {
+        "value": "AddressInfo model (fullAddress, cityDo, guGun, legalDong, adminDong, roadName, bunji, zipCode)",
+        "failure": "null return on reverse geocoding failure",
+        "timing": "Asynchronous Future resolution"
+      },
+      "missing": {
+        "value": "Raw administrative vs legal zone breakdown and unmapped metadata fields",
+        "failure": "Raw geocode service error object",
+        "timing": "Synchronous callback registration"
+      }
+    },
+    "Tmapv3.extension.TData#getAutoCompleteSearch": {
+      "dartCounterparts": [
+        "TDataService.getAutoCompleteSearch",
+        "TMapController.getAutoCompleteSearch"
+      ],
+      "model": "Future<List<AutoCompleteItem>>",
+      "jsSignature": "getAutoCompleteSearch(params, callbacks)",
+      "preserved": {
+        "value": "List<AutoCompleteItem> containing suggested search keywords",
+        "failure": "Empty list or exception on failure",
+        "timing": "Asynchronous Future completion"
+      },
+      "missing": {
+        "value": "Search scoring and category classification metadata",
+        "failure": "Specific server response error code",
+        "timing": "Immediate callback registration"
+      }
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "runtime": {
+    "auth": "script-executed",
+    "mapReady": true,
+    "verifiedBootstrapDigest": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+    "bridgeSourceHashes": {
+      "web": "73bc3e778c579cdb8283d9c34974dd267b378e53465cb0079950d72889e5b40b",
+      "mobileHelpers": "ed2dc863ed8c39c2b7938b25d1bf3b3531f326969c763d43b08895c970a00e7d"
+    },
+    "networkScripts": [
+      {
+        "url": "https://topopentile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "bytes": 1281499,
+        "status": 200,
+        "pinned": true,
+        "classification": "pinned-core"
+      }
+    ],
+    "issues": [
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getZoom",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getMinZoom",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getMaxZoom",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getPitch",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getBearing",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "web.getCenter",
+        "status": "unresolved-unavailable-wrapper"
+      }
+    ],
+    "bridgeObservations": [
+      {
+        "id": "web.getZoom",
+        "contract": "Tmapv3.Map#getZoom",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getZoom",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": 14
+      },
+      {
+        "id": "web.getMinZoom",
+        "contract": "Tmapv3.Map#getMinZoom",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getMinZoom",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": 5
+      },
+      {
+        "id": "web.getMaxZoom",
+        "contract": "Tmapv3.Map#getMaxZoom",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getMaxZoom",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": 21
+      },
+      {
+        "id": "web.getPitch",
+        "contract": "Tmapv3.Map#getPitch",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getPitch",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": 0
+      },
+      {
+        "id": "web.getBearing",
+        "contract": "Tmapv3.Map#getBearing",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getBearing",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": 0
+      },
+      {
+        "id": "web.getCenter",
+        "contract": "Tmapv3.Map#getCenter",
+        "environment": "chrome-web-bridge",
+        "wrapper": "tmap_getCenter",
+        "comparison": "direct-sdk-reference",
+        "status": "unresolved-unavailable-wrapper",
+        "expected": {
+          "latitude": 37.5665,
+          "longitude": 126.978
+        }
+      }
+    ]
+  },
+  "issues": [
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getZoom",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getMinZoom",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getMaxZoom",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getPitch",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getBearing",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "web.getCenter",
+      "status": "unresolved-unavailable-wrapper"
+    }
+  ],
+  "libFingerprint": {
+    "files": {
+      "lib/src/bridge_assets.dart": "53df87d66cf26e1936282928e0f0474ff907bfe717dd27493c5fd532110d67dd",
+      "lib/src/tmap_controller.dart": "bea92644449d4959bfcc46be9a31eaf038f5ea17bf43b93e294a81a022629ea7",
+      "lib/src/web/tmap_web_bridge.dart": "e3e36c1b3bbac1653c64b3824521703cb7c9ab542e6a1c66a9ccea1f7223a631"
+    }
+  },
+  "bridgeFingerprint": {
+    "files": {
+      "assets/bridge/shared.js": "e1c85c2c1a5abecac241d1b9c174cc7cbdbb1bce028758a295910da02e1917aa",
+      "assets/bridge/web.js": "cb1212e1f5d70a0e9d9cbf003c8a1f9be55bd8993863f5c2e2fac94345fb5bca"
+    }
+  }
+}

@@ -1,0 +1,104 @@
+name: SDK parity audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "assets/bridge/**"
+      - "lib/**"
+      - "test/**"
+      - "example/**"
+      - "tool/sdk_audit/**"
+      - "docs/sdk-audit/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/sdk-audit.yml"
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate checked-in observation integrity
+        run: python3 tool/sdk_audit/validate_observations.py
+      - name: Test observation integrity validator
+        run: python3 -m unittest discover -s tool/sdk_audit/test -p 'test_observation_integrity.py'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+        with:
+          chrome-version: stable
+      - name: Install audit tool dependencies
+        run: npm ci --prefix tool/sdk_audit
+      - name: Setup Dart audit tool dependencies
+        run: cd tool/sdk_audit/dart && dart pub get
+      - name: Setup Flutter package dependencies
+        run: flutter pub get
+      - name: Restore tracked config and locks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -- analysis_options.yaml example/analysis_options.yaml example/pubspec.lock pubspec.lock
+      - name: Run audit tool unit tests
+        run: npm test --prefix tool/sdk_audit
+
+      - name: Provide secret temporary credential
+        env:
+          TMAP_AUDIT_KEY: ${{ secrets.TMAP_AUDIT_KEY }}
+        run: |
+          if [ -z "$TMAP_AUDIT_KEY" ]; then
+            echo "Missing required secret TMAP_AUDIT_KEY"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import os, json
+          key = os.environ.get('TMAP_AUDIT_KEY')
+          path = os.path.join(os.environ['RUNNER_TEMP'], 'tmap-audit-key.json')
+          fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(fd, 'w') as f:
+              json.dump({'TMAP_APP_KEY': key}, f)
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('TMAP_AUDIT_KEY_FILE=' + path + '\n')
+          PY
+
+      - name: Restore baseline
+        env:
+          BASELINE: tool/sdk_audit/baselines/production-2026-11-19-46fa62a7bb27.json
+          TMAP_AUDIT_CHROME: ${{ steps.chrome.outputs.chrome-path }}
+        run: node tool/sdk_audit/cli.mjs restore --snapshot "$BASELINE" --key-file "$TMAP_AUDIT_KEY_FILE"
+
+      - name: Audit and check
+        env:
+          BASELINE: tool/sdk_audit/baselines/production-2026-11-19-46fa62a7bb27.json
+          PRIOR: tool/sdk_audit/baselines/previous-surface.json.gz
+          OUT: docs/sdk-audit/ci
+          TMAP_AUDIT_CHROME: ${{ steps.chrome.outputs.chrome-path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          audit_rc=0; node tool/sdk_audit/cli.mjs audit --snapshot "$BASELINE" --against "$PRIOR" --key-file "$TMAP_AUDIT_KEY_FILE" --out "$OUT" || audit_rc=$?
+          case "$audit_rc" in 0|1) ;; *) exit "$audit_rc";; esac
+          node tool/sdk_audit/cli.mjs check --integrity-only --snapshot "$BASELINE" --against "$PRIOR" --out "$OUT"
+          check_rc=0; node tool/sdk_audit/cli.mjs check --snapshot "$BASELINE" --against "$PRIOR" --out "$OUT" || check_rc=$?
+          if [ "$check_rc" -ne 0 ]; then exit "$check_rc"; fi; exit "$audit_rc"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sdk-audit-drift
+          path: |
+            docs/sdk-audit/ci/drift.md
+            docs/sdk-audit/ci/drift.json
+          if-no-files-found: error
+      - name: Remove credential file
+        if: always()
+        run: |
+          if [ -n "${TMAP_AUDIT_KEY_FILE:-}" ]; then
+            rm -f -- "$TMAP_AUDIT_KEY_FILE"
+          fi

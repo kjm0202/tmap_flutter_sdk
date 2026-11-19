@@ -1,0 +1,388 @@
+{
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "items": [
+    {
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+      "sourceSha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+      "line": 3737,
+      "blockSha256": "e6dcd8d6c9dc7ee718739f4933e15e7d4060e663f11b4ab6ca5a350ecfbe864f",
+      "callStart": 1,
+      "callEnd": 572,
+      "callbackStart": 98,
+      "callbackEnd": 335,
+      "parameter": "marker",
+      "owner": "Tmapv3.Marker",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkStart": 885975,
+      "sdkEnd": 886007,
+      "sdkExcerpt": "if(e.callback){e.callback(this)}",
+      "rationale": "This exact Marker.setContextMenu example passes the SDK marker as the callback argument; the pinned Marker context-menu implementation supplies that marker. The review is limited to this callback, not every variable named marker."
+    },
+    {
+      "binding": "this",
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample85.html",
+      "sourceSha256": "fe3f77e69def9cc95e5dd0964d256cc4c6b4ba2ad34f75a80d58e37412fa0017",
+      "line": 1,
+      "blockSha256": "79495a5ba3bc39f30787f2b6533c60940c9d48aba536208385b91143046c465a",
+      "callStart": 1272,
+      "callEnd": 1343,
+      "callExcerpt": "tData.getGeoFromAddressJson(\"서울\", \"은평\", \"갈현\", \"397\", optionObj, params)",
+      "callbackStart": 1358,
+      "callbackEnd": 1978,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 973,
+          "end": 1001,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 1097,
+          "end": 1120,
+          "excerpt": "onComplete : onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 992255,
+          "end": 992283,
+          "excerpt": "this.onComplete=a.onComplete"
+        },
+        {
+          "start": 992930,
+          "end": 992989,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(s,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact sample a constructed TData supplies the named onComplete callback to its JSON request. The pinned normal XMLHttpRequest completion path parses responseText into that receiver and invokes onComplete.apply(receiver, [receiver]). This review is limited to this callback and path; nested properties are response-payload fields, not separate TData object classes."
+    },
+    {
+      "binding": "this",
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample86.html",
+      "sourceSha256": "859df7bff12a7f82b8210bf1ea69648e24b91033715cc36baa9b7fdf4770037b",
+      "line": 1,
+      "blockSha256": "44d7cab569697edaee0af4d06a70cc61cec35ef706e0b511165d3588b4395c1a",
+      "callStart": 1446,
+      "callEnd": 1517,
+      "callExcerpt": "tData.getAddressFromGeoJson(\"37.29062\",\"127.051755\", optionObj, params)",
+      "callbackStart": 1547,
+      "callbackEnd": 2029,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 1002,
+          "end": 1030,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 1227,
+          "end": 1248,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 993827,
+          "end": 993855,
+          "excerpt": "this.onComplete=r.onComplete"
+        },
+        {
+          "start": 994487,
+          "end": 994546,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(n,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact sample a constructed TData supplies the named onComplete callback to its JSON request. The pinned normal XMLHttpRequest completion path parses responseText into that receiver and invokes onComplete.apply(receiver, [receiver]). This review is limited to this callback and path; nested properties are response-payload fields, not separate TData object classes."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample85.html",
+      "sourceSha256": "fe3f77e69def9cc95e5dd0964d256cc4c6b4ba2ad34f75a80d58e37412fa0017",
+      "line": 106,
+      "blockSha256": "e4d7432ff2c3ec09654ea5176261573a56572a64c3955db4458398fbf5a61e7c",
+      "callStart": 747,
+      "callEnd": 815,
+      "callExcerpt": "tData.getGeoFromAddressJson(\"서울\",\"은평\",\"갈현\",\"397\", optionObj, params)",
+      "callbackStart": 831,
+      "callbackEnd": 1256,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 404,
+          "end": 432,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 533,
+          "end": 554,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 992255,
+          "end": 992283,
+          "excerpt": "this.onComplete=a.onComplete"
+        },
+        {
+          "start": 992930,
+          "end": 992989,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(s,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample86.html",
+      "sourceSha256": "859df7bff12a7f82b8210bf1ea69648e24b91033715cc36baa9b7fdf4770037b",
+      "line": 106,
+      "blockSha256": "64a3277f07d0f11f7a6cf851233529c5f2a67c1a46ea6530b14ce6a2ef54b2af",
+      "callStart": 797,
+      "callEnd": 868,
+      "callExcerpt": "tData.getAddressFromGeoJson(\"37.29062\",\"127.051755\", optionObj, params)",
+      "callbackStart": 894,
+      "callbackEnd": 1294,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 403,
+          "end": 431,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 583,
+          "end": 604,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 993827,
+          "end": 993855,
+          "excerpt": "this.onComplete=r.onComplete"
+        },
+        {
+          "start": 994487,
+          "end": 994546,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(n,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample87.html",
+      "sourceSha256": "5b8a9ab3cd6b956d8b9cbb16050516a1e373bb62e3be0559d1df52f376f1506b",
+      "line": 1,
+      "blockSha256": "866d007a2a3bc3a1cec4c926351d748fd58f0092d7b0c4bb2237e2abc8e3894a",
+      "callStart": 1480,
+      "callEnd": 1541,
+      "callExcerpt": "tData.getRoutePlanJson(s_latlng, e_latlng, optionObj, params)",
+      "callbackStart": 1572,
+      "callbackEnd": 2400,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 1432,
+          "end": 1460,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 1314,
+          "end": 1335,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 995432,
+          "end": 995460,
+          "excerpt": "this.onComplete=r.onComplete"
+        },
+        {
+          "start": 996150,
+          "end": 996209,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(n,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample87.html",
+      "sourceSha256": "5b8a9ab3cd6b956d8b9cbb16050516a1e373bb62e3be0559d1df52f376f1506b",
+      "line": 121,
+      "blockSha256": "4c5cff8b381cca3d11a430130f4789046db4d3d2f79b268547968f61e438995f",
+      "callStart": 794,
+      "callEnd": 855,
+      "callExcerpt": "tData.getRoutePlanJson(s_latlng, e_latlng, optionObj, params)",
+      "callbackStart": 870,
+      "callbackEnd": 1643,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 737,
+          "end": 765,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 630,
+          "end": 651,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 995432,
+          "end": 995460,
+          "excerpt": "this.onComplete=r.onComplete"
+        },
+        {
+          "start": 996150,
+          "end": 996209,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(n,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample91.html",
+      "sourceSha256": "a14bb112ede9d4f9dfb084b31f9fa8eb68989bcc60b6c8b34473b8670c94bc8c",
+      "line": 1,
+      "blockSha256": "32066a81a564a4a3acb2b98ba0cef98bbc9b2a71bcb455c88f81f502b5a78a27",
+      "callStart": 1807,
+      "callEnd": 1881,
+      "callExcerpt": "tData.getPOIDataFromSearchJson(encodeURIComponent(\"호프집\"),optionObj,params)",
+      "callbackStart": 1953,
+      "callbackEnd": 2811,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 1769,
+          "end": 1797,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 1651,
+          "end": 1672,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 1001265,
+          "end": 1001293,
+          "excerpt": "this.onComplete=i.onComplete"
+        },
+        {
+          "start": 1001913,
+          "end": 1001972,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(r,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    },
+    {
+      "binding": "this",
+      "retainUnresolved": true,
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample91.html",
+      "sourceSha256": "a14bb112ede9d4f9dfb084b31f9fa8eb68989bcc60b6c8b34473b8670c94bc8c",
+      "line": 130,
+      "blockSha256": "734c53a1e4df506d05e8310c9e3fe85297490e7d72b258f0375c33440bfc770b",
+      "callStart": 1189,
+      "callEnd": 1263,
+      "callExcerpt": "tData.getPOIDataFromSearchJson(encodeURIComponent(\"호프집\"),optionObj,params)",
+      "callbackStart": 1323,
+      "callbackEnd": 2177,
+      "callbackName": "onComplete",
+      "sourceBindings": [
+        {
+          "start": 1151,
+          "end": 1179,
+          "excerpt": "new Tmapv3.extension.TData()"
+        },
+        {
+          "start": 1034,
+          "end": 1055,
+          "excerpt": "onComplete:onComplete"
+        }
+      ],
+      "owner": "Tmapv3.extension.TData",
+      "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "sdkEvidence": [
+        {
+          "start": 1001265,
+          "end": 1001293,
+          "excerpt": "this.onComplete=i.onComplete"
+        },
+        {
+          "start": 1001913,
+          "end": 1001972,
+          "excerpt": "onreadystatechange=function(){b.cbFuncJson.apply(r,[this])}"
+        },
+        {
+          "start": 988203,
+          "end": 988360,
+          "excerpt": "this._responseData=$.parseJSON(t.responseText);if(this._responseData.error==\"error\"){this.onError.apply(this,[this])}else{this.onComplete.apply(this,[this])}"
+        }
+      ],
+      "rationale": "In this exact displayed or executable example the constructed TData passes onComplete to the pinned JSON request; its normal XMLHttpRequest callback parses JSON on the TData receiver and invokes onComplete.apply(this,[this]). This establishes only that callback path. The global onComplete function may be called with another receiver, so each expression also remains unresolved. Paths below _responseData are response-payload members. Nested jQuery each callbacks have their own this and are excluded."
+    }
+  ]
+}

@@ -1,0 +1,479 @@
+{
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "items": [
+    {
+      "id": "STATIC-DISPATCH-001",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertBesselGEOToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertBesselGEOToWGS84GEO",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertBesselGEOToWGS84GEO",
+        "channel": "docs",
+        "call": "Projection.convertBesselGEOToWGS84GEO()",
+        "start": 144439,
+        "end": 144478
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 857356,
+        "end": 857488,
+        "sourceTextSha256": "4988c5aac672f2942dd5d527c2f27d5725ac0e0f55cb5a033f77a206fd0a565a",
+        "bodySha256": "3d14f305a42129bf5fa30a0c52521a77b8ceb45fe3d0e2a471a711d152ec0d6a"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertBesselGEOToWGS84GEO",
+          "Tmapv3.Projection.convertBesselGEOToWGS84GEO",
+          "convertBesselGEOToWGS84GEO"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-002",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertBesselTMToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertBesselTMToWGS84GEO",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertBesselTMToWGS84GEO",
+        "channel": "docs",
+        "call": "Projection.convertBesselTMToWGS84GEO()",
+        "start": 140861,
+        "end": 140899
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 856890,
+        "end": 857002,
+        "sourceTextSha256": "8d242b4722d0a673fdf726686f8d4333c7b48ad69146cfde917d32cf066c75d5",
+        "bodySha256": "19dfd592151b7d14e36ef31e91a2ebc4e8e1561df23c359c5d519e1c2e94a0f9"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertBesselTMToWGS84GEO",
+          "Tmapv3.Projection.convertBesselTMToWGS84GEO",
+          "convertBesselTMToWGS84GEO"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-003",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertEPSG3857ToWGS84GEO",
+      "to": "Tmapv3.util.Projection.convertEPSG3857ToWGS84GEO",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertEPSG3857ToWGS84GEO",
+        "channel": "docs",
+        "call": "Projection.convertEPSG3857ToWGS84GEO()",
+        "start": 148087,
+        "end": 148125
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 858262,
+        "end": 858758,
+        "sourceTextSha256": "0d6f978feaae9ef84354f7edfd5604efd2afd32730377d68cac8be376e54e3a7",
+        "bodySha256": "0f529cc9de0d6423f9b9976af1204e26aed77730436576e6b99f329df92207d2"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertEPSG3857ToWGS84GEO",
+          "Tmapv3.Projection.convertEPSG3857ToWGS84GEO",
+          "convertEPSG3857ToWGS84GEO"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-004",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToBesselGEO",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToBesselGEO",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertWGS84GEOToBesselGEO",
+        "channel": "docs",
+        "call": "Projection.convertWGS84GEOToBesselGEO()",
+        "start": 145651,
+        "end": 145690
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 857489,
+        "end": 857621,
+        "sourceTextSha256": "143756078d0c460be3de19a1199c3d375c210fe95a00446f5465e6c02cc24ada",
+        "bodySha256": "e0ab3069e638c4de8ada794e7495aaaec2d16049f6c4e59c8b9cf6e40d84fd2a"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertWGS84GEOToBesselGEO",
+          "Tmapv3.Projection.convertWGS84GEOToBesselGEO",
+          "convertWGS84GEOToBesselGEO"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-005",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToBesselTM",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToBesselTM",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertWGS84GEOToBesselTM",
+        "channel": "docs",
+        "call": "Projection.convertWGS84GEOToBesselTM()",
+        "start": 142062,
+        "end": 142100
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 857003,
+        "end": 857125,
+        "sourceTextSha256": "9f5ca528e442117f3b7026e0550e1da04ee563dff526dae260f655990d36bbf8",
+        "bodySha256": "ad56aaee65768fff25c6ebca8a5abf7116e1c69e6c2a8347e273d667677530d7"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertWGS84GEOToBesselTM",
+          "Tmapv3.Projection.convertWGS84GEOToBesselTM",
+          "convertWGS84GEOToBesselTM"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-006",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToEPSG3857",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToEPSG3857",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertWGS84GEOToEPSG3857",
+        "channel": "docs",
+        "call": "Projection.convertWGS84GEOToEPSG3857()",
+        "start": 146872,
+        "end": 146910
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 857860,
+        "end": 858261,
+        "sourceTextSha256": "bdce96df9547dafb7bd57b99ea08fb32d959a5bddbe9bcc3d4e648b49fcd3bc4",
+        "bodySha256": "caef56e5e4abc8407374d10e46ff3a3537ba026a7b47a970d1ed360ffe851605"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertWGS84GEOToEPSG3857",
+          "Tmapv3.Projection.convertWGS84GEOToEPSG3857",
+          "convertWGS84GEOToEPSG3857"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-007",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.util.Projection#convertWGS84GEOToKatec",
+      "to": "Tmapv3.util.Projection.convertWGS84GEOToKatec",
+      "docOwner": "Tmapv3.Projection",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": "Projection_convertWGS84GEOToKatec",
+        "channel": "docs",
+        "call": "Projection.convertWGS84GEOToKatec()",
+        "start": 143246,
+        "end": 143281
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 857126,
+        "end": 857245,
+        "sourceTextSha256": "cb7ba38a1d147f53f7a020befd0551399c3348ad4bbf2ea0d1d216ec5938d591",
+        "bodySha256": "0d35e69c9c908f6848dafbbbc3d335d27624390e7e874b7edddfda2714c522f6"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": {
+        "from": "Tmapv3.Projection",
+        "to": "Tmapv3.util.Projection"
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.Projection#convertWGS84GEOToKatec",
+          "Tmapv3.Projection.convertWGS84GEOToKatec",
+          "convertWGS84GEOToKatec"
+        ],
+        "matches": []
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    },
+    {
+      "id": "STATIC-DISPATCH-008",
+      "category": "reviewed-document-dispatch",
+      "from": "Tmapv3.asset.Icon#get",
+      "to": "Tmapv3.asset.Icon.get",
+      "docOwner": "Tmapv3.asset.Icon",
+      "document": {
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "anchor": null,
+        "channel": "example",
+        "call": "Tmapv3.asset.Icon.get(\"b_m_a\")",
+        "start": 89172,
+        "end": 89202
+      },
+      "sdk": {
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "source": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "start": 1029753,
+        "end": 1029812,
+        "sourceTextSha256": "18ccb921e629e546586a5d144c80c8e88680a33976a13b97878c450f8029a132",
+        "bodySha256": "7432896d0cf26f64e27f8b3b9ba268b46c66746e05afdc8e95e58eb921a31aed"
+      },
+      "prototypeProof": {
+        "environment": "Chrome 157.0.8103.79; pinned SDK prototype descriptor inspection, source-review-quality-audit Q007",
+        "staticType": "function",
+        "prototypeType": "undefined",
+        "limitation": "No constructor-added instance members or dispatch behavior were tested.",
+        "observationsSha256": "92592847991009b5aa0490611c3f18015e26cae6e99eabcebe3be19e2b32ae30"
+      },
+      "ownerAlias": null,
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/tmap-vector-v3/live-verification-2026-10-23.md",
+            "sha256": "e19efc10a85cb881d3b9a61c89c0fee1f531c155112001caf64858605a8797a9"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          }
+        ],
+        "terms": [
+          "Tmapv3.asset.Icon#get",
+          "Tmapv3.asset.Icon.get",
+          "get"
+        ],
+        "matches": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "term": "get",
+            "line": 27,
+            "excerpt": "ow의 `setVisible(false/true)`는 원본 JS에서도 `getElement` 호출 중 예외가 발생했다. Android 기록은 별도 Gradle 구성의 APK 빌드까지다. 인증 엔진의 전체 계약과 Android 기기 동작은 확인이 남아 "
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "term": "get",
+            "line": 11,
+            "excerpt": "izeObserver로 후속 크기 변경 반영), min/max zoom getter, screenSize, 초기 bounds/maxBounds/minPitch/maxPitch 전달. 플랫폼별 네이티브 설정/결과 확인. |\n| Marker | nativ"
+          }
+        ]
+      },
+      "rationale": "The pinned example calls this class-qualified method and the pinned SDK exposes the matching method as static. Identifier normalization only; contracts and platform behavior remain open."
+    }
+  ]
+}

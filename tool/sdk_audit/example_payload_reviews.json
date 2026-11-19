@@ -1,0 +1,311 @@
+{
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "items": [
+    {
+      "id": "UseCaseOptimization-1",
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/usecase/UseCaseOptimization.html",
+      "sourceSha256": "31abeafebdb6319c96cad16ab01d3d9d7e92d512336e60173855af9a474ce53c",
+      "line": 1,
+      "blockSha256": "91d506474e366437d277bfbc30abc9c6641f693c7b813d3d70b788496220978e",
+      "blockKind": "script",
+      "restReference": {
+        "url": "https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteOptimization30Doc.html",
+        "sha256": "ddeefae0a4cbad65e168d656f1ecff9e5643929e449dd13e2153f1b6aadc2169"
+      },
+      "endpoint": "https://apis.openapi.sk.com/tmap/routes/routeOptimization30?version=1&format=json",
+      "sourceEvidence": [
+        {
+          "start": 15454,
+          "end": 15541,
+          "excerpt": "url:\"https://apis.openapi.sk.com/tmap/routes/routeOptimization30?version=1&format=json\"",
+          "role": "REST endpoint"
+        },
+        {
+          "start": 17478,
+          "end": 17494,
+          "excerpt": "prtcl = response",
+          "role": "success response assigned to prtcl"
+        },
+        {
+          "start": 23131,
+          "end": 23146,
+          "excerpt": "drawData(prtcl)",
+          "role": "response is conditionally passed into drawData"
+        },
+        {
+          "start": 4583,
+          "end": 4609,
+          "excerpt": "feature = data.features[i]",
+          "role": "feature originates in data.features array"
+        },
+        {
+          "start": 5476,
+          "end": 5494,
+          "excerpt": "mData = newData[i]",
+          "role": "mData originates in grouped newData"
+        },
+        {
+          "start": 5258,
+          "end": 5281,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 5286,
+          "end": 5309,
+          "excerpt": "newData.push(equalData)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 5351,
+          "end": 5374,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        }
+      ],
+      "regions": [
+        {
+          "receiver": "prtcl",
+          "start": 17454,
+          "end": 24708,
+          "functionType": "FunctionExpression",
+          "bindingStart": 15343,
+          "bindingEnd": 15348,
+          "expectedWrites": 1,
+          "after": 17494,
+          "classification": "rest-response-field",
+          "retainUnresolved": false
+        },
+        {
+          "receiver": "feature",
+          "start": 4160,
+          "end": 6409,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 4583,
+          "bindingEnd": 4609,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        },
+        {
+          "receiver": "mData",
+          "start": 4160,
+          "end": 6409,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 5476,
+          "bindingEnd": 5494,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        }
+      ],
+      "rationale": "In the pinned example, this exact AJAX success callback assigns its response to prtcl and conditionally passes it to drawData. The drawData feature/mData fields are related to that response only on this call path; the global function can have other callers. Neither the example nor this classification validates a REST schema, SDK instance ownership, response success, or platform parity."
+    },
+    {
+      "id": "UseCasePathSearch-1",
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/usecase/UseCasePathSearch.html",
+      "sourceSha256": "76640c25c05d08d2fc6a830f937cafbd9fc007e51047ad1ffcc3687fa97773d6",
+      "line": 1,
+      "blockSha256": "2f068f544dbd457ea9af4589214414c2e8b8c30ad42b9ce2d8516c9b9ce4c481",
+      "blockKind": "script",
+      "restReference": {
+        "url": "https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteDoc.html",
+        "sha256": "6f4bdb89ebf39ab6d9de4f75a5352149de1a27b014f5da302c111fd13dde963c"
+      },
+      "endpoint": "https://apis.openapi.sk.com/tmap/routes?version=1&format=json",
+      "sourceEvidence": [
+        {
+          "start": 15638,
+          "end": 15705,
+          "excerpt": "url:\"https://apis.openapi.sk.com/tmap/routes?version=1&format=json\"",
+          "role": "REST endpoint"
+        },
+        {
+          "start": 16020,
+          "end": 16036,
+          "excerpt": "prtcl = response",
+          "role": "success response assigned to prtcl"
+        },
+        {
+          "start": 18293,
+          "end": 18308,
+          "excerpt": "drawData(prtcl)",
+          "role": "response is conditionally passed into drawData"
+        },
+        {
+          "start": 4541,
+          "end": 4567,
+          "excerpt": "feature = data.features[i]",
+          "role": "feature originates in data.features array"
+        },
+        {
+          "start": 5434,
+          "end": 5452,
+          "excerpt": "mData = newData[i]",
+          "role": "mData originates in grouped newData"
+        },
+        {
+          "start": 5216,
+          "end": 5239,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 5244,
+          "end": 5267,
+          "excerpt": "newData.push(equalData)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 5309,
+          "end": 5332,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        }
+      ],
+      "regions": [
+        {
+          "receiver": "prtcl",
+          "start": 15995,
+          "end": 19565,
+          "functionType": "FunctionExpression",
+          "bindingStart": 15522,
+          "bindingEnd": 15527,
+          "expectedWrites": 1,
+          "after": 16036,
+          "classification": "rest-response-field",
+          "retainUnresolved": false
+        },
+        {
+          "receiver": "feature",
+          "start": 4120,
+          "end": 6367,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 4541,
+          "bindingEnd": 4567,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        },
+        {
+          "receiver": "mData",
+          "start": 4120,
+          "end": 6367,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 5434,
+          "bindingEnd": 5452,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        }
+      ],
+      "rationale": "In the pinned example, this exact AJAX success callback assigns its response to prtcl and conditionally passes it to drawData. The drawData feature/mData fields are related to that response only on this call path; the global function can have other callers. Neither the example nor this classification validates a REST schema, SDK instance ownership, response success, or platform parity."
+    },
+    {
+      "id": "UseCasePathSearch-858",
+      "source": "https://tmapapi.tmapmobility.com/webv3VSM/usecase/UseCasePathSearch.html",
+      "sourceSha256": "76640c25c05d08d2fc6a830f937cafbd9fc007e51047ad1ffcc3687fa97773d6",
+      "line": 858,
+      "blockSha256": "40bd4f4b7a2e567554cf9a7c6949f7df0024c0c2661f8cda6c58e929a8b41422",
+      "blockKind": "code",
+      "restReference": {
+        "url": "https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteDoc.html",
+        "sha256": "6f4bdb89ebf39ab6d9de4f75a5352149de1a27b014f5da302c111fd13dde963c"
+      },
+      "endpoint": "https://apis.openapi.sk.com/tmap/routes?version=1&format=json",
+      "sourceEvidence": [
+        {
+          "start": 3441,
+          "end": 3508,
+          "excerpt": "url:\"https://apis.openapi.sk.com/tmap/routes?version=1&format=json\"",
+          "role": "REST endpoint"
+        },
+        {
+          "start": 3807,
+          "end": 3823,
+          "excerpt": "prtcl = response",
+          "role": "success response assigned to prtcl"
+        },
+        {
+          "start": 4336,
+          "end": 4351,
+          "excerpt": "drawData(prtcl)",
+          "role": "response is conditionally passed into drawData"
+        },
+        {
+          "start": 471,
+          "end": 497,
+          "excerpt": "feature = data.features[i]",
+          "role": "feature originates in data.features array"
+        },
+        {
+          "start": 1346,
+          "end": 1364,
+          "excerpt": "mData = newData[i]",
+          "role": "mData originates in grouped newData"
+        },
+        {
+          "start": 1131,
+          "end": 1154,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 1159,
+          "end": 1182,
+          "excerpt": "newData.push(equalData)",
+          "role": "grouping flow"
+        },
+        {
+          "start": 1224,
+          "end": 1247,
+          "excerpt": "equalData.push(feature)",
+          "role": "grouping flow"
+        }
+      ],
+      "regions": [
+        {
+          "receiver": "prtcl",
+          "start": 3784,
+          "end": 5098,
+          "functionType": "FunctionExpression",
+          "bindingStart": 3329,
+          "bindingEnd": 3334,
+          "expectedWrites": 1,
+          "after": 3823,
+          "classification": "rest-response-field",
+          "retainUnresolved": false
+        },
+        {
+          "receiver": "feature",
+          "start": 210,
+          "end": 2019,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 471,
+          "bindingEnd": 497,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        },
+        {
+          "receiver": "mData",
+          "start": 210,
+          "end": 2019,
+          "functionType": "FunctionDeclaration",
+          "functionName": "drawData",
+          "bindingStart": 1346,
+          "bindingEnd": 1364,
+          "expectedWrites": 0,
+          "classification": "rest-response-field-conditional",
+          "retainUnresolved": true
+        }
+      ],
+      "rationale": "In the pinned example, this exact AJAX success callback assigns its response to prtcl and conditionally passes it to drawData. The drawData feature/mData fields are related to that response only on this call path; the global function can have other callers. Neither the example nor this classification validates a REST schema, SDK instance ownership, response success, or platform parity."
+    }
+  ]
+}

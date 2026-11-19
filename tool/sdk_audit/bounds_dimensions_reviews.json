@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "baselineSha256": "c59eb1a1736dae5e85feb300b413dd6ea3b1651db77f15cfb2665904291e9f21",
+  "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+  "docsSha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+  "files": [
+    {
+      "file": "docs/sdk-audit/reviews/sdk-bounds-method-adjudication.json",
+      "sha256": "0bd850c5dede881b93290437385a467a0450d3927decc6d6d7e2d75fa115f5df"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/sdk-bounds-dimensions-implementation-review.json",
+      "sha256": "53c57ebf16a341d07102df901867ee42d7163cf3180aa038b29ff09890452277"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/sdk-bounds-dimensions-native-evidence.json",
+      "sha256": "d8fd37315bf658d4df683f3e4efecb58096d71c19e17d5abbddaf6acc38a648c"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/sdk-bounds-dimensions-native-probe.mjs",
+      "sha256": "a64f5b76ae3cc008853e9f363d08a15eb44db97420c24c012fedf745778d10ed"
+    },
+    {
+      "file": "example/integration_test/sdk_bounds_dimensions_contracts.dart",
+      "sha256": "ffbc7d44e4c290db0e1672860fe9b8949dc07a8e6dd198e3b3d593d3fad10fb8"
+    },
+    {
+      "file": "lib/src/models/sdk_lat_lng_bounds.dart",
+      "sha256": "f4dba26bc72e4b78b40e168fd99d95ed33fe396eb2133fd4f5d3328053ad1b8f"
+    },
+    {
+      "file": "lib/src/models/lat_lng.dart",
+      "sha256": "91994d562c7a5e45f43124870eea43610e86f623490f21de475274ee7ea061d0"
+    }
+  ],
+  "scope": "Zero-argument getWidthDiff/getHeightDiff on ordinary typed numeric SdkLatLngBounds with value, null or undefined corners, including all representable double values and raw numeric states. JS numeric constructor normalization then IEEE-754 subtraction is source-traced; absent-corner TypeError maps to SdkBoundsMissingCornerException. Numeric strings/coercion, custom getters, subclass/prototype mutation, listener state, and live mutable corner aliases are excluded.",
+  "review": "Method-level typed adaptation is source-justified over the typed numeric/presence domain: SDK corner getters normalize via LatLng constructor, expose doubles then subtract; Dart getters clone/fromSdk with matching normalization and subtract in the same operand order. Runtime observations are corroborating examples, not an exhaustive input claim. Three-platform comparisons and strict source binding remain mandatory.",
+  "dimensions": {
+    "inputs-defaults": "SDK zero-argument bodies and Dart public zero-argument bindings; nine null/undefined/value combinations plus selected raw numeric samples.",
+    "returns-types": "JS Number and Dart double: finite values including signed zero use matching IEEE-754 subtraction after getter normalization, nonfinite inputs normalize through constructors, and overflow remains numeric. Exact sampled special-value tags corroborate source trace.",
+    "mutation-identity": "Methods use reads, fresh corner clones and primitive return values; before/after corner state compared for all 22 cases. No assertion of native live-corner alias identity.",
+    "errors": "For missing typed corners, the native getter raises TypeError at first missing access and Dart raises SdkBoundsMissingCornerException in the corresponding getter; exception identity/text differs intentionally.",
+    "lifecycle-events": "Pinned method/callee bodies and Dart bindings do not explicitly dispatch events or callbacks on ordinary instances; listener machinery and monkeypatching excluded.",
+    "dispatch": "The pinned public Tmapv3.LatLngBounds alias and prototype methods are checked; platform helper invokes getWidthDiff/getHeightDiff directly. Custom getter, subclass and prototype overrides are excluded."
+  },
+  "methods": [
+    {
+      "id": "Tmapv3.base.LatLngBounds#getWidthDiff",
+      "owner": "Tmapv3.base.LatLngBounds",
+      "sourceNames": [
+        "Tmapv3.base.LatLngBounds#getWidthDiff"
+      ],
+      "kinds": [
+        "method"
+      ],
+      "scope": "undocumented-review-required",
+      "contracts": [],
+      "rowSourceHash": "c36555d48c89c6a5c6c2147aa770d15ee309c04ff7f2492c550f58e4982efbac",
+      "binding": "SdkLatLngBounds.getWidthDiff",
+      "chain": "getNorthEast().longitude - getNorthWest().longitude",
+      "unit": "signed degrees east minus west; getters apply SDK coordinate normalization",
+      "limits": "Source-proven numeric getter normalization and same-order IEEE-754 subtraction within the stated typed domain; no JS coercion, user overrides or live alias equivalence.",
+      "caseIds": [
+        "bounds-dimensions:presence-undefined-undefined:getWidthDiff",
+        "bounds-dimensions:presence-undefined-null:getWidthDiff",
+        "bounds-dimensions:presence-undefined-value:getWidthDiff",
+        "bounds-dimensions:presence-null-undefined:getWidthDiff",
+        "bounds-dimensions:presence-null-null:getWidthDiff",
+        "bounds-dimensions:presence-null-value:getWidthDiff",
+        "bounds-dimensions:presence-value-undefined:getWidthDiff",
+        "bounds-dimensions:presence-value-null:getWidthDiff",
+        "bounds-dimensions:presence-value-value:getWidthDiff",
+        "bounds-dimensions:raw-ordinary:getWidthDiff",
+        "bounds-dimensions:raw-reversed:getWidthDiff",
+        "bounds-dimensions:raw-signed-zero:getWidthDiff",
+        "bounds-dimensions:raw-small-format:getWidthDiff",
+        "bounds-dimensions:raw-large-format:getWidthDiff",
+        "bounds-dimensions:raw-subnormal:getWidthDiff",
+        "bounds-dimensions:raw-nan-sw-lat:getWidthDiff",
+        "bounds-dimensions:raw-nan-ne-lng:getWidthDiff",
+        "bounds-dimensions:raw-positive-infinity:getWidthDiff",
+        "bounds-dimensions:raw-negative-infinity:getWidthDiff",
+        "bounds-dimensions:raw-extreme-latitude:getWidthDiff",
+        "bounds-dimensions:raw-antimeridian:getWidthDiff",
+        "bounds-dimensions:raw-rounding:getWidthDiff"
+      ]
+    },
+    {
+      "id": "Tmapv3.base.LatLngBounds#getHeightDiff",
+      "owner": "Tmapv3.base.LatLngBounds",
+      "sourceNames": [
+        "Tmapv3.base.LatLngBounds#getHeightDiff"
+      ],
+      "kinds": [
+        "method"
+      ],
+      "scope": "undocumented-review-required",
+      "contracts": [],
+      "rowSourceHash": "af42ccaca9b34dbb941eea8de9f93128fbcd1f83ebf5bc554cb295eb6ece9be5",
+      "binding": "SdkLatLngBounds.getHeightDiff",
+      "chain": "getNorthWest().latitude - getSouthWest().latitude",
+      "unit": "signed degrees north minus south; getters apply SDK coordinate normalization",
+      "limits": "Source-proven numeric getter normalization and same-order IEEE-754 subtraction within the stated typed domain; no JS coercion, user overrides or live alias equivalence.",
+      "caseIds": [
+        "bounds-dimensions:presence-undefined-undefined:getHeightDiff",
+        "bounds-dimensions:presence-undefined-null:getHeightDiff",
+        "bounds-dimensions:presence-undefined-value:getHeightDiff",
+        "bounds-dimensions:presence-null-undefined:getHeightDiff",
+        "bounds-dimensions:presence-null-null:getHeightDiff",
+        "bounds-dimensions:presence-null-value:getHeightDiff",
+        "bounds-dimensions:presence-value-undefined:getHeightDiff",
+        "bounds-dimensions:presence-value-null:getHeightDiff",
+        "bounds-dimensions:presence-value-value:getHeightDiff",
+        "bounds-dimensions:raw-ordinary:getHeightDiff",
+        "bounds-dimensions:raw-reversed:getHeightDiff",
+        "bounds-dimensions:raw-signed-zero:getHeightDiff",
+        "bounds-dimensions:raw-small-format:getHeightDiff",
+        "bounds-dimensions:raw-large-format:getHeightDiff",
+        "bounds-dimensions:raw-subnormal:getHeightDiff",
+        "bounds-dimensions:raw-nan-sw-lat:getHeightDiff",
+        "bounds-dimensions:raw-nan-ne-lng:getHeightDiff",
+        "bounds-dimensions:raw-positive-infinity:getHeightDiff",
+        "bounds-dimensions:raw-negative-infinity:getHeightDiff",
+        "bounds-dimensions:raw-extreme-latitude:getHeightDiff",
+        "bounds-dimensions:raw-antimeridian:getHeightDiff",
+        "bounds-dimensions:raw-rounding:getHeightDiff"
+      ]
+    }
+  ],
+  "extraSdkSpans": [
+    {
+      "id": "Tmapv3.base.LatLng#lat",
+      "start": 839786,
+      "end": 839830,
+      "excerpt": "t.prototype.lat=function(){return this._lat}"
+    },
+    {
+      "id": "Tmapv3.base.LatLng#lng",
+      "start": 839831,
+      "end": 839875,
+      "excerpt": "t.prototype.lng=function(){return this._lng}"
+    },
+    {
+      "id": "Tmapv3.base.LatLng#latitude",
+      "start": 839876,
+      "end": 839925,
+      "excerpt": "t.prototype.latitude=function(){return this._lat}"
+    },
+    {
+      "id": "Tmapv3.base.LatLng#longitude",
+      "start": 839926,
+      "end": 839976,
+      "excerpt": "t.prototype.longitude=function(){return this._lng}"
+    },
+    {
+      "id": "Tmapv3.base.LatLng private deg2rad/rad2deg",
+      "start": 840765,
+      "end": 840856,
+      "excerpt": "var o={deg2rad:function(t){return t*Math.PI/180},rad2deg:function(t){return t*180/Math.PI}}"
+    }
+  ]
+}

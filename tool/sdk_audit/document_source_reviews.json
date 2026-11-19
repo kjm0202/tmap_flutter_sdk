@@ -1,0 +1,353 @@
+{
+  "baseline": "7d936078411af8606d98ce1f06d8bb60a40c21855a2a29f3af0607003dc3f0b5",
+  "parameterSource": {
+    "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+    "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+    "role": "official-docs-document"
+  },
+  "guideSource": {
+    "url": "https://tmapapi.tmapmobility.com/webv3VSM/guide/webGuide.html",
+    "sha256": "1096e7442ad61a66d5f5f6910055b8e44f85f007b9ded10d3e8e0898110e8f72",
+    "role": "official-guide-document"
+  },
+  "parameters": [
+    {
+      "id": "Tmapv3.Tdata#getRealTimeTrafficJson:minLat",
+      "fingerprint": "425ad61b7598f8cba547a2f76c974fdd2ec5c7f6e5f09c2b8f525d25ec86e109",
+      "name": "minLat",
+      "method": "getRealTimeTrafficJson",
+      "anchor": "Tdata_getRealTimeTrafficJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 156944,
+        "end": 156985,
+        "line": 5427,
+        "excerpt": "<li>- minLat : 남서쪽 위도 '37.55966'입니다.</li>",
+        "sliceSha256": "fc04ada24a3c3f5acc3791d23d4c941ef0477f57df3b886afaa6349ab8cd6b47"
+      },
+      "control": {
+        "start": 157153,
+        "end": 157206,
+        "sha256": "066ca490335a5e60d4af85e7e07deef66ceb4980e45a46c62fed68a0d47988b0",
+        "text": "- zoomLevel : {Int}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getRealTimeTrafficJson:minLng",
+      "fingerprint": "fb2a4ab5daf59e5b8467bc59c8bdac1a490342cc5bfa3db8ba4854baaf4921bb",
+      "name": "minLng",
+      "method": "getRealTimeTrafficJson",
+      "anchor": "Tdata_getRealTimeTrafficJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 156995,
+        "end": 157038,
+        "line": 5428,
+        "excerpt": "<li>- minLng : 남서쪽 경도 '126.974816'입니다.</li>",
+        "sliceSha256": "b645b3e2296afb301f2316a7062db329e03914852eee1a659db4e7735db6a6da"
+      },
+      "control": {
+        "start": 157153,
+        "end": 157206,
+        "sha256": "066ca490335a5e60d4af85e7e07deef66ceb4980e45a46c62fed68a0d47988b0",
+        "text": "- zoomLevel : {Int}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getRealTimeTrafficJson:maxLat",
+      "fingerprint": "047514ed571af77adf82006c360e078f575faab4cd4fa7ddc582c7a10f9ec148",
+      "name": "maxLat",
+      "method": "getRealTimeTrafficJson",
+      "anchor": "Tdata_getRealTimeTrafficJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 157048,
+        "end": 157090,
+        "line": 5429,
+        "excerpt": "<li>- maxLat : 북동쪽 위도 '37.579295'입니다.</li>",
+        "sliceSha256": "4d5b26a68f476e9bfa7617204c48a29dee81248ea0e472eb6b63e748b9eade80"
+      },
+      "control": {
+        "start": 157153,
+        "end": 157206,
+        "sha256": "066ca490335a5e60d4af85e7e07deef66ceb4980e45a46c62fed68a0d47988b0",
+        "text": "- zoomLevel : {Int}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getRealTimeTrafficJson:maxLng",
+      "fingerprint": "f17891839cbb499cae725125bc12db82c2106ed8510eacf862a6b412833ad311",
+      "name": "maxLng",
+      "method": "getRealTimeTrafficJson",
+      "anchor": "Tdata_getRealTimeTrafficJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 157100,
+        "end": 157143,
+        "line": 5430,
+        "excerpt": "<li>- maxLng : 북동쪽 경도 '127.012193'입니다.</li>",
+        "sliceSha256": "e0a51397c8a7a18919a1fdca14c29623f003f14c015f8ea6b90b6e9039f18ba1"
+      },
+      "control": {
+        "start": 157153,
+        "end": 157206,
+        "sha256": "066ca490335a5e60d4af85e7e07deef66ceb4980e45a46c62fed68a0d47988b0",
+        "text": "- zoomLevel : {Int}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getPOIDataFromLonLatson:lat",
+      "fingerprint": "216ccf84a77df7e0655c2fca4d7fc8ab2b540c101868b2f5462bcf1934bf0920",
+      "name": "lat",
+      "method": "getPOIDataFromLonLatson",
+      "anchor": "Tdata_getPOIDataFromLonLatJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 161845,
+        "end": 161879,
+        "line": 5542,
+        "excerpt": "<li>- lat : 위도 '37.55966'입니다.</li>",
+        "sliceSha256": "960601eabea05cae126778e1c8f8758d6bb5b8e6de767e4fad8b173a476222a0"
+      },
+      "control": {
+        "start": 161935,
+        "end": 161972,
+        "sha256": "eb1c23698f43cb665f25ef4cf36a1a3cfc1285fc62588ef4d4437b88314a913b",
+        "text": "- categories : {String}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getPOIDataFromLonLatson:lng",
+      "fingerprint": "d9177d0e6e1bfb6db9db49d04c9f60bf927d1e54b7b2a7a3edf613362d50e61b",
+      "name": "lng",
+      "method": "getPOIDataFromLonLatson",
+      "anchor": "Tdata_getPOIDataFromLonLatJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 161889,
+        "end": 161925,
+        "line": 5543,
+        "excerpt": "<li>- lng : 경도 '126.974816'입니다.</li>",
+        "sliceSha256": "f9fd97853fea9ec1981fd6b0ad15871e53a5b178b0cbf1d534335221a2ce1c0f"
+      },
+      "control": {
+        "start": 161935,
+        "end": 161972,
+        "sha256": "eb1c23698f43cb665f25ef4cf36a1a3cfc1285fc62588ef4d4437b88314a913b",
+        "text": "- categories : {String}"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getAddressFromGeoJson:lat",
+      "fingerprint": "30559879c6a4b376e68cf0b99921201b4e98b45f6759ada79297019004359e4d",
+      "name": "lat",
+      "method": "getAddressFromGeoJson",
+      "anchor": "Tdata_getAddressFromGeoJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 167778,
+        "end": 167812,
+        "line": 5698,
+        "excerpt": "<li>- lat : 위도 '37.55966'입니다.</li>",
+        "sliceSha256": "960601eabea05cae126778e1c8f8758d6bb5b8e6de767e4fad8b173a476222a0"
+      },
+      "control": {
+        "start": 167868,
+        "end": 168070,
+        "sha256": "0940b0ac28a3e9bbc13099a653d81de035124b1b95e05fcf37391ecd09d34564",
+        "text": "- optionObj : Object"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#getAddressFromGeoJson:lng",
+      "fingerprint": "bbb3b6c8bd40a91b5abf21d4ddba9b6c0702f3981f74a75ae2490986f547d131",
+      "name": "lng",
+      "method": "getAddressFromGeoJson",
+      "anchor": "Tdata_getAddressFromGeoJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 167822,
+        "end": 167858,
+        "line": 5699,
+        "excerpt": "<li>- lng : 경도 '126.974816'입니다.</li>",
+        "sliceSha256": "f9fd97853fea9ec1981fd6b0ad15871e53a5b178b0cbf1d534335221a2ce1c0f"
+      },
+      "control": {
+        "start": 167868,
+        "end": 168070,
+        "sha256": "0940b0ac28a3e9bbc13099a653d81de035124b1b95e05fcf37391ecd09d34564",
+        "text": "- optionObj : Object"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#transformJson:lat",
+      "fingerprint": "727c0624a2ffcc2b36979166dd9b1994f28e382f58c98baf61b69d343818d111",
+      "name": "lat",
+      "method": "transformJson",
+      "anchor": "Tdata_transformJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 169485,
+        "end": 169519,
+        "line": 5746,
+        "excerpt": "<li>- lat : 위도 '37.55966'입니다.</li>",
+        "sliceSha256": "960601eabea05cae126778e1c8f8758d6bb5b8e6de767e4fad8b173a476222a0"
+      },
+      "control": {
+        "start": 169683,
+        "end": 169927,
+        "sha256": "b3cfeb5eb8d58b28417e3e6a2030096400f864986e89e8ac45b4a621aaa3a1c0",
+        "text": "- params : Object"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#transformJson:lng",
+      "fingerprint": "24f1d0142cd12d0ca61736411885755ada8cea72d3c02a4fbc7a579aeb7dcfbe",
+      "name": "lng",
+      "method": "transformJson",
+      "anchor": "Tdata_transformJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 169529,
+        "end": 169565,
+        "line": 5747,
+        "excerpt": "<li>- lng : 경도 '126.974816'입니다.</li>",
+        "sliceSha256": "f9fd97853fea9ec1981fd6b0ad15871e53a5b178b0cbf1d534335221a2ce1c0f"
+      },
+      "control": {
+        "start": 169683,
+        "end": 169927,
+        "sha256": "b3cfeb5eb8d58b28417e3e6a2030096400f864986e89e8ac45b4a621aaa3a1c0",
+        "text": "- params : Object"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#transformJson:sourceProj",
+      "fingerprint": "1f9b0797d49600674cec80343443163dd50d9bcd73ee1d5e81fe3a6c4da41892",
+      "name": "sourceProj",
+      "method": "transformJson",
+      "anchor": "Tdata_transformJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 169575,
+        "end": 169620,
+        "line": 5748,
+        "excerpt": "<li>- sourceProj : 원본 좌표계 'WGS84GEO'입니다.</li>",
+        "sliceSha256": "4054c99435c1ac04e534ef99385bd037823fc7f9818bdad16843b85f15da4079"
+      },
+      "control": {
+        "start": 169683,
+        "end": 169927,
+        "sha256": "b3cfeb5eb8d58b28417e3e6a2030096400f864986e89e8ac45b4a621aaa3a1c0",
+        "text": "- params : Object"
+      }
+    },
+    {
+      "id": "Tmapv3.Tdata#transformJson:targetProj",
+      "fingerprint": "bf32cd822b64db2aced40ef000bb9ab6baee87189d1e4c3be7043e93841fd302",
+      "name": "targetProj",
+      "method": "transformJson",
+      "anchor": "Tdata_transformJson",
+      "span": {
+        "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "entitySha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "start": 169630,
+        "end": 169673,
+        "line": 5749,
+        "excerpt": "<li>- targetProj : 대상 좌표계 'KATECH'입니다.</li>",
+        "sliceSha256": "5bc3d53f4baa25515d88e9f0df59575817f3e13dc79f646a78c0c3b950523b2f"
+      },
+      "control": {
+        "start": 169683,
+        "end": 169927,
+        "sha256": "b3cfeb5eb8d58b28417e3e6a2030096400f864986e89e8ac45b4a621aaa3a1c0",
+        "text": "- params : Object"
+      }
+    }
+  ],
+  "examples": [
+    {
+      "fingerprint": "60a4b3d28f938abcdbe29432466e3a53150e86fe7fc2a3a09761f725e980fe3a",
+      "line": 182,
+      "outerSha256": "cc73687e12029363e05dd4110ac8648e163b20d177dc97e605f1318f6e1b0cee",
+      "scriptSha256": "98d9a400aec207f736e0386e399554035cd2eefee6cdc333d7709a56be19e9b3",
+      "browser": {
+        "compiles": false,
+        "exception": "SyntaxError: Unexpected end of input",
+        "zeroBasedLine": 17,
+        "zeroBasedColumn": 0
+      },
+      "region": "지도 불러오기",
+      "spans": [
+        {
+          "end": 5807,
+          "excerpt": "function initTmap(){",
+          "kind": "document",
+          "line": 192,
+          "sha256": "1096e7442ad61a66d5f5f6910055b8e44f85f007b9ded10d3e8e0898110e8f72",
+          "source": "https://tmapapi.tmapmobility.com/webv3VSM/guide/webGuide.html",
+          "start": 5787
+        },
+        {
+          "end": 5991,
+          "excerpt": "\t});\n&#60;/script&#62;",
+          "kind": "document",
+          "line": 199,
+          "sha256": "1096e7442ad61a66d5f5f6910055b8e44f85f007b9ded10d3e8e0898110e8f72",
+          "source": "https://tmapapi.tmapmobility.com/webv3VSM/guide/webGuide.html",
+          "start": 5969
+        }
+      ]
+    },
+    {
+      "fingerprint": "5ad2e75c955add5b5c4e3a1427c147eca6ec2e5d4e87352b84d0aa277e0b783c",
+      "line": 298,
+      "outerSha256": "16ae208f899cf1b016d8d45bc8d75409197ee257d3535280cd99c7228958e0b3",
+      "scriptSha256": "269af900ca688c045e71b72ef1b9d14c9083ec8a7b111db51acb61ec160b42ed",
+      "browser": {
+        "compiles": false,
+        "exception": "SyntaxError: Unexpected token ')'",
+        "zeroBasedLine": 13,
+        "zeroBasedColumn": 8
+      },
+      "region": "폴리곤 그리기",
+      "spans": [
+        {
+          "end": 9069,
+          "excerpt": "map.on(\"ConfigLoad\", function() {",
+          "kind": "document",
+          "line": 308,
+          "sha256": "1096e7442ad61a66d5f5f6910055b8e44f85f007b9ded10d3e8e0898110e8f72",
+          "source": "https://tmapapi.tmapmobility.com/webv3VSM/guide/webGuide.html",
+          "start": 9036
+        },
+        {
+          "end": 9107,
+          "excerpt": "addPolygon();\n\t\t\t});\n       });\n}",
+          "kind": "document",
+          "line": 309,
+          "sha256": "1096e7442ad61a66d5f5f6910055b8e44f85f007b9ded10d3e8e0898110e8f72",
+          "source": "https://tmapapi.tmapmobility.com/webv3VSM/guide/webGuide.html",
+          "start": 9074
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "official-unspecified-parameter-types.json.gz": "638da7dbdb1f4a67ffd709a4b6f6b0acd451597f2144b2d37832d4d250b31061",
+    "official-unspecified-parameter-type-controls.json.gz": "8dcb158f3cf6678b6f517b21003477f650be67460fa1c828210d60cf09989f74",
+    "official-doc-errors-source-spans.json.gz": "74b8a291fc4300372bbcdf847f0a582aa4948747fd4dafa90704875b890e7f92",
+    "source-diagnostic-independent.json.gz": "424265fda1e1ecb7e87963fa8592bc07da9aa849e9b72548f6126613f25f77e8"
+  }
+}

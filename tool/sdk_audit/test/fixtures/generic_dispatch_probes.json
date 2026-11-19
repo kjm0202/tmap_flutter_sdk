@@ -1,0 +1,513 @@
+{
+  "runtime": {
+    "auth": "script-executed",
+    "mapReady": true,
+    "verifiedBootstrapDigest": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+    "bridgeSourceHashes": {
+      "web": "73bc3e778c579cdb8283d9c34974dd267b378e53465cb0079950d72889e5b40b",
+      "mobileHelpers": "5c9d2d7bc47b39b82b4ff9dac000f11c1784f79324a00dfd6453187730702f1c"
+    },
+    "networkScripts": [
+      {
+        "url": "https://topopentile3.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+        "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "bytes": 1281499,
+        "status": 200,
+        "pinned": true,
+        "classification": "pinned-core"
+      }
+    ],
+    "bridgeObservations": [
+      {
+        "id": "Map.generic-adapter",
+        "contract": "Tmapv3.Map",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Map were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "DotMap.generic-adapter",
+        "contract": "Tmapv3.extension.DotMap",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for DotMap were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "SquareMap.generic-adapter",
+        "contract": "Tmapv3.extension.SquareMap",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for SquareMap were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "InfoWindow.generic-adapter",
+        "contract": "Tmapv3.mapobject.InfoWindow",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for InfoWindow were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Label.generic-adapter",
+        "contract": "Tmapv3.mapobject.Label",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Label were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Polyline.generic-adapter",
+        "contract": "Tmapv3.shape.Polyline",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Polyline were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Polygon.generic-adapter",
+        "contract": "Tmapv3.shape.Polygon",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Polygon were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Circle.generic-adapter",
+        "contract": "Tmapv3.shape.Circle",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Circle were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Rectangle.generic-adapter",
+        "contract": "Tmapv3.shape.Rectangle",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Rectangle were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "GroundOverlay.generic-adapter",
+        "contract": "Tmapv3.shape.GroundOverlay",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for GroundOverlay were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Marker.generic-adapter",
+        "contract": "Tmapv3.mapobject.Marker",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Marker were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "MarkerCluster.generic-adapter",
+        "contract": "Tmapv3.extension.MarkerCluster",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for MarkerCluster were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Drawing.generic-adapter",
+        "contract": "Tmapv3.extension.Drawing",
+        "environment": "chrome-extension-bridge",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Historical generic-adapter comparisons for Drawing were not run. The current bridges.dart emitter does not provide an extension handler; the conditional path only supports an externally supplied historical handler; direct public bridge paths are evaluated independently.",
+        "comparison": "unmeasured"
+      },
+      {
+        "id": "Drawing.pointer.generic-adapter",
+        "contract": "Tmapv3.extension.Drawing",
+        "environment": "chrome-real-mouse",
+        "comparison": "unmeasured",
+        "status": "unresolved-unavailable-wrapper",
+        "wrapper": "generic extension dispatch",
+        "scope": "Pointer comparisons through the generic adapter were not run; this does not establish absence of a public drawing API."
+      }
+    ],
+    "issues": [
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Map.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "DotMap.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "SquareMap.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "InfoWindow.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Label.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Polyline.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Polygon.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Circle.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Rectangle.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "GroundOverlay.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Marker.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "MarkerCluster.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Drawing.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      },
+      {
+        "code": "bridge-component-check-failed",
+        "id": "Drawing.pointer.generic-adapter",
+        "status": "unresolved-unavailable-wrapper"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Map.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "DotMap.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "SquareMap.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "InfoWindow.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Label.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Polyline.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Polygon.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Circle.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Rectangle.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "GroundOverlay.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Marker.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "MarkerCluster.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Drawing.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    },
+    {
+      "code": "bridge-component-check-failed",
+      "id": "Drawing.pointer.generic-adapter",
+      "status": "unresolved-unavailable-wrapper"
+    }
+  ],
+  "libFingerprint": {
+    "files": {
+      "lib/src/bridge_assets.dart": "53df87d66cf26e1936282928e0f0474ff907bfe717dd27493c5fd532110d67dd",
+      "lib/src/tmap_controller.dart": "bea92644449d4959bfcc46be9a31eaf038f5ea17bf43b93e294a81a022629ea7",
+      "lib/src/tmap.dart": "c25d3bc828e0fcb52fe4c9c2bf168e9bb14daf41c60533e4507b7995447be845",
+      "lib/src/web/tmap_web_bridge.dart": "e3e36c1b3bbac1653c64b3824521703cb7c9ab542e6a1c66a9ccea1f7223a631",
+      "lib/tmap_flutter_sdk.dart": "0747c375871570528239315eb26ace78de0fca8d6f627d7a99a2f37884504bf0"
+    }
+  },
+  "bridgeFingerprint": {
+    "files": {
+      "assets/bridge/mobile_overlays.js": "2447b2e2c8c57d4eeaef387d14fa39d2f2bc39065b79ac63a35dec2ca53e8f67",
+      "assets/bridge/mobile_tdata.js": "7cb0fa61b6a34bc5ec005bd7e9ad39f5609f8b49c0fe27d4f467b9455eba207b",
+      "assets/bridge/mobile.js": "2515469fc9636d81f0701d9256f5100952af5084d7d1e0fda81267e719ef40f0",
+      "assets/bridge/shared.js": "e1c85c2c1a5abecac241d1b9c174cc7cbdbb1bce028758a295910da02e1917aa",
+      "assets/bridge/web.js": "cb1212e1f5d70a0e9d9cbf003c8a1f9be55bd8993863f5c2e2fac94345fb5bca"
+    }
+  },
+  "rows": [
+    {
+      "id": "Tmapv3.extension.DotMap",
+      "status": "unmapped",
+      "dartCandidates": []
+    },
+    {
+      "id": "Tmapv3.extension.Drawing",
+      "status": "unmapped",
+      "dartCandidates": []
+    },
+    {
+      "id": "Tmapv3.extension.MarkerCluster",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Clusterer",
+          "kind": "class",
+          "file": "lib/src/overlays/clusterer.dart",
+          "line": 3,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.extension.SquareMap",
+      "status": "unmapped",
+      "dartCandidates": []
+    },
+    {
+      "id": "Tmapv3.Map",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "TMap",
+          "kind": "class",
+          "file": "lib/src/tmap.dart",
+          "line": 43,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.mapobject.InfoWindow",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "InfoWindow",
+          "kind": "class",
+          "file": "lib/src/overlays/info_window.dart",
+          "line": 4,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.mapobject.Label",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Label",
+          "kind": "class",
+          "file": "lib/src/overlays/label.dart",
+          "line": 5,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.mapobject.Marker",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Marker",
+          "kind": "class",
+          "file": "lib/src/overlays/marker.dart",
+          "line": 6,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.shape.Circle",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Circle",
+          "kind": "class",
+          "file": "lib/src/overlays/circle.dart",
+          "line": 6,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.shape.GroundOverlay",
+      "status": "unmapped",
+      "dartCandidates": []
+    },
+    {
+      "id": "Tmapv3.shape.Polygon",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Polygon",
+          "kind": "class",
+          "file": "lib/src/overlays/polygon.dart",
+          "line": 6,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.shape.Polyline",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Polyline",
+          "kind": "class",
+          "file": "lib/src/overlays/polyline.dart",
+          "line": 6,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    },
+    {
+      "id": "Tmapv3.shape.Rectangle",
+      "status": "candidate-unverified",
+      "dartCandidates": [
+        {
+          "id": "Rectangle",
+          "kind": "class",
+          "file": "lib/src/overlays/rectangle.dart",
+          "line": 6,
+          "signature": null
+        },
+        {
+          "id": "TMapController",
+          "kind": "class",
+          "file": "lib/src/tmap_controller.dart",
+          "line": 30,
+          "signature": null
+        }
+      ]
+    }
+  ]
+}

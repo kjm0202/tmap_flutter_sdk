@@ -1,0 +1,28 @@
+{
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+  "environment": "Chrome 157.0.8103.79, pinned SDK script, constructor prototypes inspected without invoking constructors",
+  "limitation": "This checks only existing constructor and prototype descriptors at initial script load. Constructor-added instance members, later dynamic mutation, value alias semantics and live platform dispatch were not tested.",
+  "observations": [
+    {
+      "apis": [
+        "Tmapv3.asset.Icon#get"
+      ],
+      "prototypeType": "undefined",
+      "staticType": "function"
+    },
+    {
+      "apis": [
+        "Tmapv3.util.Projection#convertBesselGEOToWGS84GEO",
+        "Tmapv3.util.Projection#convertBesselTMToWGS84GEO",
+        "Tmapv3.util.Projection#convertEPSG3857ToWGS84GEO",
+        "Tmapv3.util.Projection#convertWGS84GEOToBesselGEO",
+        "Tmapv3.util.Projection#convertWGS84GEOToBesselTM",
+        "Tmapv3.util.Projection#convertWGS84GEOToEPSG3857",
+        "Tmapv3.util.Projection#convertWGS84GEOToKatec"
+      ],
+      "prototypeType": "undefined",
+      "staticType": "function"
+    }
+  ]
+}

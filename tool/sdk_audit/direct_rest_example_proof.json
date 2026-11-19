@@ -1,0 +1,75 @@
+{
+  "doc": {
+    "url": "https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteOptimization30Doc.html",
+    "sha256": "ddeefae0a4cbad65e168d656f1ecff9e5643929e449dd13e2153f1b6aadc2169",
+    "bytes": 154187,
+    "matchingLines": [
+      {
+        "line": 43,
+        "span": [
+          1140,
+          1382,
+          "46adc8c943705022a160763732d304a9c95af594fc7b8c7ff3bb0d255d541e8a"
+        ]
+      }
+    ]
+  },
+  "example": {
+    "url": "https://tmapapi.tmapmobility.com/webv3VSM/usecase/UseCaseOptimization.html",
+    "sha256": "31abeafebdb6319c96cad16ab01d3d9d7e92d512336e60173855af9a474ce53c",
+    "bytes": 32989,
+    "matchingLines": [
+      {
+        "line": 667,
+        "span": [
+          16607,
+          16828,
+          "9ad509cb5e5c186c5716e8f1ffa42db24c673abd44d3b4aa7c786cecc7bd12d7"
+        ]
+      },
+      {
+        "line": 1051,
+        "span": [
+          30327,
+          30546,
+          "762022346056886490aac8b66920fff4da1a756e9e550b8e1b9271024515cc65"
+        ]
+      }
+    ]
+  },
+  "officialSampleTransport": "Direct jQuery $.ajax POST; final endpoint routeOptimization30, plain JS request outside named TData adapters",
+  "officialCores": [
+    {
+      "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "namedMethods": 28,
+      "exactMethods": 0,
+      "surfacePinned": true,
+      "endpointLiteralOccurrences": 0
+    },
+    {
+      "sha256": "09557bf8f7cfd14ff4ea9cca226962469fa14208ef4af1ee6b2d3567798296f1",
+      "namedMethods": 28,
+      "exactMethods": 0,
+      "surfacePinned": true,
+      "endpointLiteralOccurrences": 0
+    }
+  ],
+  "releasedDartArchive": "dae54a154deb0b979e27c18d7d49d00faedd93bc8dfff8c732f11438a7fbb056",
+  "directPublishedDartEndpoint": false,
+  "sevenNamedEndpointPaths": [
+    "/tmap/routes",
+    "/tmap/routes/pedestrian",
+    "/tmap/pois",
+    "/tmap/pois/search/around",
+    "/tmap/geo/fullAddrGeo",
+    "/tmap/geo/reversegeocoding",
+    "/tmap/pois/search/autocomplete"
+  ],
+  "tables": 8,
+  "generatedFieldRows": 60,
+  "allUnverified": true,
+  "candidateTableStatuses": [
+    "unmapped"
+  ],
+  "scope": "Source request example and named bridge separation only. No runtime POST, no release transport parity, and no inferred callback or response schema."
+}

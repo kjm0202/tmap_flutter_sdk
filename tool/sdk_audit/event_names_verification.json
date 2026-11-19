@@ -1,0 +1,1077 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "baselineSha256": "c59eb1a1736dae5e85feb300b413dd6ea3b1651db77f15cfb2665904291e9f21",
+  "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+  "files": [
+    {
+      "file": "lib/src/constants/event_names.dart",
+      "sha256": "45285d925ba6ed83e07cdacecde8b72ae5b4edd787a72316e8081081d69755a3"
+    },
+    {
+      "file": "lib/tmap_flutter_sdk.dart",
+      "sha256": "1febaf2cf614494bff4b4b0e770ca7c9d300d72b07450c37de10c2191fd5f531"
+    },
+    {
+      "file": "example/integration_test/event_names_contracts.dart",
+      "sha256": "6dcda6bb99d0295165a96a7a0a70fd63b496292f6736a68acd81429558586dc5"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/event-names-native-evidence.json",
+      "sha256": "67c35d6184fb5ea623b34a09ad0a48cef5bd12aa11f551bab427c329771a579c"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/event-names-native-probe.mjs",
+      "sha256": "c767ac1fe9ee344fa5072d2aa6d07117f2d8c94bf2add32a6601feabb5f2a1ce"
+    },
+    {
+      "file": "tool/sdk_audit/event_names_aliases.mjs",
+      "sha256": "682e8a7fec99eff26b52b84f792502714a27e38934a950ce45a3fcabd8ea27f6"
+    },
+    {
+      "file": "tool/sdk_audit/event_names_compare.mjs",
+      "sha256": "60ffb31f6cdff050e600e74760ae292c0198f6c4d39c05bfbf01d6bf79160427"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/event-name-exports-followup-8f29828.json",
+      "sha256": "7f9da8ed1da5436a84d1f22f723f8209570d7463898ab8649647c583489feb24"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/constant-exports-native-extensions-followup.json",
+      "sha256": "0280fd15a58453dc8281e03214eefe03a03a22c58e935430f90e1fc568d9eb1c"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/constant-exports-native-domain-followup.json",
+      "sha256": "52bd8d47d2c182c5684a51381caa1071ac0845a72b8f1c1cce3c4329e8f4ec11"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/constant-exports-native-resources-followup.json",
+      "sha256": "4de6e6fed543719e13e5cb97399d386ce25be3a8a4df901a91958e5493b21087"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/constant-exports-standalone-followup.json",
+      "sha256": "e2deb80aaec04126e526225267f1bb4ab8551d802b80c7d0603e86a070212239"
+    },
+    {
+      "file": "docs/sdk-audit/reviews/native-environment-export-followup.json",
+      "sha256": "738050bbe45a8dfbba9efc11b5dc488c80d93bae78c3e2f16c14f6f3bdf6b019"
+    }
+  ],
+  "scope": "Initial read-only values of the 43 named SDK event-name properties mapped to TMapEventNames static const strings and its const map. The SDK object is writable/configurable and aliases the Vsm object; Dart values are immutable snapshots. No mutation, object identity equivalence, namespace object, listener, event dispatch or callback contract is verified.",
+  "adaptation": {
+    "native": "Writable/configurable JavaScript property in an aliased namespace; values may later change.",
+    "dart": "Compile-time immutable Dart string and const map, containing initial pinned value.",
+    "rationale": "Provides the initial named string values without claiming mutable object equivalence."
+  },
+  "dimensions": {
+    "inputs-defaults": "Named zero-argument static property read, no user input; exact initial SDK and Dart values for all 43 names.",
+    "returns-types": "JavaScript primitive string and Dart String; exact case-sensitive values.",
+    "mutation-identity": "Read-only static values; JS writable/configurable shared namespace vs immutable Dart const snapshot is explicit adaptation.",
+    "errors": "Known present SDK properties and Dart compile-time fields read successfully; unknown names and mutation errors are outside this property scope.",
+    "lifecycle-events": "Reading constants does not register listeners or dispatch events; event payload, behavior and lifecycle are separate OPEN contracts.",
+    "dispatch": "Loaded pinned native alias identity and member descriptors plus exact Dart static field and map reads on three platform integrations."
+  },
+  "dartValues": {
+    "id": "TMapEventNames.values",
+    "owner": "TMapEventNames",
+    "name": "values",
+    "kind": "field",
+    "file": "lib/src/constants/event_names.dart",
+    "line": 55,
+    "start": 2540,
+    "end": 3694,
+    "signature": "Map<String, String> values",
+    "documentation": ""
+  },
+  "methods": [
+    {
+      "name": "Click",
+      "id": "Tmapv3.event.EventNames.Click",
+      "engineId": "Vsm.Map.EventNames.Click",
+      "value": "Click",
+      "rowSourceHash": "6335702ca6c4be9cc92e4c180380638a1ebdfe5bae7ff587a9c1c3802a1dfa25",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Click",
+        "Vsm.Map.EventNames.Click"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Click",
+        "owner": "TMapEventNames",
+        "name": "Click",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 10,
+        "start": 500,
+        "end": 515,
+        "signature": "String Click",
+        "documentation": null
+      }
+    },
+    {
+      "name": "ConfigLoad",
+      "id": "Tmapv3.event.EventNames.ConfigLoad",
+      "engineId": "Vsm.Map.EventNames.ConfigLoad",
+      "value": "ConfigLoad",
+      "rowSourceHash": "665d220b96a09f9c27e8ae0f9a30a83e2c505b32e9c39a9d1bd300546841b62b",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.ConfigLoad",
+        "Vsm.Map.EventNames.ConfigLoad"
+      ],
+      "dart": {
+        "id": "TMapEventNames.ConfigLoad",
+        "owner": "TMapEventNames",
+        "name": "ConfigLoad",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 47,
+        "start": 2161,
+        "end": 2186,
+        "signature": "String ConfigLoad",
+        "documentation": null
+      }
+    },
+    {
+      "name": "ContextLost",
+      "id": "Tmapv3.event.EventNames.ContextLost",
+      "engineId": "Vsm.Map.EventNames.ContextLost",
+      "value": "ContextLost",
+      "rowSourceHash": "0bbb9b238cbf59e6540792019c4c280024d49861f31683305502d7f9ab620a6b",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.ContextLost",
+        "Vsm.Map.EventNames.ContextLost"
+      ],
+      "dart": {
+        "id": "TMapEventNames.ContextLost",
+        "owner": "TMapEventNames",
+        "name": "ContextLost",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 51,
+        "start": 2367,
+        "end": 2394,
+        "signature": "String ContextLost",
+        "documentation": null
+      }
+    },
+    {
+      "name": "ContextMenu",
+      "id": "Tmapv3.event.EventNames.ContextMenu",
+      "engineId": "Vsm.Map.EventNames.ContextMenu",
+      "value": "ContextMenu",
+      "rowSourceHash": "649ccc99f024c565ad8e025541e1e95b183d897709a108ffcead128624791acc",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.ContextMenu",
+        "Vsm.Map.EventNames.ContextMenu"
+      ],
+      "dart": {
+        "id": "TMapEventNames.ContextMenu",
+        "owner": "TMapEventNames",
+        "name": "ContextMenu",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 17,
+        "start": 819,
+        "end": 846,
+        "signature": "String ContextMenu",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Data",
+      "id": "Tmapv3.event.EventNames.Data",
+      "engineId": "Vsm.Map.EventNames.Data",
+      "value": "Data",
+      "rowSourceHash": "993556892c5a265e1fe42933bcd91fd96cedabf2ed2ed3556efad207da280721",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Data",
+        "Vsm.Map.EventNames.Data"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Data",
+        "owner": "TMapEventNames",
+        "name": "Data",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 44,
+        "start": 2022,
+        "end": 2035,
+        "signature": "String Data",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Destroy",
+      "id": "Tmapv3.event.EventNames.Destroy",
+      "engineId": "Vsm.Map.EventNames.Destroy",
+      "value": "Destroy",
+      "rowSourceHash": "f7fa0d0940b875772d9a2030f8da9b88811217479027791b47852cbe19b79974",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Destroy",
+        "Vsm.Map.EventNames.Destroy"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Destroy",
+        "owner": "TMapEventNames",
+        "name": "Destroy",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 50,
+        "start": 2324,
+        "end": 2343,
+        "signature": "String Destroy",
+        "documentation": null
+      }
+    },
+    {
+      "name": "DoubleClick",
+      "id": "Tmapv3.event.EventNames.DoubleClick",
+      "engineId": "Vsm.Map.EventNames.DoubleClick",
+      "value": "DoubleClick",
+      "rowSourceHash": "9294d1cf7bfe3b5b46fa0a936103a2ecfc8705208d5cb0dcd789a029c6ceef00",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.DoubleClick",
+        "Vsm.Map.EventNames.DoubleClick"
+      ],
+      "dart": {
+        "id": "TMapEventNames.DoubleClick",
+        "owner": "TMapEventNames",
+        "name": "DoubleClick",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 11,
+        "start": 539,
+        "end": 566,
+        "signature": "String DoubleClick",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Drag",
+      "id": "Tmapv3.event.EventNames.Drag",
+      "engineId": "Vsm.Map.EventNames.Drag",
+      "value": "Drag",
+      "rowSourceHash": "876eb0485118dd5112ee9ff1948f1e8664eac74047b2feeec9fe4ae228601b16",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Drag",
+        "Vsm.Map.EventNames.Drag"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Drag",
+        "owner": "TMapEventNames",
+        "name": "Drag",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 28,
+        "start": 1318,
+        "end": 1331,
+        "signature": "String Drag",
+        "documentation": null
+      }
+    },
+    {
+      "name": "DragEnd",
+      "id": "Tmapv3.event.EventNames.DragEnd",
+      "engineId": "Vsm.Map.EventNames.DragEnd",
+      "value": "DragEnd",
+      "rowSourceHash": "dfebf3d6e7762ce3de7fc602dfc23bf69add020826106d883ebeb8046995c077",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.DragEnd",
+        "Vsm.Map.EventNames.DragEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.DragEnd",
+        "owner": "TMapEventNames",
+        "name": "DragEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 29,
+        "start": 1355,
+        "end": 1374,
+        "signature": "String DragEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "DragStart",
+      "id": "Tmapv3.event.EventNames.DragStart",
+      "engineId": "Vsm.Map.EventNames.DragStart",
+      "value": "DragStart",
+      "rowSourceHash": "87ef8b98c2b390c9581fa732210aa5d7bfe3041d7e348f0f700edb2727130346",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.DragStart",
+        "Vsm.Map.EventNames.DragStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.DragStart",
+        "owner": "TMapEventNames",
+        "name": "DragStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 27,
+        "start": 1271,
+        "end": 1294,
+        "signature": "String DragStart",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Error",
+      "id": "Tmapv3.event.EventNames.Error",
+      "engineId": "Vsm.Map.EventNames.Error",
+      "value": "Error",
+      "rowSourceHash": "75be31f53f3d5cf02f3c6c2dfc0f42d9f248e5c7f20f01e39f283e7f1476c9b0",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Error",
+        "Vsm.Map.EventNames.Error"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Error",
+        "owner": "TMapEventNames",
+        "name": "Error",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 52,
+        "start": 2418,
+        "end": 2433,
+        "signature": "String Error",
+        "documentation": null
+      }
+    },
+    {
+      "name": "FirstPaint",
+      "id": "Tmapv3.event.EventNames.FirstPaint",
+      "engineId": "Vsm.Map.EventNames.FirstPaint",
+      "value": "FirstPaint",
+      "rowSourceHash": "cdd290605a16002d76be92d2f2d2264198e964f4a623a48658b008038995c5b7",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.FirstPaint",
+        "Vsm.Map.EventNames.FirstPaint"
+      ],
+      "dart": {
+        "id": "TMapEventNames.FirstPaint",
+        "owner": "TMapEventNames",
+        "name": "FirstPaint",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 42,
+        "start": 1916,
+        "end": 1941,
+        "signature": "String FirstPaint",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Idle",
+      "id": "Tmapv3.event.EventNames.Idle",
+      "engineId": "Vsm.Map.EventNames.Idle",
+      "value": "Idle",
+      "rowSourceHash": "d2d95a346fc0cf97ff9a5b385102bebe17b8574d209013592879168c2a4f2b7f",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Idle",
+        "Vsm.Map.EventNames.Idle"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Idle",
+        "owner": "TMapEventNames",
+        "name": "Idle",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 41,
+        "start": 1879,
+        "end": 1892,
+        "signature": "String Idle",
+        "documentation": null
+      }
+    },
+    {
+      "name": "LimitOptionsChanged",
+      "id": "Tmapv3.event.EventNames.LimitOptionsChanged",
+      "engineId": "Vsm.Map.EventNames.LimitOptionsChanged",
+      "value": "LimitOptionsChanged",
+      "rowSourceHash": "437e4c0f40c06b40a80fcc63d9d2a4fa287892c9c08189e62097f8e6f091d6c3",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.LimitOptionsChanged",
+        "Vsm.Map.EventNames.LimitOptionsChanged"
+      ],
+      "dart": {
+        "id": "TMapEventNames.LimitOptionsChanged",
+        "owner": "TMapEventNames",
+        "name": "LimitOptionsChanged",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 49,
+        "start": 2257,
+        "end": 2300,
+        "signature": "String LimitOptionsChanged",
+        "documentation": null
+      }
+    },
+    {
+      "name": "LongTap",
+      "id": "Tmapv3.event.EventNames.LongTap",
+      "engineId": "Vsm.Map.EventNames.LongTap",
+      "value": "LongTap",
+      "rowSourceHash": "220330a7170cd35d3e5a033ac51ebc7c01fd74ec7bcf9b51565aaeccc7d281e1",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.LongTap",
+        "Vsm.Map.EventNames.LongTap"
+      ],
+      "dart": {
+        "id": "TMapEventNames.LongTap",
+        "owner": "TMapEventNames",
+        "name": "LongTap",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 23,
+        "start": 1101,
+        "end": 1120,
+        "signature": "String LongTap",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MouseDown",
+      "id": "Tmapv3.event.EventNames.MouseDown",
+      "engineId": "Vsm.Map.EventNames.MouseDown",
+      "value": "MouseDown",
+      "rowSourceHash": "ef6e9c0f1a6f9aa9f5ff432ac9ae063b183fcda82d3cbe47b57b80ce308379a9",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MouseDown",
+        "Vsm.Map.EventNames.MouseDown"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MouseDown",
+        "owner": "TMapEventNames",
+        "name": "MouseDown",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 12,
+        "start": 590,
+        "end": 613,
+        "signature": "String MouseDown",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MouseMove",
+      "id": "Tmapv3.event.EventNames.MouseMove",
+      "engineId": "Vsm.Map.EventNames.MouseMove",
+      "value": "MouseMove",
+      "rowSourceHash": "c125c1006ff37fbf81bfe1fbabd9d665ca48ceeae08c861affe2c8603ea40504",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MouseMove",
+        "Vsm.Map.EventNames.MouseMove"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MouseMove",
+        "owner": "TMapEventNames",
+        "name": "MouseMove",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 14,
+        "start": 680,
+        "end": 703,
+        "signature": "String MouseMove",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MouseOut",
+      "id": "Tmapv3.event.EventNames.MouseOut",
+      "engineId": "Vsm.Map.EventNames.MouseOut",
+      "value": "MouseOut",
+      "rowSourceHash": "e1b95769f72c1970d2832829f763401dbc1eeca914a40db5b527233e9a2d3915",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MouseOut",
+        "Vsm.Map.EventNames.MouseOut"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MouseOut",
+        "owner": "TMapEventNames",
+        "name": "MouseOut",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 16,
+        "start": 774,
+        "end": 795,
+        "signature": "String MouseOut",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MouseOver",
+      "id": "Tmapv3.event.EventNames.MouseOver",
+      "engineId": "Vsm.Map.EventNames.MouseOver",
+      "value": "MouseOver",
+      "rowSourceHash": "5a80dfa50c66e23d11543432b8f0031e90fb2c3b04d9cd97fbaaa97a10cbc42d",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MouseOver",
+        "Vsm.Map.EventNames.MouseOver"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MouseOver",
+        "owner": "TMapEventNames",
+        "name": "MouseOver",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 15,
+        "start": 727,
+        "end": 750,
+        "signature": "String MouseOver",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MouseUp",
+      "id": "Tmapv3.event.EventNames.MouseUp",
+      "engineId": "Vsm.Map.EventNames.MouseUp",
+      "value": "MouseUp",
+      "rowSourceHash": "93e793a8683a1c6dfd46b61a6de62612794d3b7dc6ed7c3c54215fae4c396441",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MouseUp",
+        "Vsm.Map.EventNames.MouseUp"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MouseUp",
+        "owner": "TMapEventNames",
+        "name": "MouseUp",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 13,
+        "start": 637,
+        "end": 656,
+        "signature": "String MouseUp",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Move",
+      "id": "Tmapv3.event.EventNames.Move",
+      "engineId": "Vsm.Map.EventNames.Move",
+      "value": "Move",
+      "rowSourceHash": "3faf8b42474c060e55a37785fbcba3ca3aff6bb0ed524e2ea044aac6747127e1",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Move",
+        "Vsm.Map.EventNames.Move"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Move",
+        "owner": "TMapEventNames",
+        "name": "Move",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 25,
+        "start": 1191,
+        "end": 1204,
+        "signature": "String Move",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MoveEnd",
+      "id": "Tmapv3.event.EventNames.MoveEnd",
+      "engineId": "Vsm.Map.EventNames.MoveEnd",
+      "value": "MoveEnd",
+      "rowSourceHash": "8828b8132b49cc0fa2a95ae1b44945323e9512696065b04bd7af31ac6c4ede4a",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MoveEnd",
+        "Vsm.Map.EventNames.MoveEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MoveEnd",
+        "owner": "TMapEventNames",
+        "name": "MoveEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 26,
+        "start": 1228,
+        "end": 1247,
+        "signature": "String MoveEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "MoveStart",
+      "id": "Tmapv3.event.EventNames.MoveStart",
+      "engineId": "Vsm.Map.EventNames.MoveStart",
+      "value": "MoveStart",
+      "rowSourceHash": "8e5b0bad6f7c38b6d9566b1fff3230024d8f718c52bf3b444727a6297d18696f",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.MoveStart",
+        "Vsm.Map.EventNames.MoveStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.MoveStart",
+        "owner": "TMapEventNames",
+        "name": "MoveStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 24,
+        "start": 1144,
+        "end": 1167,
+        "signature": "String MoveStart",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Pitch",
+      "id": "Tmapv3.event.EventNames.Pitch",
+      "engineId": "Vsm.Map.EventNames.Pitch",
+      "value": "Pitch",
+      "rowSourceHash": "fb2363f923963ea956b9ecb7fe06c740738dde2fe7673b9777a400861dffff85",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Pitch",
+        "Vsm.Map.EventNames.Pitch"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Pitch",
+        "owner": "TMapEventNames",
+        "name": "Pitch",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 37,
+        "start": 1713,
+        "end": 1728,
+        "signature": "String Pitch",
+        "documentation": null
+      }
+    },
+    {
+      "name": "PitchEnd",
+      "id": "Tmapv3.event.EventNames.PitchEnd",
+      "engineId": "Vsm.Map.EventNames.PitchEnd",
+      "value": "PitchEnd",
+      "rowSourceHash": "ff9fc32e139534652e2098f3a1502c6a388569d887f2ce0a5d4a580acf22490f",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.PitchEnd",
+        "Vsm.Map.EventNames.PitchEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.PitchEnd",
+        "owner": "TMapEventNames",
+        "name": "PitchEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 38,
+        "start": 1752,
+        "end": 1773,
+        "signature": "String PitchEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "PitchStart",
+      "id": "Tmapv3.event.EventNames.PitchStart",
+      "engineId": "Vsm.Map.EventNames.PitchStart",
+      "value": "PitchStart",
+      "rowSourceHash": "e538a667a380e4a38fbab4973ba7973949c3b595b262cd34353e7e2796fd2e5b",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.PitchStart",
+        "Vsm.Map.EventNames.PitchStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.PitchStart",
+        "owner": "TMapEventNames",
+        "name": "PitchStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 36,
+        "start": 1664,
+        "end": 1689,
+        "signature": "String PitchStart",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Render",
+      "id": "Tmapv3.event.EventNames.Render",
+      "engineId": "Vsm.Map.EventNames.Render",
+      "value": "Render",
+      "rowSourceHash": "4a86d36a1e4aa6900590a0bee210fcecfc157df76cd42da34cad07121bc71ab7",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Render",
+        "Vsm.Map.EventNames.Render"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Render",
+        "owner": "TMapEventNames",
+        "name": "Render",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 40,
+        "start": 1838,
+        "end": 1855,
+        "signature": "String Render",
+        "documentation": null
+      }
+    },
+    {
+      "name": "RenderComplete",
+      "id": "Tmapv3.event.EventNames.RenderComplete",
+      "engineId": "Vsm.Map.EventNames.RenderComplete",
+      "value": "RenderComplete",
+      "rowSourceHash": "a1e55582367145d84ed3b10ed8ff10ec776913afed8117590b966f55fb6cffd3",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.RenderComplete",
+        "Vsm.Map.EventNames.RenderComplete"
+      ],
+      "dart": {
+        "id": "TMapEventNames.RenderComplete",
+        "owner": "TMapEventNames",
+        "name": "RenderComplete",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 43,
+        "start": 1965,
+        "end": 1998,
+        "signature": "String RenderComplete",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Resize",
+      "id": "Tmapv3.event.EventNames.Resize",
+      "engineId": "Vsm.Map.EventNames.Resize",
+      "value": "Resize",
+      "rowSourceHash": "405767ab767d57451277ff86b6fbc5a1c2d53d3ef5a2917ac8f6f02d333f1e13",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Resize",
+        "Vsm.Map.EventNames.Resize"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Resize",
+        "owner": "TMapEventNames",
+        "name": "Resize",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 39,
+        "start": 1797,
+        "end": 1814,
+        "signature": "String Resize",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Rotate",
+      "id": "Tmapv3.event.EventNames.Rotate",
+      "engineId": "Vsm.Map.EventNames.Rotate",
+      "value": "Rotate",
+      "rowSourceHash": "dd81b0689244eb6e7c6061015b02b90591204cbd49beca13ec67804ea3670700",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Rotate",
+        "Vsm.Map.EventNames.Rotate"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Rotate",
+        "owner": "TMapEventNames",
+        "name": "Rotate",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 34,
+        "start": 1576,
+        "end": 1593,
+        "signature": "String Rotate",
+        "documentation": null
+      }
+    },
+    {
+      "name": "RotateEnd",
+      "id": "Tmapv3.event.EventNames.RotateEnd",
+      "engineId": "Vsm.Map.EventNames.RotateEnd",
+      "value": "RotateEnd",
+      "rowSourceHash": "24d12d1f1020d702ac1dd7cb88df62d1e2f573970d27651c29e8245123289b53",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.RotateEnd",
+        "Vsm.Map.EventNames.RotateEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.RotateEnd",
+        "owner": "TMapEventNames",
+        "name": "RotateEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 35,
+        "start": 1617,
+        "end": 1640,
+        "signature": "String RotateEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "RotateStart",
+      "id": "Tmapv3.event.EventNames.RotateStart",
+      "engineId": "Vsm.Map.EventNames.RotateStart",
+      "value": "RotateStart",
+      "rowSourceHash": "818e5979a3acf5824259110570f3eff0dfceea74ff0b7be57c1131dbaecd17e7",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.RotateStart",
+        "Vsm.Map.EventNames.RotateStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.RotateStart",
+        "owner": "TMapEventNames",
+        "name": "RotateStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 33,
+        "start": 1525,
+        "end": 1552,
+        "signature": "String RotateStart",
+        "documentation": null
+      }
+    },
+    {
+      "name": "SourceLoad",
+      "id": "Tmapv3.event.EventNames.SourceLoad",
+      "engineId": "Vsm.Map.EventNames.SourceLoad",
+      "value": "SourceLoad",
+      "rowSourceHash": "3dc7c47bebcf6177512a7275070a14db86de10f38686a7697301d1498b25cffa",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.SourceLoad",
+        "Vsm.Map.EventNames.SourceLoad"
+      ],
+      "dart": {
+        "id": "TMapEventNames.SourceLoad",
+        "owner": "TMapEventNames",
+        "name": "SourceLoad",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 45,
+        "start": 2059,
+        "end": 2084,
+        "signature": "String SourceLoad",
+        "documentation": null
+      }
+    },
+    {
+      "name": "SourceUpdate",
+      "id": "Tmapv3.event.EventNames.SourceUpdate",
+      "engineId": "Vsm.Map.EventNames.SourceUpdate",
+      "value": "SourceUpdate",
+      "rowSourceHash": "95047dffc6b4c812b8fd3f1b9396767fd28298f11a0e31dd13b975a619498a8f",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.SourceUpdate",
+        "Vsm.Map.EventNames.SourceUpdate"
+      ],
+      "dart": {
+        "id": "TMapEventNames.SourceUpdate",
+        "owner": "TMapEventNames",
+        "name": "SourceUpdate",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 46,
+        "start": 2108,
+        "end": 2137,
+        "signature": "String SourceUpdate",
+        "documentation": null
+      }
+    },
+    {
+      "name": "StyleLoad",
+      "id": "Tmapv3.event.EventNames.StyleLoad",
+      "engineId": "Vsm.Map.EventNames.StyleLoad",
+      "value": "StyleLoad",
+      "rowSourceHash": "52955629a3ad74ce6b4bfbf658f8cc521c6fbb3cefbaa6def102ef58b5d416f9",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.StyleLoad",
+        "Vsm.Map.EventNames.StyleLoad"
+      ],
+      "dart": {
+        "id": "TMapEventNames.StyleLoad",
+        "owner": "TMapEventNames",
+        "name": "StyleLoad",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 48,
+        "start": 2210,
+        "end": 2233,
+        "signature": "String StyleLoad",
+        "documentation": null
+      }
+    },
+    {
+      "name": "TouchCancel",
+      "id": "Tmapv3.event.EventNames.TouchCancel",
+      "engineId": "Vsm.Map.EventNames.TouchCancel",
+      "value": "TouchCancel",
+      "rowSourceHash": "fe114aa5bb845bc729004710f3343ca2f1ce2f791fa2f39965053a182ab02bbf",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.TouchCancel",
+        "Vsm.Map.EventNames.TouchCancel"
+      ],
+      "dart": {
+        "id": "TMapEventNames.TouchCancel",
+        "owner": "TMapEventNames",
+        "name": "TouchCancel",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 22,
+        "start": 1050,
+        "end": 1077,
+        "signature": "String TouchCancel",
+        "documentation": null
+      }
+    },
+    {
+      "name": "TouchEnd",
+      "id": "Tmapv3.event.EventNames.TouchEnd",
+      "engineId": "Vsm.Map.EventNames.TouchEnd",
+      "value": "TouchEnd",
+      "rowSourceHash": "618db6835100fc505e555b5cf99f3d733d7155fcb6807ee66e1b0382262c8ba4",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.TouchEnd",
+        "Vsm.Map.EventNames.TouchEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.TouchEnd",
+        "owner": "TMapEventNames",
+        "name": "TouchEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 21,
+        "start": 1005,
+        "end": 1026,
+        "signature": "String TouchEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "TouchMove",
+      "id": "Tmapv3.event.EventNames.TouchMove",
+      "engineId": "Vsm.Map.EventNames.TouchMove",
+      "value": "TouchMove",
+      "rowSourceHash": "5c3c79f9dd9d88739266fa45b78259c70b0d3c562ec159a92100a5f4ddbf62c8",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.TouchMove",
+        "Vsm.Map.EventNames.TouchMove"
+      ],
+      "dart": {
+        "id": "TMapEventNames.TouchMove",
+        "owner": "TMapEventNames",
+        "name": "TouchMove",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 20,
+        "start": 958,
+        "end": 981,
+        "signature": "String TouchMove",
+        "documentation": null
+      }
+    },
+    {
+      "name": "TouchStart",
+      "id": "Tmapv3.event.EventNames.TouchStart",
+      "engineId": "Vsm.Map.EventNames.TouchStart",
+      "value": "TouchStart",
+      "rowSourceHash": "311b6efa75a0c9bd464a1dcdf4cdd0ede371fadb8fb6d98c3fb2cba64c435b90",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.TouchStart",
+        "Vsm.Map.EventNames.TouchStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.TouchStart",
+        "owner": "TMapEventNames",
+        "name": "TouchStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 19,
+        "start": 909,
+        "end": 934,
+        "signature": "String TouchStart",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Wheel",
+      "id": "Tmapv3.event.EventNames.Wheel",
+      "engineId": "Vsm.Map.EventNames.Wheel",
+      "value": "Wheel",
+      "rowSourceHash": "183f97cd5964c2721cb2a7c5fcce315f59b70d9325867246f8d7c4e4b1c44e64",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Wheel",
+        "Vsm.Map.EventNames.Wheel"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Wheel",
+        "owner": "TMapEventNames",
+        "name": "Wheel",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 18,
+        "start": 870,
+        "end": 885,
+        "signature": "String Wheel",
+        "documentation": null
+      }
+    },
+    {
+      "name": "Zoom",
+      "id": "Tmapv3.event.EventNames.Zoom",
+      "engineId": "Vsm.Map.EventNames.Zoom",
+      "value": "Zoom",
+      "rowSourceHash": "6713e83ca2686be44df3f84676ae1df657e56b5de33745f07931a4c54812c76e",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.Zoom",
+        "Vsm.Map.EventNames.Zoom"
+      ],
+      "dart": {
+        "id": "TMapEventNames.Zoom",
+        "owner": "TMapEventNames",
+        "name": "Zoom",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 31,
+        "start": 1445,
+        "end": 1458,
+        "signature": "String Zoom",
+        "documentation": null
+      }
+    },
+    {
+      "name": "ZoomEnd",
+      "id": "Tmapv3.event.EventNames.ZoomEnd",
+      "engineId": "Vsm.Map.EventNames.ZoomEnd",
+      "value": "ZoomEnd",
+      "rowSourceHash": "f7791aedd83cabc88dadb73aab0dda5e4c62f08ff0621ed427fc409be88b8c2e",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.ZoomEnd",
+        "Vsm.Map.EventNames.ZoomEnd"
+      ],
+      "dart": {
+        "id": "TMapEventNames.ZoomEnd",
+        "owner": "TMapEventNames",
+        "name": "ZoomEnd",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 32,
+        "start": 1482,
+        "end": 1501,
+        "signature": "String ZoomEnd",
+        "documentation": null
+      }
+    },
+    {
+      "name": "ZoomStart",
+      "id": "Tmapv3.event.EventNames.ZoomStart",
+      "engineId": "Vsm.Map.EventNames.ZoomStart",
+      "value": "ZoomStart",
+      "rowSourceHash": "32aabf7fa2f32550a943efd0aa8fb516a5efea3dffc6158e24e1f46430195b42",
+      "sourceNames": [
+        "Tmapv3.event.EventNames.ZoomStart",
+        "Vsm.Map.EventNames.ZoomStart"
+      ],
+      "dart": {
+        "id": "TMapEventNames.ZoomStart",
+        "owner": "TMapEventNames",
+        "name": "ZoomStart",
+        "kind": "field",
+        "file": "lib/src/constants/event_names.dart",
+        "line": 30,
+        "start": 1398,
+        "end": 1421,
+        "signature": "String ZoomStart",
+        "documentation": null
+      }
+    }
+  ]
+}

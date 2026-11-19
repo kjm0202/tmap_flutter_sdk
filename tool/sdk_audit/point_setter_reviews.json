@@ -1,0 +1,666 @@
+{
+  "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+  "sdkSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+  "scope": "Source-bound, sampled numeric coordinate update adaptation on ordinary writable Point data properties. Ten numeric fixtures include signed zero, non-finite and finite extremes; samples are not exhaustive execution of every double. Excludes missing/non-numeric arguments, custom descriptors, frozen receivers and inherited Point event/identity behavior; related parameter/class/event contracts remain open. Also excludes monkeypatches, proxies, subclass dispatch and concurrent/external mutation. Only ordinary direct calls to the reviewed methods are covered.",
+  "fixture": {
+    "file": "example/integration_test/point_size_setter_contracts.dart",
+    "sha256": "0d24eb94cb06efabf37c697b802a25587c45cde1e008a5d16e38f3cfa871905e"
+  },
+  "probe": {
+    "file": "tool/sdk_audit/point_size_setter_probe.mjs",
+    "sha256": "31b546c0829b456697a8f9e97009a1f225942c56c640bfb23c43693aabcceba5"
+  },
+  "inputs": {
+    "file": "tool/sdk_audit/getter_inputs.json",
+    "sha256": "a37a06e7c0d7b2a51efc0853f73751f9b9c5aa2b1b128bfe5ce4a3f9603304ba"
+  },
+  "items": [
+    {
+      "contract": "Tmapv3.base.Point#setX",
+      "variant": "immutable-point-setter",
+      "dartMember": "Point.withX",
+      "dartFile": "lib/src/models/point.dart",
+      "dartSignature": "Point withX(double newX)",
+      "sdkBodySha256": "ec032dda6eb1797414004b6b46eaaeb4073440d91a057dba52ce7b71dfeb7dce",
+      "arity": 1,
+      "casesPerPlatform": 100,
+      "rowSourceHash": "f088f55e39c08444cdcc715a06820a45cbcbad01752a3fbd026c74f50407d1bb",
+      "sdkEvidence": {
+        "id": "Tmapv3.base.Point#setX",
+        "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "start": 841435,
+        "end": 841473,
+        "excerpt": "t.prototype.setX=function(t){this.x=t}",
+        "bodySha256": "ec032dda6eb1797414004b6b46eaaeb4073440d91a057dba52ce7b71dfeb7dce",
+        "parameters": [
+          "t"
+        ]
+      },
+      "dartEvidence": {
+        "id": "Point.withX",
+        "file": "lib/src/models/point.dart",
+        "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+        "start": 910,
+        "end": 1009,
+        "line": 22,
+        "signature": "Point withX(double newX)",
+        "excerpt": "/// Immutable equivalent of official `Point.setX(x)`.\n  Point withX(double newX) => Point(newX, y);"
+      },
+      "constructorDependencies": {
+        "sdk": {
+          "id": "Tmapv3.base.Point#constructor",
+          "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "start": 840930,
+          "end": 841003,
+          "excerpt": "function(t,e){Tmapv3.base.Object.apply(this,arguments);this.x=t;this.y=e}",
+          "bodySha256": "62c61d4f597596cab02c99b61076b9e4a98a24c1e1a02e55ffb37bad94378b70",
+          "parameters": [
+            "t",
+            "e"
+          ]
+        },
+        "dart": {
+          "file": "lib/src/models/point.dart",
+          "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+          "start": 114,
+          "end": 142,
+          "excerpt": "const Point(this.x, this.y);",
+          "line": 8
+        }
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          },
+          {
+            "file": "docs/sdk-audit/additional-findings.json",
+            "sha256": "ff0bfa4808aebbc1c4ef06c8adaad5af5f19922b0bc4f769d34685cddd05b68d"
+          },
+          {
+            "file": "docs/sdk-audit/reference-contracts.json",
+            "sha256": "3b7148440d6e20a154941aef99bf945e9a729cda17c0f0f01f6d74a73ccb9e2b"
+          },
+          {
+            "file": "docs/sdk-audit/triage-original.json",
+            "sha256": "4e8516121238fd83374ae7da7c8ebbfd9e497cfb0ed2780f173ee87da92c1fd0"
+          },
+          {
+            "file": "docs/sdk-audit/triage.json",
+            "sha256": "7cf7d8d7780912856a57afb0c10073963846fff4dad068e75f7c959dd1f9eff5"
+          },
+          {
+            "file": "docs/sdk-audit/triage.md",
+            "sha256": "1ba35028f0cbf8d95a9296d4c0769b75267cd50f531d4bc4de2d93a096c5f8a8"
+          },
+          {
+            "file": "docs/sdk-audit/validation.json",
+            "sha256": "3a06369589c686770e9316b884421ee27bc351ef6bfda5b36154e8b01730e51a"
+          },
+          {
+            "file": "docs/sdk-audit/followup-validation.json",
+            "sha256": "0797a4305cfd64512dcf9ab3751534e9ea61e68d85ebee1ae0265625e979eb57"
+          },
+          {
+            "file": "docs/sdk-audit/current-validation.json",
+            "sha256": "2032c0d0ebfaf0d2ba56b8c6d2a9714c3d85ecde3478fcc8acc06f9b2b556996"
+          },
+          {
+            "file": "docs/sdk-audit/marker-contract-review.json",
+            "sha256": "1ee6dfc992e242641ccb815a48b6359486d3a1ef4f593b488054945c1aef7024"
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234"
+          },
+          {
+            "file": "tool/sdk_audit/getter_reviews.json",
+            "sha256": "be622433174ef4360e7381ba2fd49cb4ccefa031b7e0e4a40fbf297c96e545c9"
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29"
+          }
+        ],
+        "terms": [
+          "Tmapv3.base.Point#setX",
+          "Point.withX",
+          "withX("
+        ],
+        "matches": [
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Tmapv3.base.Point#setX",
+            "count": 8,
+            "examples": [
+              {
+                "line": 95451,
+                "text": "\"api\": \"Tmapv3.base.Point#setX\","
+              },
+              {
+                "line": 95473,
+                "text": "\"Tmapv3.base.Point#setX\","
+              },
+              {
+                "line": 95623,
+                "text": "\"api\": \"Tmapv3.base.Point#setX:argument[0]\","
+              }
+            ]
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Point.withX",
+            "count": 12,
+            "examples": [
+              {
+                "line": 95538,
+                "text": "\"Point.withX\""
+              },
+              {
+                "line": 95542,
+                "text": "\"id\": \"Point.withX\","
+              },
+              {
+                "line": 95585,
+                "text": "\"dartMapping\": \"Point.withX\","
+              }
+            ]
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "withX(",
+            "count": 6,
+            "examples": [
+              {
+                "line": 95548,
+                "text": "\"signature\": \"Point withX(double newX)\","
+              },
+              {
+                "line": 95549,
+                "text": "\"excerpt\": \"Point withX(double newX)\""
+              },
+              {
+                "line": 95691,
+                "text": "\"signature\": \"Point withX(double newX)\","
+              }
+            ]
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29",
+            "term": "withX(",
+            "count": 1,
+            "examples": [
+              {
+                "line": 34,
+                "text": "final updated = modified.withX(0).withY(1.25);"
+              }
+            ]
+          }
+        ],
+        "limitation": "Literal search; a mention does not establish a platform result or full behavioral equivalence."
+      },
+      "scope": "Source-bound, sampled numeric coordinate update adaptation on ordinary writable Point data properties. Ten numeric fixtures include signed zero, non-finite and finite extremes; samples are not exhaustive execution of every double. Excludes missing/non-numeric arguments, custom descriptors, frozen receivers and inherited Point event/identity behavior; related parameter/class/event contracts remain open. Also excludes monkeypatches, proxies, subclass dispatch and concurrent/external mutation. Only ordinary direct calls to the reviewed methods are covered.",
+      "dimensions": {
+        "inputs-defaults": "Dart requires one/two typed double arguments; the native JS setter does not enforce these types and the pinned bodies perform direct coordinate writes with no defaults. Ten encoded numeric values and asymmetric receiver fixtures are sampled. Missing and nonnumeric JS arguments are outside this adaptation.",
+        "returns-types": "Pinned native bodies return undefined; Dart with* returns a newly allocated Point. This is an intentional interface difference, not equivalent return behavior.",
+        "mutation-identity": "Native before/after coordinates change by direct assignment. Dart final receiver fields remain unchanged, returned coordinates match native after state, and repeated results are distinct. Receiver-reference flags alone are not evidence.",
+        "errors": "For ordinary writable numeric fields the reviewed bodies have no validation or explicit throw. All exact sample IDs must execute without setup/call/repeat exceptions. JS exotic receivers and Dart nonnumeric/type errors remain out of scope.",
+        "lifecycle-events": "Only the setter bodies are covered: direct data writes contain no explicit event or lifecycle call. SDK Point Base.Object listener storage and Dart new-object inherited state are not equivalent or verified; their contracts stay open.",
+        "dispatch": "Exact SDK method bodies and aliases are pinned; the reviewed helper invokes exact Dart with* declarations in separate Web/Android/iOS runs with fresh source, fixture and log hashes. Only ordinary direct calls are covered; monkeypatches, proxies, subclass dispatch and external mutation are excluded."
+      },
+      "adaptation": {
+        "native": "Mutates x/y on the same ordinary Point receiver and returns undefined.",
+        "dart": "Retains the original Point and returns a distinct Point; repeated calls return distinct results.",
+        "rationale": "The existing Dart Point model has final coordinates and immutable with* methods. Coordinate updates are compared separately from mutation and return behavior; inherited SDK event storage is not reproduced or certified."
+      },
+      "document": {
+        "id": "Tmapv3.Point#setX",
+        "owner": "Tmapv3.Point",
+        "name": "setX",
+        "anchor": "Point_setX",
+        "file": "tool/sdk_audit/.cache/sources/bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "start": 79944,
+        "end": 80144,
+        "excerpt": "id=\"Point_setX\">setX</h4></li>\n\t\t\t\t</ul>\n\n\t\t\t\t<div class=\"sub\">\n\t\t\t\t\t<h5 class=\"tit_2\">Description</h5>\n\t\t\t\t\t<div class=\"desc_2\">point 객체(Tmapv3.Point)의 x좌표를 설정합니다.</div>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"s"
+      }
+    },
+    {
+      "contract": "Tmapv3.base.Point#setY",
+      "variant": "immutable-point-setter",
+      "dartMember": "Point.withY",
+      "dartFile": "lib/src/models/point.dart",
+      "dartSignature": "Point withY(double newY)",
+      "sdkBodySha256": "e5d15eae436c6562b7c63448a3459991da9fdb2b167145cf335a499ddeb1a005",
+      "arity": 1,
+      "casesPerPlatform": 100,
+      "rowSourceHash": "b44516501f891105fd97450e23a8eebd367227ff93fd58f54c826c82f8b73073",
+      "sdkEvidence": {
+        "id": "Tmapv3.base.Point#setY",
+        "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "start": 841474,
+        "end": 841512,
+        "excerpt": "t.prototype.setY=function(t){this.y=t}",
+        "bodySha256": "e5d15eae436c6562b7c63448a3459991da9fdb2b167145cf335a499ddeb1a005",
+        "parameters": [
+          "t"
+        ]
+      },
+      "dartEvidence": {
+        "id": "Point.withY",
+        "file": "lib/src/models/point.dart",
+        "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+        "start": 1013,
+        "end": 1112,
+        "line": 25,
+        "signature": "Point withY(double newY)",
+        "excerpt": "/// Immutable equivalent of official `Point.setY(y)`.\n  Point withY(double newY) => Point(x, newY);"
+      },
+      "constructorDependencies": {
+        "sdk": {
+          "id": "Tmapv3.base.Point#constructor",
+          "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "start": 840930,
+          "end": 841003,
+          "excerpt": "function(t,e){Tmapv3.base.Object.apply(this,arguments);this.x=t;this.y=e}",
+          "bodySha256": "62c61d4f597596cab02c99b61076b9e4a98a24c1e1a02e55ffb37bad94378b70",
+          "parameters": [
+            "t",
+            "e"
+          ]
+        },
+        "dart": {
+          "file": "lib/src/models/point.dart",
+          "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+          "start": 114,
+          "end": 142,
+          "excerpt": "const Point(this.x, this.y);",
+          "line": 8
+        }
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          },
+          {
+            "file": "docs/sdk-audit/additional-findings.json",
+            "sha256": "ff0bfa4808aebbc1c4ef06c8adaad5af5f19922b0bc4f769d34685cddd05b68d"
+          },
+          {
+            "file": "docs/sdk-audit/reference-contracts.json",
+            "sha256": "3b7148440d6e20a154941aef99bf945e9a729cda17c0f0f01f6d74a73ccb9e2b"
+          },
+          {
+            "file": "docs/sdk-audit/triage-original.json",
+            "sha256": "4e8516121238fd83374ae7da7c8ebbfd9e497cfb0ed2780f173ee87da92c1fd0"
+          },
+          {
+            "file": "docs/sdk-audit/triage.json",
+            "sha256": "7cf7d8d7780912856a57afb0c10073963846fff4dad068e75f7c959dd1f9eff5"
+          },
+          {
+            "file": "docs/sdk-audit/triage.md",
+            "sha256": "1ba35028f0cbf8d95a9296d4c0769b75267cd50f531d4bc4de2d93a096c5f8a8"
+          },
+          {
+            "file": "docs/sdk-audit/validation.json",
+            "sha256": "3a06369589c686770e9316b884421ee27bc351ef6bfda5b36154e8b01730e51a"
+          },
+          {
+            "file": "docs/sdk-audit/followup-validation.json",
+            "sha256": "0797a4305cfd64512dcf9ab3751534e9ea61e68d85ebee1ae0265625e979eb57"
+          },
+          {
+            "file": "docs/sdk-audit/current-validation.json",
+            "sha256": "2032c0d0ebfaf0d2ba56b8c6d2a9714c3d85ecde3478fcc8acc06f9b2b556996"
+          },
+          {
+            "file": "docs/sdk-audit/marker-contract-review.json",
+            "sha256": "1ee6dfc992e242641ccb815a48b6359486d3a1ef4f593b488054945c1aef7024"
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234"
+          },
+          {
+            "file": "tool/sdk_audit/getter_reviews.json",
+            "sha256": "be622433174ef4360e7381ba2fd49cb4ccefa031b7e0e4a40fbf297c96e545c9"
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29"
+          }
+        ],
+        "terms": [
+          "Tmapv3.base.Point#setY",
+          "Point.withY",
+          "withY("
+        ],
+        "matches": [
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Tmapv3.base.Point#setY",
+            "count": 8,
+            "examples": [
+              {
+                "line": 95902,
+                "text": "\"api\": \"Tmapv3.base.Point#setY\","
+              },
+              {
+                "line": 95924,
+                "text": "\"Tmapv3.base.Point#setY\","
+              },
+              {
+                "line": 96074,
+                "text": "\"api\": \"Tmapv3.base.Point#setY:argument[0]\","
+              }
+            ]
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Point.withY",
+            "count": 12,
+            "examples": [
+              {
+                "line": 95989,
+                "text": "\"Point.withY\""
+              },
+              {
+                "line": 95993,
+                "text": "\"id\": \"Point.withY\","
+              },
+              {
+                "line": 96036,
+                "text": "\"dartMapping\": \"Point.withY\","
+              }
+            ]
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "withY(",
+            "count": 6,
+            "examples": [
+              {
+                "line": 95999,
+                "text": "\"signature\": \"Point withY(double newY)\","
+              },
+              {
+                "line": 96000,
+                "text": "\"excerpt\": \"Point withY(double newY)\""
+              },
+              {
+                "line": 96142,
+                "text": "\"signature\": \"Point withY(double newY)\","
+              }
+            ]
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29",
+            "term": "withY(",
+            "count": 1,
+            "examples": [
+              {
+                "line": 34,
+                "text": "final updated = modified.withX(0).withY(1.25);"
+              }
+            ]
+          }
+        ],
+        "limitation": "Literal search; a mention does not establish a platform result or full behavioral equivalence."
+      },
+      "scope": "Source-bound, sampled numeric coordinate update adaptation on ordinary writable Point data properties. Ten numeric fixtures include signed zero, non-finite and finite extremes; samples are not exhaustive execution of every double. Excludes missing/non-numeric arguments, custom descriptors, frozen receivers and inherited Point event/identity behavior; related parameter/class/event contracts remain open. Also excludes monkeypatches, proxies, subclass dispatch and concurrent/external mutation. Only ordinary direct calls to the reviewed methods are covered.",
+      "dimensions": {
+        "inputs-defaults": "Dart requires one/two typed double arguments; the native JS setter does not enforce these types and the pinned bodies perform direct coordinate writes with no defaults. Ten encoded numeric values and asymmetric receiver fixtures are sampled. Missing and nonnumeric JS arguments are outside this adaptation.",
+        "returns-types": "Pinned native bodies return undefined; Dart with* returns a newly allocated Point. This is an intentional interface difference, not equivalent return behavior.",
+        "mutation-identity": "Native before/after coordinates change by direct assignment. Dart final receiver fields remain unchanged, returned coordinates match native after state, and repeated results are distinct. Receiver-reference flags alone are not evidence.",
+        "errors": "For ordinary writable numeric fields the reviewed bodies have no validation or explicit throw. All exact sample IDs must execute without setup/call/repeat exceptions. JS exotic receivers and Dart nonnumeric/type errors remain out of scope.",
+        "lifecycle-events": "Only the setter bodies are covered: direct data writes contain no explicit event or lifecycle call. SDK Point Base.Object listener storage and Dart new-object inherited state are not equivalent or verified; their contracts stay open.",
+        "dispatch": "Exact SDK method bodies and aliases are pinned; the reviewed helper invokes exact Dart with* declarations in separate Web/Android/iOS runs with fresh source, fixture and log hashes. Only ordinary direct calls are covered; monkeypatches, proxies, subclass dispatch and external mutation are excluded."
+      },
+      "adaptation": {
+        "native": "Mutates x/y on the same ordinary Point receiver and returns undefined.",
+        "dart": "Retains the original Point and returns a distinct Point; repeated calls return distinct results.",
+        "rationale": "The existing Dart Point model has final coordinates and immutable with* methods. Coordinate updates are compared separately from mutation and return behavior; inherited SDK event storage is not reproduced or certified."
+      },
+      "document": {
+        "id": "Tmapv3.Point#setY",
+        "owner": "Tmapv3.Point",
+        "name": "setY",
+        "anchor": "Point_setY",
+        "file": "tool/sdk_audit/.cache/sources/bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "start": 80860,
+        "end": 81060,
+        "excerpt": "id=\"Point_setY\">setY</h4></li>\n\t\t\t\t</ul>\n\n\t\t\t\t<div class=\"sub\">\n\t\t\t\t\t<h5 class=\"tit_2\">Description</h5>\n\t\t\t\t\t<div class=\"desc_2\">point 객체(Tmapv3.Point)의 y좌표를 설정합니다.</div>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"s"
+      }
+    },
+    {
+      "contract": "Tmapv3.base.Point#setValue",
+      "variant": "immutable-point-setter",
+      "dartMember": "Point.withValue",
+      "dartFile": "lib/src/models/point.dart",
+      "dartSignature": "Point withValue(double newX, double newY)",
+      "sdkBodySha256": "9f5c1abd42a5e6a22b866ae15f6795b9d3a116c28fd39efea8b61b46a115d308",
+      "arity": 2,
+      "casesPerPlatform": 1000,
+      "rowSourceHash": "4389263f323ff206224a2666bc3a7888d84f7349ebb30ffc91f69474bc550cc8",
+      "sdkEvidence": {
+        "id": "Tmapv3.base.Point#setValue",
+        "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+        "start": 841381,
+        "end": 841434,
+        "excerpt": "t.prototype.setValue=function(t,e){this.x=t;this.y=e}",
+        "bodySha256": "9f5c1abd42a5e6a22b866ae15f6795b9d3a116c28fd39efea8b61b46a115d308",
+        "parameters": [
+          "t",
+          "e"
+        ]
+      },
+      "dartEvidence": {
+        "id": "Point.withValue",
+        "file": "lib/src/models/point.dart",
+        "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+        "start": 780,
+        "end": 906,
+        "line": 19,
+        "signature": "Point withValue(double newX, double newY)",
+        "excerpt": "/// Immutable equivalent of official `Point.setValue(x, y)`.\n  Point withValue(double newX, double newY) => Point(newX, newY);"
+      },
+      "constructorDependencies": {
+        "sdk": {
+          "id": "Tmapv3.base.Point#constructor",
+          "file": "tool/sdk_audit/.cache/sources/5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "sourceSha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+          "start": 840930,
+          "end": 841003,
+          "excerpt": "function(t,e){Tmapv3.base.Object.apply(this,arguments);this.x=t;this.y=e}",
+          "bodySha256": "62c61d4f597596cab02c99b61076b9e4a98a24c1e1a02e55ffb37bad94378b70",
+          "parameters": [
+            "t",
+            "e"
+          ]
+        },
+        "dart": {
+          "file": "lib/src/models/point.dart",
+          "sourceSha256": "d350f1548c979b8981c18c1965c31dcbcc93a78482f990b3d672edd0c0c94693",
+          "start": 114,
+          "end": 142,
+          "excerpt": "const Point(this.x, this.y);",
+          "line": 8
+        }
+      },
+      "priorReportSearch": {
+        "filesSearched": [
+          {
+            "file": "docs/api-audit-summary.md",
+            "sha256": "ae35faef6fccd27e7574c9b71b6bff7cf59991aa178786e61cf4b10679b9fea7"
+          },
+          {
+            "file": "docs/sdk-audit/findings.md",
+            "sha256": "11399f977a3f0f925db34916afd7128954d8676fe60f63f3b44d6c895693fadd"
+          },
+          {
+            "file": "docs/sdk-audit/additional-findings.json",
+            "sha256": "ff0bfa4808aebbc1c4ef06c8adaad5af5f19922b0bc4f769d34685cddd05b68d"
+          },
+          {
+            "file": "docs/sdk-audit/reference-contracts.json",
+            "sha256": "3b7148440d6e20a154941aef99bf945e9a729cda17c0f0f01f6d74a73ccb9e2b"
+          },
+          {
+            "file": "docs/sdk-audit/triage-original.json",
+            "sha256": "4e8516121238fd83374ae7da7c8ebbfd9e497cfb0ed2780f173ee87da92c1fd0"
+          },
+          {
+            "file": "docs/sdk-audit/triage.json",
+            "sha256": "7cf7d8d7780912856a57afb0c10073963846fff4dad068e75f7c959dd1f9eff5"
+          },
+          {
+            "file": "docs/sdk-audit/triage.md",
+            "sha256": "1ba35028f0cbf8d95a9296d4c0769b75267cd50f531d4bc4de2d93a096c5f8a8"
+          },
+          {
+            "file": "docs/sdk-audit/validation.json",
+            "sha256": "3a06369589c686770e9316b884421ee27bc351ef6bfda5b36154e8b01730e51a"
+          },
+          {
+            "file": "docs/sdk-audit/followup-validation.json",
+            "sha256": "0797a4305cfd64512dcf9ab3751534e9ea61e68d85ebee1ae0265625e979eb57"
+          },
+          {
+            "file": "docs/sdk-audit/current-validation.json",
+            "sha256": "2032c0d0ebfaf0d2ba56b8c6d2a9714c3d85ecde3478fcc8acc06f9b2b556996"
+          },
+          {
+            "file": "docs/sdk-audit/marker-contract-review.json",
+            "sha256": "1ee6dfc992e242641ccb815a48b6359486d3a1ef4f593b488054945c1aef7024"
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234"
+          },
+          {
+            "file": "tool/sdk_audit/getter_reviews.json",
+            "sha256": "be622433174ef4360e7381ba2fd49cb4ccefa031b7e0e4a40fbf297c96e545c9"
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29"
+          }
+        ],
+        "terms": [
+          "Tmapv3.base.Point#setValue",
+          "Point.withValue",
+          "final modified = source.withValue"
+        ],
+        "matches": [
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Tmapv3.base.Point#setValue",
+            "count": 14,
+            "examples": [
+              {
+                "line": 94721,
+                "text": "\"api\": \"Tmapv3.base.Point#setValue\","
+              },
+              {
+                "line": 94743,
+                "text": "\"Tmapv3.base.Point#setValue\","
+              },
+              {
+                "line": 94893,
+                "text": "\"api\": \"Tmapv3.base.Point#setValue:argument[0]\","
+              }
+            ]
+          },
+          {
+            "file": "docs/sdk-audit/reviews/geometry_internals-review.json",
+            "sha256": "11ab6c89e3bb3768e5681b32c5981e6b210ee6d0d031c699856d8bc3a2030234",
+            "term": "Point.withValue",
+            "count": 20,
+            "examples": [
+              {
+                "line": 94808,
+                "text": "\"Point.withValue\""
+              },
+              {
+                "line": 94812,
+                "text": "\"id\": \"Point.withValue\","
+              },
+              {
+                "line": 94855,
+                "text": "\"dartMapping\": \"Point.withValue\","
+              }
+            ]
+          },
+          {
+            "file": "test/round11_basic_geometry_sdk_contract_test.dart",
+            "sha256": "6942255e6c2325ef84aad4c1e2e0e7750bdd9b09865a44971d45a746a087fd29",
+            "term": "final modified = source.withValue",
+            "count": 1,
+            "examples": [
+              {
+                "line": 32,
+                "text": "final modified = source.withValue(-3.25, 2.5);"
+              }
+            ]
+          }
+        ],
+        "limitation": "Literal search; a mention does not establish a platform result or full behavioral equivalence."
+      },
+      "scope": "Source-bound, sampled numeric coordinate update adaptation on ordinary writable Point data properties. Ten numeric fixtures include signed zero, non-finite and finite extremes; samples are not exhaustive execution of every double. Excludes missing/non-numeric arguments, custom descriptors, frozen receivers and inherited Point event/identity behavior; related parameter/class/event contracts remain open. Also excludes monkeypatches, proxies, subclass dispatch and concurrent/external mutation. Only ordinary direct calls to the reviewed methods are covered.",
+      "dimensions": {
+        "inputs-defaults": "Dart requires one/two typed double arguments; the native JS setter does not enforce these types and the pinned bodies perform direct coordinate writes with no defaults. Ten encoded numeric values and asymmetric receiver fixtures are sampled. Missing and nonnumeric JS arguments are outside this adaptation.",
+        "returns-types": "Pinned native bodies return undefined; Dart with* returns a newly allocated Point. This is an intentional interface difference, not equivalent return behavior.",
+        "mutation-identity": "Native before/after coordinates change by direct assignment. Dart final receiver fields remain unchanged, returned coordinates match native after state, and repeated results are distinct. Receiver-reference flags alone are not evidence.",
+        "errors": "For ordinary writable numeric fields the reviewed bodies have no validation or explicit throw. All exact sample IDs must execute without setup/call/repeat exceptions. JS exotic receivers and Dart nonnumeric/type errors remain out of scope.",
+        "lifecycle-events": "Only the setter bodies are covered: direct data writes contain no explicit event or lifecycle call. SDK Point Base.Object listener storage and Dart new-object inherited state are not equivalent or verified; their contracts stay open.",
+        "dispatch": "Exact SDK method bodies and aliases are pinned; the reviewed helper invokes exact Dart with* declarations in separate Web/Android/iOS runs with fresh source, fixture and log hashes. Only ordinary direct calls are covered; monkeypatches, proxies, subclass dispatch and external mutation are excluded."
+      },
+      "adaptation": {
+        "native": "Mutates x/y on the same ordinary Point receiver and returns undefined.",
+        "dart": "Retains the original Point and returns a distinct Point; repeated calls return distinct results.",
+        "rationale": "The existing Dart Point model has final coordinates and immutable with* methods. Coordinate updates are compared separately from mutation and return behavior; inherited SDK event storage is not reproduced or certified."
+      },
+      "document": {
+        "id": "Tmapv3.Point#setValue",
+        "owner": "Tmapv3.Point",
+        "name": "setValue",
+        "anchor": "Point_setValue",
+        "file": "tool/sdk_audit/.cache/sources/bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214",
+        "source": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+        "start": 78974,
+        "end": 79174,
+        "excerpt": "id=\"Point_setValue\">setValue</h4></li>\n\t\t\t\t</ul>\n\n\t\t\t\t<div class=\"sub\">\n\t\t\t\t\t<h5 class=\"tit_2\">Description</h5>\n\t\t\t\t\t<div class=\"desc_2\">point 객체(Tmapv3.Point)의 x,y좌표를 설정합니다.</div>\n\t\t\t\t</div>\n\n\t\t\t\t<di"
+      }
+    }
+  ]
+}

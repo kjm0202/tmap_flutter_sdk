@@ -1,0 +1,620 @@
+[
+  {
+    "id": "point.getX",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "getX",
+    "dart": "x",
+    "contract": "Tmapv3.base.Point#getX"
+  },
+  {
+    "id": "point.getY",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "getY",
+    "dart": "y",
+    "contract": "Tmapv3.base.Point#getY"
+  },
+  {
+    "id": "point.clone",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Point#clone"
+  },
+  {
+    "id": "point.offset",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "offset",
+    "methodArgs": [
+      3,
+      4
+    ],
+    "dart": "offset",
+    "contract": "Tmapv3.base.Point#offset"
+  },
+  {
+    "id": "point.setX-adapter",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "setX",
+    "methodArgs": [
+      3
+    ],
+    "dart": "setX",
+    "contract": "Tmapv3.base.Point#setX"
+  },
+  {
+    "id": "point.toString",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Point#toString"
+  },
+  {
+    "id": "point.toSdkString-adapter",
+    "class": "Point",
+    "args": [
+      1.25,
+      -2.5
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Point#toString"
+  },
+  {
+    "id": "size.getWidth",
+    "class": "Size",
+    "args": [
+      -3,
+      4
+    ],
+    "read": [
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "getWidth",
+    "dart": "width",
+    "contract": "Tmapv3.base.Size#getWidth"
+  },
+  {
+    "id": "bounds.getBottom",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "getBottom",
+    "dart": "getBottom",
+    "contract": "Tmapv3.base.Bounds#getBottom"
+  },
+  {
+    "id": "bounds.getRight",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "getRight",
+    "dart": "getRight",
+    "contract": "Tmapv3.base.Bounds#getRight"
+  },
+  {
+    "id": "bounds.clone",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Bounds#clone"
+  },
+  {
+    "id": "bounds.padding-adapter",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "padding",
+    "methodArgs": [
+      2
+    ],
+    "dart": "padding",
+    "contract": "Tmapv3.base.Bounds#padding"
+  },
+  {
+    "id": "bounds.setWidth-adapter",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "setWidth",
+    "methodArgs": [
+      -2
+    ],
+    "dart": "setWidth",
+    "contract": "Tmapv3.base.Bounds#setWidth"
+  },
+  {
+    "id": "bounds.toSdkString-adapter",
+    "class": "Bounds",
+    "args": [
+      1,
+      10,
+      5,
+      4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Bounds#toString"
+  },
+  {
+    "id": "latlng.lat",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "lat",
+    "dart": "latitude",
+    "contract": "Tmapv3.base.LatLng#lat"
+  },
+  {
+    "id": "latlng.lng",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "lng",
+    "dart": "longitude",
+    "contract": "Tmapv3.base.LatLng#lng"
+  },
+  {
+    "id": "latlng.clone",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.LatLng#clone"
+  },
+  {
+    "id": "latlng.setLatitude-adapter",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "setLatitude",
+    "methodArgs": [
+      38
+    ],
+    "dart": "setLatitude",
+    "contract": "Tmapv3.base.LatLng#setLatitude"
+  },
+  {
+    "id": "latlng.toString",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.LatLng#toString"
+  },
+  {
+    "id": "latlng.toSdkString-adapter",
+    "class": "LatLng",
+    "args": [
+      37.5665,
+      126.978
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.LatLng#toString"
+  },
+  {
+    "id": "size.getHeight",
+    "class": "Size",
+    "args": [
+      -3,
+      4
+    ],
+    "read": [
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "getHeight",
+    "dart": "height",
+    "contract": "Tmapv3.base.Size#getHeight"
+  },
+  {
+    "id": "size.setSize-adapter",
+    "class": "Size",
+    "args": [
+      3,
+      4
+    ],
+    "read": [
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "setSize",
+    "methodArgs": [
+      5,
+      -6
+    ],
+    "dart": "setSize",
+    "contract": "Tmapv3.base.Size#setSize"
+  },
+  {
+    "id": "size.setWidth-adapter",
+    "class": "Size",
+    "args": [
+      3,
+      4
+    ],
+    "read": [
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "setWidth",
+    "methodArgs": [
+      -2
+    ],
+    "dart": "setWidth",
+    "contract": "Tmapv3.base.Size#setWidth"
+  },
+  {
+    "id": "point.getX.edge0",
+    "class": "Point",
+    "args": [
+      0,
+      0
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "getX",
+    "dart": "x",
+    "contract": "Tmapv3.base.Point#getX"
+  },
+  {
+    "id": "point.getX.edge1",
+    "class": "Point",
+    "args": [
+      -1.005,
+      999999.995
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "getX",
+    "dart": "x",
+    "contract": "Tmapv3.base.Point#getX"
+  },
+  {
+    "id": "point.clone.edge0",
+    "class": "Point",
+    "args": [
+      0,
+      0
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Point#clone"
+  },
+  {
+    "id": "point.clone.edge1",
+    "class": "Point",
+    "args": [
+      -1.005,
+      999999.995
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Point#clone"
+  },
+  {
+    "id": "point.toSdkString-adapter.edge0",
+    "class": "Point",
+    "args": [
+      0,
+      0
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Point#toString"
+  },
+  {
+    "id": "point.toSdkString-adapter.edge1",
+    "class": "Point",
+    "args": [
+      -1.005,
+      999999.995
+    ],
+    "read": [
+      "getX",
+      "getY"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Point#toString"
+  },
+  {
+    "id": "bounds.clone.edge0",
+    "class": "Bounds",
+    "args": [
+      0,
+      0,
+      -5,
+      -4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Bounds#clone"
+  },
+  {
+    "id": "bounds.clone.edge1",
+    "class": "Bounds",
+    "args": [
+      -7,
+      3,
+      0,
+      0
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.Bounds#clone"
+  },
+  {
+    "id": "bounds.toSdkString-adapter.edge0",
+    "class": "Bounds",
+    "args": [
+      0,
+      0,
+      -5,
+      -4
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Bounds#toString"
+  },
+  {
+    "id": "bounds.toSdkString-adapter.edge1",
+    "class": "Bounds",
+    "args": [
+      -7,
+      3,
+      0,
+      0
+    ],
+    "read": [
+      "getLeft",
+      "getTop",
+      "getWidth",
+      "getHeight"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.Bounds#toString"
+  },
+  {
+    "id": "latlng.clone.edge0",
+    "class": "LatLng",
+    "args": [
+      0,
+      0
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.LatLng#clone"
+  },
+  {
+    "id": "latlng.clone.edge1",
+    "class": "LatLng",
+    "args": [
+      -89.99999,
+      179.999999
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "clone",
+    "dart": "clone",
+    "contract": "Tmapv3.base.LatLng#clone"
+  },
+  {
+    "id": "latlng.toSdkString-adapter.edge0",
+    "class": "LatLng",
+    "args": [
+      0,
+      0
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.LatLng#toString"
+  },
+  {
+    "id": "latlng.toSdkString-adapter.edge1",
+    "class": "LatLng",
+    "args": [
+      -89.99999,
+      179.999999
+    ],
+    "read": [
+      "lat",
+      "lng"
+    ],
+    "method": "toString",
+    "dart": "toString",
+    "contract": "Tmapv3.base.LatLng#toString"
+  }
+]

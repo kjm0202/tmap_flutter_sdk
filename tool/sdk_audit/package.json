@@ -1,0 +1,23 @@
+{
+  "name": "tmap-sdk-audit",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "snapshot": "node cli.mjs snapshot",
+    "audit": "node cli.mjs audit",
+    "check": "node cli.mjs check"
+  },
+  "dependencies": {
+    "acorn": "8.15.0",
+    "acorn-walk": "8.3.4",
+    "cheerio": "1.1.2",
+    "playwright": "1.56.1"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
