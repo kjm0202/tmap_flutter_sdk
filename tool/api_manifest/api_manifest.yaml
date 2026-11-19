@@ -1338,145 +1338,217 @@ entries:
   - id: "Tmapv3.extension.DotMap"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: DotMap
+    status: done
+    dart: DotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
   - id: "Tmapv3.extension.DotMap#constructor"
     kind: constructor
     decision: expose
-    status: todo
-    planned_dart: DotMap.new
+    status: done
+    dart: DotMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
   - id: "Tmapv3.extension.DotMap.options.data"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.data
+    decision: adapt
+    status: done
+    dart: DotMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
   - id: "Tmapv3.extension.DotMap.options.fillColor"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.fillColor
+    decision: adapt
+    status: done
+    dart: DotMap.fillColor
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
   - id: "Tmapv3.extension.DotMap.options.fillOpacity"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: DotMap.fillOpacity
+    status: done
+    dart: DotMap.fillOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
   - id: "Tmapv3.extension.DotMap.options.lat"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.lat
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.DotMap.options.lng"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.lng
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.DotMap.options.map"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: TMapController.addDotMap
+    decision: adapt
+    status: done
+    dart: TMapController.addDotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
   - id: "Tmapv3.extension.DotMap.options.radius"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: DotMap.radius
+    status: done
+    dart: DotMap.radius
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
   - id: "Tmapv3.extension.DotMap.options.range"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: DotMap.range
+    status: done
+    dart: DotMap.range
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
   - id: "Tmapv3.extension.DotMap.options.strokeColor"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.strokeColor
+    decision: adapt
+    status: done
+    dart: DotMap.strokeColor
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
   - id: "Tmapv3.extension.DotMap.options.strokeOpacity"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: DotMap.strokeOpacity
+    status: done
+    dart: DotMap.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
   - id: "Tmapv3.extension.DotMap.options.value"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: DotMap.value
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.DotMap#destroy"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: DotMap.destroy
+    decision: adapt
+    status: done
+    dart: TMapController.removeDotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
 
   # SquareMap
   - id: "Tmapv3.extension.SquareMap"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: SquareMap
+    status: done
+    dart: SquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
   - id: "Tmapv3.extension.SquareMap#constructor"
     kind: constructor
     decision: expose
-    status: todo
-    planned_dart: SquareMap.new
+    status: done
+    dart: SquareMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
   - id: "Tmapv3.extension.SquareMap.options.colors"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.colors
+    decision: adapt
+    status: done
+    dart: SquareMap.colors
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
   - id: "Tmapv3.extension.SquareMap.options.data"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.data
+    decision: adapt
+    status: done
+    dart: SquareMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
   - id: "Tmapv3.extension.SquareMap.options.fillOpacity"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: SquareMap.fillOpacity
+    status: done
+    dart: SquareMap.fillOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
   - id: "Tmapv3.extension.SquareMap.options.lat"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.lat
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.SquareMap.options.lng"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.lng
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.SquareMap.options.map"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: TMapController.addSquareMap
+    decision: adapt
+    status: done
+    dart: TMapController.addSquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
   - id: "Tmapv3.extension.SquareMap.options.origin"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: SquareMap.origin
+    status: done
+    dart: SquareMap.origin
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+      - "test/visualization_bridge.test.mjs::SquareMap constructor options and data attached"
   - id: "Tmapv3.extension.SquareMap.options.size"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: SquareMap.size
+    status: done
+    dart: SquareMap.size
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
   - id: "Tmapv3.extension.SquareMap.options.strokeOpacity"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: SquareMap.strokeOpacity
+    status: done
+    dart: SquareMap.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
   - id: "Tmapv3.extension.SquareMap.options.value"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.value
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.SquareMap.options.values"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: SquareMap.values
+    status: done
+    dart: SquareMap.values
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
   - id: "Tmapv3.extension.SquareMap#destroy"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: SquareMap.destroy
+    decision: adapt
+    status: done
+    dart: TMapController.removeSquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
 
   # TData
   - id: "Tmapv3.TData"
@@ -2165,53 +2237,80 @@ entries:
   - id: "Tmapv3.extension.HeatMap"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: HeatMap
+    status: done
+    dart: HeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
   - id: "Tmapv3.extension.HeatMap#constructor"
     kind: constructor
     decision: expose
-    status: todo
-    planned_dart: HeatMap.new
+    status: done
+    dart: HeatMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
   - id: "Tmapv3.extension.HeatMap.options.data"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.data
+    decision: adapt
+    status: done
+    dart: HeatMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
   - id: "Tmapv3.extension.HeatMap.options.lat"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.lat
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.HeatMap.options.lng"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.lng
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.HeatMap.options.map"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: TMapController.addHeatMap
+    decision: adapt
+    status: done
+    dart: TMapController.addHeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
   - id: "Tmapv3.extension.HeatMap.options.max"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.max
+    decision: adapt
+    status: done
+    dart: HeatMap.max
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "The Dart max property is serialized as data.max for the SDK."
   - id: "Tmapv3.extension.HeatMap.options.radius"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: HeatMap.radius
+    status: done
+    dart: HeatMap.radius
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
   - id: "Tmapv3.extension.HeatMap.options.value"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.value
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
   - id: "Tmapv3.extension.HeatMap#destroy"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: HeatMap.destroy
+    decision: adapt
+    status: done
+    dart: TMapController.removeHeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
 
   # Polyline
   - id: "Tmapv3.Polyline"
