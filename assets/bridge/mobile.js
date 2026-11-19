@@ -13,6 +13,7 @@ var defaultCenter;
 var mapListeners = [];
 
 window.tmap_dispose_mobile = function() {
+  if (window.__tmapIosScrollGuardDispose) window.__tmapIosScrollGuardDispose();
   if (map && typeof tmapBridge !== 'undefined' && tmapBridge.disposeControls) {
     tmapBridge.disposeControls(map);
   }
@@ -69,6 +70,7 @@ function initTmap() {
     height: "100%"
   };
 
+  if (config.iosScrollableGuard) installIosScrollableGuard(document.getElementById("map_div"));
   map = new Tmapv3.Map("map_div", options);
   installAndroidTouchZoomRecovery(map, document.getElementById("map_div"), config.maxZoom);
   tmapBridge.applyNaviControl(map, config.naviControl ?? false);
@@ -616,4 +618,84 @@ function installAndroidTouchZoomRecovery(map, container, maxZoom) {
   container.addEventListener('wheel', clear, true);
   container.addEventListener('pointermove', clear, true);
   container.addEventListener('pointercancel', clear, true);
+}
+
+// Flutter's iOS platform view may deliver initial touch moves to WKWebView
+// before the gesture arena rejects them. Only gate a single-finger canvas
+// gesture while a scrollable ancestor can claim its axis.
+function installIosScrollableGuard(container) {
+  if (window.__tmapIosScrollGuardDispose) window.__tmapIosScrollGuardDispose();
+  var pointers = new Set();
+  var origin = null;
+  var mode = null;
+  var handlers = [];
+  function listen(type, handler) {
+    handlers.push([type, handler]);
+    window.addEventListener(type, handler, true);
+  }
+  function canvasEvent(e) {
+    return e.target && e.target.tagName === 'CANVAS' && container.contains(e.target);
+  }
+  function blockMove(e, x, y) {
+    if (!e.isTrusted || !canvasEvent(e) || !origin || mode === 'multi' || mode === 'map') return;
+    var axis = window.__tmapScrollGuardAxis;
+    if (!axis) { mode = 'map'; return; }
+    var dx = Math.abs(x - origin.x), dy = Math.abs(y - origin.y);
+    if (mode === 'pending' && (dx > 0 || dy > 0)) {
+      // Hold an ambiguous first movement until the direction is clear.
+      if (Math.abs(dx - dy) < 1) { e.stopImmediatePropagation(); return; }
+      var movementAxis = dy > dx ? 'vertical' : 'horizontal';
+      mode = movementAxis === axis ? 'scroll' : 'map';
+    }
+    if (mode === 'scroll') e.stopImmediatePropagation();
+  }
+  listen('pointerdown', function(e) {
+    if (!e.isTrusted || e.pointerType !== 'touch' || !canvasEvent(e)) return;
+    if (e.isPrimary) {
+      // A rejected WebKit sequence may never deliver pointerup/cancel.
+      pointers.clear();
+      origin = {x: e.clientX, y: e.clientY};
+      mode = 'pending';
+    } else {
+      mode = 'multi';
+    }
+    pointers.add(e.pointerId);
+    if (pointers.size > 1) mode = 'multi';
+  });
+  listen('pointermove', function(e) {
+    if (e.pointerType === 'touch' && pointers.size === 1) blockMove(e, e.clientX, e.clientY);
+  });
+  function endPointer(e) {
+    pointers.delete(e.pointerId);
+    // Keep multi-touch ownership until a new primary sequence begins.
+    if (!pointers.size && mode !== 'multi') { origin = null; mode = null; }
+  }
+  listen('pointerup', endPointer);
+  listen('pointercancel', endPointer);
+  listen('touchstart', function(e) {
+    if (!e.isTrusted || !canvasEvent(e)) return;
+    if (e.touches.length > 1) mode = 'multi';
+    else if (e.touches.length === 1 && !origin) {
+      origin = {x: e.touches[0].clientX, y: e.touches[0].clientY};
+      mode = 'pending';
+    }
+  });
+  listen('touchmove', function(e) {
+    if (e.touches.length === 1) blockMove(e, e.touches[0].clientX, e.touches[0].clientY);
+  });
+  listen('touchend', function(e) {
+    if (!e.touches.length && mode !== 'multi') { origin = null; mode = null; }
+  });
+  listen('touchcancel', function(e) {
+    if (!e.touches.length) { pointers.clear(); origin = null; mode = null; }
+    else mode = 'multi';
+  });
+  window.__tmapIosScrollGuardDispose = function() {
+    handlers.forEach(function(entry) { window.removeEventListener(entry[0], entry[1], true); });
+    handlers = [];
+    pointers.clear();
+    origin = null;
+    mode = null;
+    window.__tmapIosScrollGuardDispose = null;
+  };
 }

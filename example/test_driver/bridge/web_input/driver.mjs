@@ -137,6 +137,19 @@ async function handleAction(cdpCall, gesture) {
     await cdpCall('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
     await setTimeout(1000);
     await cdpCall('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } else if (action === 'dragTouch') {
+    await cdpCall('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+    try {
+      const steps = 8;
+      for (let i = 1; i <= steps; i++) {
+        const curX = x + (endX - x) * (i / steps);
+        const curY = y + (endY - y) * (i / steps);
+        await cdpCall('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: curX, y: curY }] });
+        await setTimeout(20);
+      }
+    } finally {
+      await cdpCall('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    }
   } else if (action === 'drag') {
     await cdpCall('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
     const steps = 8;

@@ -1,6 +1,7 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'dart:ui_web' as ui_web;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:web/web.dart' as web;
 
@@ -489,6 +490,19 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return HtmlElementView(viewType: _viewType);
+    // The HTML map receives DOM input independently of Flutter's gesture
+    // arena. Claim the same pointer stream in Flutter so a surrounding
+    // Scrollable does not move at the same time as the map.
+    return RawGestureDetector(
+      behavior: HitTestBehavior.opaque,
+      gestures: <Type, GestureRecognizerFactory>{
+        EagerGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<EagerGestureRecognizer>(
+          () => EagerGestureRecognizer(),
+          (_) {},
+        ),
+      },
+      child: HtmlElementView(viewType: _viewType),
+    );
   }
 }

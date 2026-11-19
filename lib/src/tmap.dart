@@ -194,6 +194,12 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   late final TMapController _mapController;
   final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isMapReady = false;
+  ScrollPosition? _iosScrollPosition;
+  ScrollNotificationObserverState? _iosScrollObserver;
+  String? _iosGuardDesired;
+  String? _iosGuardApplied;
+  bool _iosGuardSyncing = false;
+  int _iosGuardDocumentEpoch = 0;
 
   @override
   void initState() {
@@ -205,7 +211,30 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    final position = Scrollable.maybeOf(context)?.position;
+    if (!identical(position, _iosScrollPosition)) {
+      _iosScrollPosition?.removeListener(_updateIosScrollGuard);
+      _iosScrollPosition = position;
+      _iosScrollPosition?.addListener(_updateIosScrollGuard);
+    }
+    final observer = ScrollNotificationObserver.maybeOf(context);
+    if (!identical(observer, _iosScrollObserver)) {
+      _iosScrollObserver?.removeListener(_handleIosScrollNotification);
+      _iosScrollObserver = observer;
+      _iosScrollObserver?.addListener(_handleIosScrollNotification);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _updateIosScrollGuard();
+    });
+  }
+
+  @override
   void dispose() {
+    _iosScrollObserver?.removeListener(_handleIosScrollNotification);
+    _iosScrollPosition?.removeListener(_updateIosScrollGuard);
     _isMapReady = false;
     if (!kIsWeb) {
       try {
@@ -335,8 +364,46 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     widget.onMapDoubleTap?.call(latLng);
   }
 
+  void _updateIosScrollGuard() {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || !_isMapReady) return;
+    final position = _iosScrollPosition;
+    final enabled = widget.gestureRecognizers.isEmpty && position != null &&
+        position.hasContentDimensions && position.physics.shouldAcceptUserOffset(position);
+    _iosGuardDesired = enabled ? position.axis.name : '';
+    if (!_iosGuardSyncing && _iosGuardDesired != _iosGuardApplied) {
+      unawaited(_syncIosScrollGuard());
+    }
+  }
+
+  void _handleIosScrollNotification(ScrollNotification notification) {
+    final position = _iosScrollPosition;
+    if (position != null &&
+        identical(notification.context, position.context.notificationContext)) {
+      _updateIosScrollGuard();
+    }
+  }
+
+  Future<void> _syncIosScrollGuard() async {
+    _iosGuardSyncing = true;
+    try {
+      while (mounted && _isMapReady && _iosGuardDesired != _iosGuardApplied) {
+        final axis = _iosGuardDesired;
+        final epoch = _iosGuardDocumentEpoch;
+        await _mapController.webViewController.runJavaScript(
+            'window.__tmapScrollGuardAxis = ${jsonEncode(axis)};');
+        if (epoch == _iosGuardDocumentEpoch) _iosGuardApplied = axis;
+      }
+    } catch (error) {
+      // Navigation or disposal may invalidate the WebView while a write is pending.
+      developer.log('iOS scroll guard synchronization failed: ${error.runtimeType}', name: 'TMap');
+    } finally {
+      _iosGuardSyncing = false;
+    }
+  }
+
   void _handlePointerDown(PointerDownEvent event) {
     if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+    _updateIosScrollGuard();
 
     if (_activePointers.isNotEmpty) {
       _isDisqualified = true;
@@ -488,6 +555,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     if (!mounted) return;
     final config = {
       'appKey': AuthRepository.instance.appKey,
+      'iosScrollableGuard': defaultTargetPlatform == TargetPlatform.iOS,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
       'mapType': widget.mapType.value,
@@ -525,6 +593,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   void didUpdateWidget(TMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (kIsWeb) return;
+    _updateIosScrollGuard();
     if (!_isMapReady) return;
 
     if (widget.center != oldWidget.center && widget.center != null) {
@@ -648,6 +717,9 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
           _isMapReady = true;
+          _iosGuardDocumentEpoch++;
+          _iosGuardApplied = null;
+          _updateIosScrollGuard();
           _overlaySnapshot.clear();
           _syncOverlays();
           final onMapCreated = widget.onMapCreated;

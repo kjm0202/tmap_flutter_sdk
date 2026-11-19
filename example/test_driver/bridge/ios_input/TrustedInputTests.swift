@@ -84,15 +84,27 @@ final class TrustedInputTests: XCTestCase {
                 // Foreground target application if needed
                 if app.state != .runningForeground {
                     app.activate()
-                    _ = app.wait(for: .runningForeground, timeout: 5.0)
+                    guard app.wait(for: .runningForeground, timeout: 5.0) else {
+                        throw NSError(domain: "TrustedInput", code: 503,
+                                      userInfo: [NSLocalizedDescriptionKey: "Target app did not enter foreground"])
+                    }
                 }
 
-                // Locate WKWebView or fallback to app window accounting for status bar
+                let normAction = action.lowercased()
+                    .replacingOccurrences(of: "_", with: "")
+                    .replacingOccurrences(of: "-", with: "")
+
+                // App-relative commands use Flutter's logical coordinates, even
+                // when a smaller embedded WKWebView is present. pinchMap gestures
+                // on that view, but its request carries app-relative coordinates.
                 let webView = app.webViews.firstMatch
                 let baseCoordinate: XCUICoordinate
                 let baseFrame: CGRect
 
-                if webView.exists && webView.frame.width > 0 && webView.frame.height > 0 {
+                if normAction == "dragapp" || normAction == "dragappfast" || normAction == "tapapp" || normAction == "pinchmap" {
+                    baseFrame = app.frame
+                    baseCoordinate = app.coordinate(withNormalizedOffset: .zero)
+                } else if webView.exists && webView.frame.width > 0 && webView.frame.height > 0 {
                     baseFrame = webView.frame
                     baseCoordinate = webView.coordinate(withNormalizedOffset: .zero)
                 } else {
@@ -123,7 +135,7 @@ final class TrustedInputTests: XCTestCase {
 
                 let startCoord: XCUICoordinate
                 if x < 0 || y < 0 {
-                    startCoord = (webView.exists && webView.frame.width > 0)
+                    startCoord = (normAction != "dragapp" && normAction != "dragappfast" && normAction != "tapapp" && normAction != "pinchmap" && webView.exists && webView.frame.width > 0)
                         ? webView.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
                         : app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
                 } else {
@@ -137,13 +149,16 @@ final class TrustedInputTests: XCTestCase {
                     startCoord = baseCoordinate.withOffset(CGVector(dx: x, dy: y))
                 }
 
-                let normAction = action.lowercased()
-                    .replacingOccurrences(of: "_", with: "")
-                    .replacingOccurrences(of: "-", with: "")
-
                 switch normAction {
-                case "tap":
+                case "tap", "tapapp":
                     startCoord.tap()
+
+                case "pinchmap":
+                    guard webView.exists else {
+                        throw NSError(domain: "TrustedInput", code: 404,
+                                      userInfo: [NSLocalizedDescriptionKey: "Map web view not found"])
+                    }
+                    webView.pinch(withScale: 1.5, velocity: 1.0)
 
                 case "doubletap":
                     startCoord.doubleTap()
@@ -152,7 +167,7 @@ final class TrustedInputTests: XCTestCase {
                     let duration = (command["duration"] as? NSNumber)?.doubleValue ?? 0.75
                     startCoord.press(forDuration: duration)
 
-                case "drag", "pan", "pressdrag":
+                case "drag", "pan", "pressdrag", "dragapp", "dragappfast":
                     guard let toX = (command["endX"] as? NSNumber)?.doubleValue ?? (command["toX"] as? NSNumber)?.doubleValue,
                           let toY = (command["endY"] as? NSNumber)?.doubleValue ?? (command["toY"] as? NSNumber)?.doubleValue else {
                         throw NSError(
@@ -169,10 +184,25 @@ final class TrustedInputTests: XCTestCase {
                         )
                     }
                     let endCoord = baseCoordinate.withOffset(CGVector(dx: toX, dy: toY))
-                    let pressDuration = (command["pressDuration"] as? NSNumber)?.doubleValue ?? 0.12
-                    let holdDuration = (command["holdDuration"] as? NSNumber)?.doubleValue ?? 0.05
-                    startCoord.press(forDuration: pressDuration, thenDragTo: endCoord,
-                                     withVelocity: .slow, thenHoldForDuration: holdDuration)
+                    if normAction == "dragappfast" {
+                        // Coordinate resolution and app activation finish before
+                        // the scenario changes layout. Wait for its frame signal.
+                        var armedRequest = URLRequest(url: base.appendingPathComponent("armed"))
+                        armedRequest.httpMethod = "POST"
+                        armedRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                        armedRequest.httpBody = try JSONSerialization.data(withJSONObject: ["id": commandId])
+                        _ = try exchange(armedRequest)
+                        var fireUrl = URLComponents(url: base.appendingPathComponent("fire"), resolvingAgainstBaseURL: false)!
+                        fireUrl.queryItems = [URLQueryItem(name: "id", value: commandId)]
+                        _ = try exchange(URLRequest(url: fireUrl.url!))
+                        startCoord.press(forDuration: 0, thenDragTo: endCoord,
+                                         withVelocity: .fast, thenHoldForDuration: 0)
+                    } else {
+                        let pressDuration = (command["pressDuration"] as? NSNumber)?.doubleValue ?? 0.12
+                        let holdDuration = (command["holdDuration"] as? NSNumber)?.doubleValue ?? 0.05
+                        startCoord.press(forDuration: pressDuration, thenDragTo: endCoord,
+                                         withVelocity: .slow, thenHoldForDuration: holdDuration)
+                    }
 
                 default:
                     throw NSError(domain: "TrustedInput", code: 400,

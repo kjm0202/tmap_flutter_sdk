@@ -17,6 +17,7 @@ import 'overlay_presentation_scenario.dart';
 import 'overlay_regression_scenario.dart';
 import 'polygon_zindex_scenario.dart';
 import 'shape_style_scenario.dart';
+import 'scroll_screen_scenario.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,6 +77,8 @@ void main() async {
     'shape_zindex': testShapeZIndex,
     'shape_style': testShapeStyle,
     'cluster_members': testClusterMembers,
+    'scroll_screen': testScrollScreenScenario,
+    'scroll_screen_dynamic': testScrollScreenDynamic,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
@@ -83,7 +86,11 @@ void main() async {
   bool allPassed = true;
 
   if (filterEnv.trim().isEmpty) {
-    suitesToRun = scenarios.keys.toList();
+    // The dynamic case already runs inside scroll_screen on iOS; the alias is
+    // only for selecting that case directly.
+    suitesToRun = scenarios.keys
+        .where((name) => name != 'scroll_screen_dynamic')
+        .toList();
   } else {
     final filterNames = filterEnv
         .split(',')
@@ -103,7 +110,10 @@ void main() async {
           debugPrint('SCENARIO $name FAIL: unknown scenario');
         }
       }
-      suitesToRun = scenarios.keys.where(filterSet.contains).toList();
+      suitesToRun = scenarios.keys.where((name) =>
+          filterSet.contains(name) &&
+          !(name == 'scroll_screen_dynamic' &&
+              filterSet.contains('scroll_screen'))).toList();
     }
   }
 
@@ -111,10 +121,14 @@ void main() async {
 
   for (final name in suitesToRun) {
     final runner = scenarios[name]!;
+    final timeoutSeconds =
+        name == 'scroll_screen' ? 150 : 75;
     ranCount++;
 
     try {
-      await runner().timeout(const Duration(seconds: 75), onTimeout: () => throw TimeoutException('Scenario execution timeout'));
+      await runner().timeout(Duration(seconds: timeoutSeconds),
+          onTimeout: () =>
+              throw TimeoutException('Scenario execution timeout'));
       debugPrint('SCENARIO $name PASS');
     } on StateError catch (e) {
       allPassed = false;
@@ -128,7 +142,7 @@ void main() async {
     } on TimeoutException catch (e) {
       allPassed = false;
       final type = e.message == 'Map readiness timeout' ? 'outer' : 'interior';
-      debugPrint('SCENARIO $name FAIL: $type timeout after 75s');
+      debugPrint('SCENARIO $name FAIL: $type timeout after ${timeoutSeconds}s');
     } catch (e) {
       allPassed = false;
       debugPrint('SCENARIO $name FAIL: ${e.runtimeType}');

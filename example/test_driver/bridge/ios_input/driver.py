@@ -25,6 +25,7 @@ import tempfile
 import threading
 import time
 import uuid
+from urllib.parse import parse_qs, urlparse
 
 
 # -----------------------------------------------------------------------------
@@ -40,6 +41,8 @@ class GestureDriverServer:
         self.command_queue = queue.Queue()
         self.pending_events = {}
         self.pending_results = {}
+        self.armed_events = {}
+        self.fire_events = {}
         self.runner_ready_event = threading.Event()
         self.server = None
         self.server_thread = None
@@ -72,12 +75,40 @@ class GestureDriverServer:
                     if req_id and req_id in parent.pending_events:
                         parent.pending_results[req_id] = data
                         parent.pending_events[req_id].set()
+                        if req_id in parent.armed_events:
+                            parent.armed_events[req_id].set()
                     self.send_response(200)
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(b'{"status":"ok"}')
 
-                elif self.path == "/input":
+                elif self.path == "/armed":
+                    req_id = data.get("id")
+                    if req_id in parent.armed_events:
+                        parent.armed_events[req_id].set()
+                    self.send_response(200)
+                    self.end_headers()
+
+                elif self.path == "/fire":
+                    req_id = data.get("id")
+                    fire = parent.fire_events.get(req_id)
+                    done = parent.pending_events.get(req_id)
+                    if fire is None or done is None:
+                        self.send_response(404)
+                        self.end_headers()
+                        return
+                    fire.set()
+                    completed = done.wait(timeout=30.0)
+                    res = parent.pending_results.pop(req_id, None)
+                    parent.pending_events.pop(req_id, None)
+                    parent.armed_events.pop(req_id, None)
+                    parent.fire_events.pop(req_id, None)
+                    self.send_response(200 if completed and res and res.get("status") == "success" else 500)
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(json.dumps(res or {"error": "Timed out waiting for fast drag"}).encode("utf-8"))
+
+                elif self.path in ("/input", "/prepare"):
                     action = data.get("action")
                     if not action or "x" not in data or "y" not in data:
                         self.send_response(400)
@@ -90,7 +121,28 @@ class GestureDriverServer:
                     data["id"] = req_id
                     ev = threading.Event()
                     parent.pending_events[req_id] = ev
+                    if self.path == "/prepare":
+                        parent.armed_events[req_id] = threading.Event()
+                        parent.fire_events[req_id] = threading.Event()
                     parent.command_queue.put(data)
+
+                    if self.path == "/prepare":
+                        armed = parent.armed_events[req_id].wait(timeout=30.0)
+                        result = parent.pending_results.get(req_id)
+                        if not armed or result:
+                            parent.pending_events.pop(req_id, None)
+                            parent.pending_results.pop(req_id, None)
+                            parent.armed_events.pop(req_id, None)
+                            parent.fire_events.pop(req_id, None)
+                            self.send_response(500)
+                            self.end_headers()
+                            self.wfile.write(json.dumps(result or {"error": "Timed out preparing fast drag"}).encode("utf-8"))
+                            return
+                        self.send_response(200)
+                        self.send_header("Content-Type", "application/json")
+                        self.end_headers()
+                        self.wfile.write(json.dumps({"id": req_id}).encode("utf-8"))
+                        return
 
                     # Wait for XCUITest completion (fail closed if runner stalls)
                     completed = ev.wait(timeout=30.0)
@@ -133,7 +185,16 @@ class GestureDriverServer:
                     self.end_headers()
 
             def do_GET(self):
-                if self.path == "/next":
+                parsed = urlparse(self.path)
+                if parsed.path == "/fire":
+                    req_id = parse_qs(parsed.query).get("id", [None])[0]
+                    fire = parent.fire_events.get(req_id)
+                    if fire is None or not fire.wait(timeout=30.0):
+                        self.send_response(408)
+                    else:
+                        self.send_response(200)
+                    self.end_headers()
+                elif self.path == "/next":
                     parent.runner_ready_event.set()
                     try:
                         cmd = parent.command_queue.get(timeout=0.5)
@@ -470,7 +531,7 @@ Reproducible Invocation:
     env["TEST_RUNNER_TMAP_GESTURE_PORT"] = str(args.port)
     env["TEST_RUNNER_TMAP_GESTURE_SERVER"] = f"http://{args.host}:{args.port}"
     env["TMAP_TARGET_BUNDLE_ID"] = args.bundle_id
-    env["TEST_RUNNER_BUNDLE_ID"] = args.bundle_id
+    env["TEST_RUNNER_TMAP_TARGET_BUNDLE_ID"] = args.bundle_id
 
     print(f"[driver] Launching XCUITest runner on {name}...")
     proc = subprocess.Popen(
