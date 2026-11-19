@@ -2,13 +2,16 @@ import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'package:web/web.dart' as web;
 
+import '../auth/auth_repository.dart';
 import '../bridge_assets.dart';
 import '../constants/map_type.dart';
 import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
+import '../overlays/custom_overlay.dart';
 import '../overlays/info_window.dart';
+import '../overlays/label.dart';
 import '../overlays/marker.dart';
 import '../overlays/polygon.dart';
 import '../overlays/polyline.dart';
@@ -48,9 +51,14 @@ class TMapWebBridge {
     double? bearing,
     double? pitch,
     TMapType? mapType,
+    bool? naviControl,
+    bool? scaleBar,
+    bool? hasOnMapLongTap,
     required JSObject callbacks,
   }) {
+    final appKey = AuthRepository.instance.appKey;
     final options = {
+      if (appKey.isNotEmpty) 'appKey': appKey,
       if (center != null) 'center': [center.latitude, center.longitude],
       if (zoom != null) 'zoom': zoom,
       if (minZoom != null) 'minZoom': minZoom,
@@ -58,6 +66,9 @@ class TMapWebBridge {
       if (bearing != null) 'bearing': bearing,
       if (pitch != null) 'pitch': pitch,
       if (mapType != null) 'mapType': mapType.name.toUpperCase(),
+      if (naviControl != null) 'naviControl': naviControl,
+      if (scaleBar != null) 'scaleBar': scaleBar,
+      if (hasOnMapLongTap != null) 'hasOnMapLongTap': hasOnMapLongTap,
     };
 
     (web.window as JSObject).callMethodVarArgs<JSAny?>(
@@ -84,6 +95,18 @@ class TMapWebBridge {
 
   static void zoomOut(String viewId) {
     _call('zoomOut', [viewId]);
+  }
+
+  static void zoomToMaxExtent(String viewId) {
+    _call('zoomToMaxExtent', [viewId]);
+  }
+
+  static void relayout(String viewId) {
+    _call('relayout', [viewId]);
+  }
+
+  static void updateMapOptions(String viewId, Map<String, dynamic> options) {
+    _call('updateMapOptions', [viewId, options]);
   }
 
   static void panTo(String viewId, LatLng target) {
@@ -157,6 +180,8 @@ class TMapWebBridge {
       'lng': iw.position.longitude,
       'content': iw.content,
       'type': iw.type,
+      if (iw.border != null) 'border': iw.border,
+      'anchor': iw.anchor,
       if (iw.offset != null) 'offsetX': iw.offset?.x,
       if (iw.offset != null) 'offsetY': iw.offset?.y,
       'visible': iw.visible,
@@ -170,6 +195,49 @@ class TMapWebBridge {
 
   static void clearAllInfoWindows(String viewId) {
     _call('clearAllInfoWindows', [viewId]);
+  }
+
+  static void addLabel(String viewId, Label label) {
+    final data = {
+      'id': label.labelId,
+      'lat': label.position.latitude,
+      'lng': label.position.longitude,
+      'content': label.content,
+      'fontSize': label.fontSize,
+      'fontColor': label.fontColor.toHexColor(),
+      if (label.minLevel != null) 'minLevel': label.minLevel,
+      if (label.maxLevel != null) 'maxLevel': label.maxLevel,
+    };
+    _call('addLabel', [viewId, data]);
+  }
+
+  static void clearLabel(String viewId, String labelId) {
+    _call('clearLabel', [viewId, labelId]);
+  }
+
+  static void clearAllLabels(String viewId) {
+    _call('clearAllLabels', [viewId]);
+  }
+
+  static void addCustomOverlay(String viewId, CustomOverlay overlay) {
+    final data = {
+      'id': overlay.customOverlayId,
+      'lat': overlay.position.latitude,
+      'lng': overlay.position.longitude,
+      'content': overlay.content,
+      if (overlay.offset != null) 'offsetX': overlay.offset?.x,
+      if (overlay.offset != null) 'offsetY': overlay.offset?.y,
+      'zIndex': overlay.zIndex,
+    };
+    _call('addCustomOverlay', [viewId, data]);
+  }
+
+  static void clearCustomOverlay(String viewId, String customOverlayId) {
+    _call('clearCustomOverlay', [viewId, customOverlayId]);
+  }
+
+  static void clearAllCustomOverlays(String viewId) {
+    _call('clearAllCustomOverlays', [viewId]);
   }
 
   static void addPolyline(String viewId, Polyline polyline) {

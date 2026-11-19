@@ -8,7 +8,7 @@ import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 /// `WidgetsBinding.instance.endOfFrame`. Wraps the built [TMap] in [MaterialApp],
 /// using a [Completer] callback guarded against multiple invocations, and
 /// enforces a readiness timeout.
-Future<TMapController> mountLiveMap(TMap Function(MapCreateCallback created) build) async {
+Future<TMapController> mountLiveMap(Widget Function(MapCreateCallback created) build) async {
   runApp(const SizedBox.shrink());
   await WidgetsBinding.instance.endOfFrame;
 

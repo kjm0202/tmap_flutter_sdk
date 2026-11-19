@@ -3,7 +3,9 @@ import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
+import '../overlays/custom_overlay.dart';
 import '../overlays/info_window.dart';
+import '../overlays/label.dart';
 import '../overlays/marker.dart';
 import '../overlays/polygon.dart';
 import '../overlays/polyline.dart';
@@ -15,6 +17,9 @@ class TMapWebBridge {
   static void setZoom(String viewId, int zoom) {}
   static void zoomIn(String viewId) {}
   static void zoomOut(String viewId) {}
+  static void zoomToMaxExtent(String viewId) {}
+  static void relayout(String viewId) {}
+  static void updateMapOptions(String viewId, Map<String, dynamic> options) {}
   static void panTo(String viewId, LatLng target) {}
   static void panBy(String viewId, int x, int y) {}
   static void setBearing(String viewId, double bearing) {}
@@ -29,6 +34,12 @@ class TMapWebBridge {
   static void addInfoWindow(String viewId, InfoWindow iw) {}
   static void clearInfoWindow(String viewId, String infoWindowId) {}
   static void clearAllInfoWindows(String viewId) {}
+  static void addLabel(String viewId, Label label) {}
+  static void clearLabel(String viewId, String labelId) {}
+  static void clearAllLabels(String viewId) {}
+  static void addCustomOverlay(String viewId, CustomOverlay overlay) {}
+  static void clearCustomOverlay(String viewId, String customOverlayId) {}
+  static void clearAllCustomOverlays(String viewId) {}
   static void addPolyline(String viewId, Polyline polyline) {}
   static void clearPolyline(String viewId, String polylineId) {}
   static void clearAllPolylines(String viewId) {}

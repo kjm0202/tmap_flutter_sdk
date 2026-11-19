@@ -21,7 +21,11 @@ class Marker {
 }
 
 function load(...files) {
-  const window = {Tmapv3: {LatLng, Marker}, clearTimeout};
+  const window = {
+    Tmapv3: {LatLng, Marker},
+    clearTimeout,
+    addEventListener: () => {}
+  };
   window.window = window;
   const context = vm.createContext(window);
   for (const name of ['shared', ...files]) {
@@ -238,4 +242,18 @@ test('web overlay clearing operations handle single and bulk removal safely', ()
   assert.deepEqual(Object.keys(v2.polygons), []);
   assert.deepEqual(Object.keys(v2.circles), []);
   assert.deepEqual(Object.keys(v2.rectangles), []);
+});
+
+test('disposing a web map calls tmapBridge.disposeControls', () => {
+  const host = load('web');
+  const map = { destroy: () => {} };
+  host.tmap_instances.first = { map, markers: {} };
+  
+  let disposeControlsCalled = false;
+  host.tmapBridge.disposeControls = (m) => {
+    if (m === map) disposeControlsCalled = true;
+  };
+  
+  host.tmap_dispose('first');
+  assert.equal(disposeControlsCalled, true);
 });

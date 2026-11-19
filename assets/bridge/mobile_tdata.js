@@ -265,12 +265,7 @@ function requestAutoComplete(requestId, searchKeyword) {
 }
 
 function toggleTraffic(trafficOnOff) {
-  var td = _ensureTData();
-  if (td && map && td.autoTraffic) {
-    try {
-      td.autoTraffic(map, { trafficOnOff: trafficOnOff });
-    } catch(e) {
-      console.error("autoTraffic error:", e);
-    }
+  if (map && typeof tmapBridge !== 'undefined' && tmapBridge.traffic) {
+    tmapBridge.traffic.toggleTraffic(map, trafficOnOff, (typeof config !== 'undefined' && config.appKey) || "");
   }
 }

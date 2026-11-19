@@ -10,6 +10,27 @@ var customOverlays = {};
 var markerCluster = null;
 var tdata = null;
 var defaultCenter;
+var mapListeners = [];
+
+window.tmap_dispose_mobile = function() {
+  if (map && typeof tmapBridge !== 'undefined' && tmapBridge.disposeControls) {
+    tmapBridge.disposeControls(map);
+  }
+  if (map && typeof tmapBridge !== 'undefined' && tmapBridge.traffic) {
+    tmapBridge.traffic.dispose(map);
+  }
+  if (tdata && typeof tdata.destroy === 'function') {
+      try { tdata.destroy(); } catch (_) {}
+  }
+  detachMapListeners();
+  if (map && typeof map.destroy === 'function') {
+      try { map.destroy(); } catch (_) {}
+  }
+};
+
+window.addEventListener('pagehide', function() {
+  window.tmap_dispose_mobile();
+});
 
 window.onload = function() {
   waitForTmap(0);
@@ -42,13 +63,34 @@ function initTmap() {
     bearing: config.bearing,
     pitch: config.pitch,
     mapType: config.mapType,
-    naviControl: config.naviControl,
-    scaleBar: config.scaleBar,
+    naviControl: false,
+    scaleBar: false,
     width: "100%",
     height: "100%"
   };
 
   map = new Tmapv3.Map("map_div", options);
+  tmapBridge.applyNaviControl(map, config.naviControl ?? false);
+  tmapBridge.applyScaleBar(map, config.scaleBar ?? false);
+
+  map.__tmapTrafficLines = [];
+
+  if (config.hasOnMapLongTap) {
+    if (typeof map.vsmMap === 'function' && map.vsmMap() && typeof map.vsmMap().getInteractive === 'function') {
+      map.setInteractive(Object.assign(map.vsmMap().getInteractive(), {longTap: true}));
+    } else {
+      map.setInteractive({longTap: true});
+    }
+  }
+
+  if (typeof config !== 'undefined' && config.appKey) {
+    map.__tmapAppKey = config.appKey;
+  }
+  if (config.minZoom != null || config.maxZoom != null) {
+    if (typeof map.setZoomLimit === 'function') {
+      map.setZoomLimit(config.minZoom ?? 0, config.maxZoom ?? 19);
+    }
+  }
 
   try {
     tdata = new Tmapv3.extension.TData();
@@ -58,140 +100,288 @@ function initTmap() {
     } catch(e2) {}
   }
 
-  map.on("ConfigLoad", function() {
+  mapListeners = [];
+  function bindMapEvent(eventName, handler) {
+    if (!map || typeof map.on !== 'function') return;
+    map.on(eventName, handler);
+    mapListeners.push({ name: eventName, fn: handler });
+  }
+
+  var configLoaded = false;
+  bindMapEvent("ConfigLoad", function() {
+    if (configLoaded) return;
+    configLoaded = true;
     if (window.onMapCreated) {
       onMapCreated.postMessage("ready");
     }
   });
 
-  if (config.hasOnMapTap) {
-    map.on("Click", function(evt) {
-      if (window.onMapTap && evt && evt.data && evt.data.lngLat) {
-        var lat = latitudeOf(evt.data.lngLat);
-        var lng = longitudeOf(evt.data.lngLat);
+  bindMapEvent("StyleLoad", function() {
+    if (!map || !map.__tmapRestorePending) return;
+    map.__tmapRestorePending = false;
+    var collections = [polylines, polygons, circles, rectangles];
+    collections.forEach(function(coll) {
+      if (coll) {
+        Object.keys(coll).forEach(function(id) {
+          var item = coll[id];
+          if (item && typeof item.getMap === 'function' && item.getMap() === map) {
+            item.setMap(null);
+            item.setMap(map);
+          }
+        });
+      }
+    });
+    if (map.__tmapTrafficEnabled && typeof tmapBridge !== 'undefined' && tmapBridge.traffic) {
+      tmapBridge.traffic.restoreTraffic(map);
+    }
+  });
+
+  var lastLongTapTime = 0;
+  var lastDoubleTapTime = 0;
+
+  var hasOnMapTap = (typeof config !== 'undefined' && config.hasOnMapTap) || typeof onMapTap !== 'undefined';
+  if (hasOnMapTap) {
+    bindMapEvent("Click", function(evt) {
+      if (!window.onMapTap) return;
+      var now = Date.now();
+      if (now - lastLongTapTime < 500) return;
+      var coords = extractEventLatLng(evt);
+      if (coords) {
         onMapTap.postMessage(JSON.stringify({
-          latitude: lat,
-          longitude: lng,
-          zoom: map.getZoom ? map.getZoom() : config.zoom
+          latitude: coords.lat,
+          longitude: coords.lng,
+          zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16)
         }));
       }
     });
   }
 
-  if (config.hasOnMapLongTap) {
-    map.on("ContextMenu", function(evt) {
-      if (window.onMapLongTap && evt && evt.data && evt.data.lngLat) {
-        var lat = latitudeOf(evt.data.lngLat);
-        var lng = longitudeOf(evt.data.lngLat);
+  var hasOnMapDoubleTap = (typeof config !== 'undefined' && (config.hasOnMapDoubleTap || config.hasMapDoubleTap)) || typeof onMapDoubleTap !== 'undefined';
+  if (hasOnMapDoubleTap) {
+    var handleDoubleTap = function(evt) {
+      if (!window.onMapDoubleTap) return;
+      var now = Date.now();
+      if (now - lastDoubleTapTime < 400) return;
+      lastDoubleTapTime = now;
+      var coords = extractEventLatLng(evt);
+      if (coords) {
+        onMapDoubleTap.postMessage(JSON.stringify({
+          latitude: coords.lat,
+          longitude: coords.lng,
+          zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16)
+        }));
+      }
+    };
+    bindMapEvent("DoubleClick", handleDoubleTap);
+    bindMapEvent("dblclick", handleDoubleTap);
+  }
+
+  var hasOnMapLongTap = (typeof config !== 'undefined' && config.hasOnMapLongTap) || typeof onMapLongTap !== 'undefined';
+  if (hasOnMapLongTap) {
+    var handleLongTap = function(evt) {
+      if (!window.onMapLongTap) return;
+      var now = Date.now();
+      if (now - lastLongTapTime < 500) return;
+      lastLongTapTime = now;
+      var coords = extractEventLatLng(evt);
+      if (coords) {
         onMapLongTap.postMessage(JSON.stringify({
-          latitude: lat,
-          longitude: lng,
-          zoom: map.getZoom ? map.getZoom() : config.zoom
+          latitude: coords.lat,
+          longitude: coords.lng,
+          zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16)
         }));
       }
-    });
+    };
+    bindMapEvent("ContextMenu", handleLongTap);
+    bindMapEvent("LongTap", handleLongTap);
   }
 
-  if (config.hasOnDragChangeCallback) {
-    map.on("DragStart", function(evt) {
-      if (window.dragStart) {
-        var c = map.getCenter();
-        var lat = latitudeOf(c);
-        var lng = longitudeOf(c);
-        dragStart.postMessage(JSON.stringify({
-          latitude: lat,
-          longitude: lng,
-          zoom: map.getZoom ? map.getZoom() : config.zoom
-        }));
+  var hasDrag = (typeof config !== 'undefined' && config.hasOnDragChangeCallback) || typeof dragStart !== 'undefined' || typeof dragMove !== 'undefined' || typeof dragEnd !== 'undefined';
+  if (hasDrag) {
+    bindMapEvent("DragStart", function(evt) {
+      if (window.dragStart && map) {
+        var c = map.getCenter ? map.getCenter() : null;
+        if (c) {
+          dragStart.postMessage(JSON.stringify({
+            latitude: latitudeOf(c),
+            longitude: longitudeOf(c),
+            zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16),
+            phase: 'start'
+          }));
+        }
       }
     });
 
-    map.on("DragEnd", function(evt) {
-      if (window.dragEnd) {
-        var c = map.getCenter();
-        var lat = latitudeOf(c);
-        var lng = longitudeOf(c);
-        dragEnd.postMessage(JSON.stringify({
-          latitude: lat,
-          longitude: lng,
-          zoom: map.getZoom ? map.getZoom() : config.zoom
-        }));
+    bindMapEvent("Drag", function(evt) {
+      if (window.dragMove && map) {
+        var c = map.getCenter ? map.getCenter() : null;
+        if (c) {
+          dragMove.postMessage(JSON.stringify({
+            latitude: latitudeOf(c),
+            longitude: longitudeOf(c),
+            zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16),
+            phase: 'move'
+          }));
+        }
       }
+    });
+
+    bindMapEvent("DragEnd", function(evt) {
+      if (window.dragEnd && map) {
+        var c = map.getCenter ? map.getCenter() : null;
+        if (c) {
+          dragEnd.postMessage(JSON.stringify({
+            latitude: latitudeOf(c),
+            longitude: longitudeOf(c),
+            zoom: map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16),
+            phase: 'end'
+          }));
+        }
+      }
+      _notifyCenterAndBounds();
     });
   }
 
-  if (config.hasOnZoomChangeCallback) {
-    map.on("Zoom", function(evt) {
-      if (window.zoomChanged) {
-        var z = map.getZoom ? map.getZoom() : config.zoom;
-        zoomChanged.postMessage(JSON.stringify({ zoomLevel: Math.round(z) }));
+  var hasZoom = (typeof config !== 'undefined' && config.hasOnZoomChangeCallback) || typeof zoomChanged !== 'undefined';
+  if (hasZoom) {
+    var inZoom = false;
+    bindMapEvent("ZoomStart", function(evt) {
+      inZoom = true;
+      if (window.zoomChanged && map) {
+        var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
+        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'start' }));
       }
+    });
+
+    bindMapEvent("Zoom", function(evt) {
+      if (window.zoomChanged && map) {
+        var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
+        if (!inZoom) {
+          zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'end' }));
+        }
+      }
+    });
+
+    bindMapEvent("ZoomEnd", function(evt) {
+      inZoom = false;
+      if (window.zoomChanged && map) {
+        var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
+        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'end' }));
+      }
+      _notifyCenterAndBounds();
     });
   }
 
-  if (config.hasOnCameraIdle || config.hasOnCenterChangeCallback || config.hasOnBoundsChangeCallback || config.hasOnBearingChangeCallback || config.hasOnPitchChangeCallback) {
-    map.on("DragEnd", function() {
-      _notifyCameraState();
-    });
-    map.on("Zoom", function() {
-      _notifyCameraState();
+  var hasBearing = (typeof config !== 'undefined' && config.hasOnBearingChangeCallback) || typeof bearingChanged !== 'undefined';
+  if (hasBearing) {
+    bindMapEvent("Rotate", function() {
+      _notifyBearing();
     });
   }
+
+  var hasPitch = (typeof config !== 'undefined' && config.hasOnPitchChangeCallback) || typeof pitchChanged !== 'undefined';
+  if (hasPitch) {
+    bindMapEvent("Pitch", function() {
+      _notifyPitch();
+    });
+  }
+
+  bindMapEvent("MoveEnd", function() {
+    _notifyCenterAndBounds();
+  });
+
+  bindMapEvent("Idle", function() {
+    _notifyCenterAndBounds();
+    _notifyCameraIdle();
+  });
 }
 
-function _notifyCameraState() {
+var lastNotifiedBearing = null;
+function _notifyBearing() {
+  if (!map || typeof map.getBearing !== 'function' || !window.bearingChanged) return;
+  var b = map.getBearing();
+  if (typeof b !== 'number' || isNaN(b) || b === lastNotifiedBearing) return;
+  lastNotifiedBearing = b;
+  bearingChanged.postMessage(JSON.stringify({ bearing: b }));
+}
+
+var lastNotifiedPitch = null;
+function _notifyPitch() {
+  if (!map || typeof map.getPitch !== 'function' || !window.pitchChanged) return;
+  var p = map.getPitch();
+  if (typeof p !== 'number' || isNaN(p) || p === lastNotifiedPitch) return;
+  lastNotifiedPitch = p;
+  pitchChanged.postMessage(JSON.stringify({ pitch: p }));
+}
+
+var lastNotifiedCenter = null;
+var lastNotifiedBounds = null;
+function _notifyCenterAndBounds() {
   if (!map) return;
-  var c = map.getCenter();
-  var lat = latitudeOf(c);
-  var lng = longitudeOf(c);
-  var z = map.getZoom ? Math.round(map.getZoom()) : config.zoom;
-  var b = map.getBearing ? map.getBearing() : 0;
-  var p = map.getPitch ? map.getPitch() : 0;
-
-  if (config.hasOnCameraIdle && window.cameraIdle) {
-    cameraIdle.postMessage(JSON.stringify({
-      latitude: lat,
-      longitude: lng,
-      zoom: z,
-      bearing: b,
-      pitch: p
-    }));
+  var c = map.getCenter ? map.getCenter() : null;
+  if (c && window.centerChanged) {
+    var lat = latitudeOf(c);
+    var lng = longitudeOf(c);
+    var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
+    if (!lastNotifiedCenter || lastNotifiedCenter.lat !== lat || lastNotifiedCenter.lng !== lng || lastNotifiedCenter.zoom !== z) {
+      lastNotifiedCenter = { lat: lat, lng: lng, zoom: z };
+      centerChanged.postMessage(JSON.stringify({
+        latitude: lat,
+        longitude: lng,
+        zoom: z
+      }));
+    }
   }
 
-  if (config.hasOnCenterChangeCallback && window.centerChanged) {
-    centerChanged.postMessage(JSON.stringify({
-      latitude: lat,
-      longitude: lng,
-      zoom: z
-    }));
-  }
-
-  if (config.hasOnBearingChangeCallback && window.bearingChanged) {
-    bearingChanged.postMessage(JSON.stringify({ bearing: b }));
-  }
-
-  if (config.hasOnPitchChangeCallback && window.pitchChanged) {
-    pitchChanged.postMessage(JSON.stringify({ pitch: p }));
-  }
-
-  if (config.hasOnBoundsChangeCallback && window.boundsChanged) {
-    var bnd = map.getBounds ? map.getBounds() : null;
+  if (window.boundsChanged && map.getBounds) {
+    var bnd = extractMapBounds(map);
     if (bnd) {
-      var sw = bnd.getSouthWest ? bnd.getSouthWest() : (bnd._sw || null);
-      var ne = bnd.getNorthEast ? bnd.getNorthEast() : (bnd._ne || null);
-      if (sw && ne) {
-        var swLat = latitudeOf(sw);
-        var swLng = longitudeOf(sw);
-        var neLat = latitudeOf(ne);
-        var neLng = longitudeOf(ne);
-
+      if (!lastNotifiedBounds || lastNotifiedBounds.swLat !== bnd.swLat || lastNotifiedBounds.swLng !== bnd.swLng || lastNotifiedBounds.neLat !== bnd.neLat || lastNotifiedBounds.neLng !== bnd.neLng) {
+        lastNotifiedBounds = bnd;
         boundsChanged.postMessage(JSON.stringify({
-          southWest: { latitude: swLat, longitude: swLng },
-          northEast: { latitude: neLat, longitude: neLng }
+          southWest: { latitude: bnd.swLat, longitude: bnd.swLng },
+          northEast: { latitude: bnd.neLat, longitude: bnd.neLng }
         }));
       }
     }
   }
+}
+
+function _notifyCameraIdle() {
+  if (!map || !window.cameraIdle) return;
+  var c = map.getCenter ? map.getCenter() : null;
+  if (!c) return;
+  var lat = latitudeOf(c);
+  var lng = longitudeOf(c);
+  var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
+  var b = map.getBearing ? map.getBearing() : 0;
+  var p = map.getPitch ? map.getPitch() : 0;
+
+  cameraIdle.postMessage(JSON.stringify({
+    latitude: lat,
+    longitude: lng,
+    zoom: z,
+    bearing: b,
+    pitch: p
+  }));
+}
+
+function _notifyCameraState() {
+  _notifyCenterAndBounds();
+  _notifyBearing();
+  _notifyPitch();
+  _notifyCameraIdle();
+}
+
+function detachMapListeners() {
+  if (map && typeof map.off === 'function') {
+    for (var i = 0; i < mapListeners.length; i++) {
+      try {
+        map.off(mapListeners[i].name, mapListeners[i].fn);
+      } catch (_) {}
+    }
+  }
+  mapListeners = [];
 }
 
 function setCenter(lat, lng) {
@@ -215,9 +405,7 @@ function zoomOut() {
 }
 
 function zoomToMaxExtent() {
-  if (map && map.zoomToMaxExtent) {
-    map.zoomToMaxExtent();
-  }
+  if (map) tmapBridge.zoomToMaxExtent(map);
 }
 
 function panTo(lat, lng) {
@@ -243,9 +431,7 @@ function setPitch(pitch) {
 }
 
 function setMapType(type) {
-  if (map && map.setMapType) {
-    map.setMapType(type);
-  }
+  if (map) tmapBridge.setMapType(map, type);
 }
 
 function fitBounds(swLat, swLng, neLat, neLng, padding) {
@@ -264,8 +450,16 @@ function fitBounds(swLat, swLng, neLat, neLng, padding) {
 }
 
 function relayout() {
-  if (map && map.resize) {
-    map.resize();
+  if (map) tmapBridge.relayout(map);
+}
+
+function updateMapOptions(opts) {
+  if (map) tmapBridge.updateMapOptions(map, opts);
+}
+
+function toggleTraffic(trafficOnOff) {
+  if (map && typeof tmapBridge !== 'undefined' && tmapBridge.traffic) {
+    tmapBridge.traffic.toggleTraffic(map, trafficOnOff, (typeof config !== 'undefined' && config.appKey) || "");
   }
 }
 
@@ -312,26 +506,32 @@ function getBoundsData() {
   return null;
 }
 
+var markerDragListeners = {};
+
 function addMarker(data) {
   if (!map) return;
   const callbacks = {};
-  if (config.hasMarkerTapCallback) {
-    callbacks.click = (markerId, latitude, longitude, zoom) =>
-      onMarkerTap.postMessage(JSON.stringify({markerId, latitude, longitude, zoom}));
+  if (config.hasMarkerTapCallback || window.onMarkerTap) {
+    callbacks.click = (markerId, latitude, longitude, zoom) => {
+      if (window.onMarkerTap) {
+        onMarkerTap.postMessage(JSON.stringify({markerId, latitude, longitude, zoom}));
+      }
+    };
   }
-  if (config.hasMarkerDragCallback && data.draggable) {
-    for (const dragType of ['start', 'end']) {
-      callbacks['drag' + dragType] = (markerId, latitude, longitude) =>
+  if ((config.hasMarkerDragCallback || window.onMarkerDragChangeCallback) && data.draggable) {
+    callbacks.drag = (markerId, latitude, longitude, dragType) => {
+      if (window.onMarkerDragChangeCallback) {
         onMarkerDragChangeCallback.postMessage(JSON.stringify({markerId, latitude, longitude, dragType}));
-    }
+      }
+    };
   }
-  tmapBridge.addMarker(map, markers, data, callbacks);
+  tmapBridge.addMarker(map, markers, data, callbacks, markerDragListeners);
 }
 
 function clearMarker(id) {
-  tmapBridge.clearMarker(markers, id);
+  tmapBridge.clearMarker(markers, id, markerDragListeners);
 }
 
 function clearAllMarkers() {
-  tmapBridge.clearAllMarkers(markers);
+  tmapBridge.clearAllMarkers(markers, markerDragListeners);
 }

@@ -207,8 +207,8 @@ final clusterer = Clusterer(
     Marker(markerId: 'm2', position: LatLng(37.5670, 126.9790)),
     Marker(markerId: 'm3', position: LatLng(37.5650, 126.9770)),
   ],
-  maxZoom: 17,
-  minClusterSize: 2,
+  maxClusterZoom: 17,
+  minClusterCount: 2,
 );
 
 TMap(
@@ -489,8 +489,8 @@ final clusterer = Clusterer(
     Marker(markerId: 'm2', position: LatLng(37.5670, 126.9790)),
     Marker(markerId: 'm3', position: LatLng(37.5650, 126.9770)),
   ],
-  maxZoom: 17,
-  minClusterSize: 2,
+  maxClusterZoom: 17,
+  minClusterCount: 2,
 );
 
 TMap(

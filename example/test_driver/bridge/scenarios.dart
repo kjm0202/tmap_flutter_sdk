@@ -6,6 +6,12 @@ import 'cluster_scenarios.dart';
 import 'tdata_scenarios.dart';
 import 'camera_scenarios.dart';
 import 'info_window_scenarios.dart';
+import 'map_display_scenario.dart';
+import 'map_gestures_scenario.dart';
+import 'overlay_interactions_scenario.dart';
+import 'overlay_tools_scenario.dart';
+import 'widget_lifecycle_scenario.dart';
+import 'overlay_presentation_scenario.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,22 +51,59 @@ void main() async {
     return;
   }
 
-  final Map<String, Future<void> Function(TMapController)> scenarios = {
-    'shapes': testShapeScenarios,
-    'cluster': testClusterScenarios,
-    'tdata': testTDataScenarios,
-    'place_search': testPlaceSearchScenario,
-    'walking': testWalkingScenario,
-    'camera': testCameraScenarios,
-    'info_window': testInfoWindowScenarios,
+  final Map<String, Future<void> Function()> scenarios = {
+    'shapes': () => testShapeScenarios(controller),
+    'cluster': () => testClusterScenarios(controller),
+    'tdata': () => testTDataScenarios(controller),
+    'place_search': () => testPlaceSearchScenario(controller),
+    'walking': () => testWalkingScenario(controller),
+    'camera': () => testCameraScenarios(controller),
+    'info_window': () => testInfoWindowScenarios(controller),
+    'map_display': testMapDisplay,
+    'map_gestures': testMapGestures,
+    'overlay_interactions': testOverlayInteractions,
+    'overlay_tools': testOverlayTools,
+    'widget_lifecycle': testWidgetLifecycle,
+    'overlay_presentation': testOverlayPresentation,
   };
 
+  final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
+  final List<String> suitesToRun;
   bool allPassed = true;
 
-  for (final entry in scenarios.entries) {
-    final name = entry.key;
+  if (filterEnv.trim().isEmpty) {
+    suitesToRun = scenarios.keys.toList();
+  } else {
+    final filterNames = filterEnv
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    if (filterNames.isEmpty) {
+      allPassed = false;
+      suitesToRun = const [];
+    } else {
+      final filterSet = filterNames.toSet();
+      final unknown = <String>{};
+      for (final name in filterNames) {
+        if (!scenarios.containsKey(name) && unknown.add(name)) {
+          allPassed = false;
+          debugPrint('SCENARIO $name FAIL: unknown scenario');
+        }
+      }
+      suitesToRun = scenarios.keys.where(filterSet.contains).toList();
+    }
+  }
+
+  int ranCount = 0;
+
+  for (final name in suitesToRun) {
+    final runner = scenarios[name]!;
+    ranCount++;
+
     try {
-      await entry.value(controller).timeout(const Duration(seconds: 75));
+      await runner().timeout(const Duration(seconds: 75), onTimeout: () => throw TimeoutException('Scenario execution timeout'));
       debugPrint('SCENARIO $name PASS');
     } on StateError catch (e) {
       allPassed = false;
@@ -71,9 +114,10 @@ void main() async {
       final detail =
           collapsed.length > 1800 ? collapsed.substring(0, 1800) : collapsed;
       debugPrint('SCENARIO $name FAIL: $detail');
-    } on TimeoutException {
+    } on TimeoutException catch (e) {
       allPassed = false;
-      debugPrint('SCENARIO $name FAIL: timed out after 75s');
+      final type = e.message == 'Map readiness timeout' ? 'outer' : 'interior';
+      debugPrint('SCENARIO $name FAIL: $type timeout after 75s');
     } catch (e) {
       allPassed = false;
       debugPrint('SCENARIO $name FAIL: ${e.runtimeType}');
@@ -83,7 +127,7 @@ void main() async {
   runApp(const SizedBox.shrink());
   await WidgetsBinding.instance.endOfFrame;
 
-  if (allPassed && flutterErrorCount == 0) {
+  if (allPassed && flutterErrorCount == 0 && ranCount > 0) {
     debugPrint('SCENARIOS_PASS');
   } else {
     debugPrint('SCENARIOS_FAIL');

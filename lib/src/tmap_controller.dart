@@ -40,6 +40,10 @@ class TMapController {
         'webViewController is only available on Mobile platforms.');
   }
 
+  String? _lastLoadedHtml;
+  String? _lastLoadedBaseUrl;
+  String? _currentDocId;
+
   /// 모바일(WebView) 컨트롤러 생성자
   TMapController(WebViewController webViewController)
       : _webViewController = webViewController,
@@ -124,6 +128,11 @@ class TMapController {
 
   /// 전체 맵이 보이도록 최대 영역으로 축소합니다.
   Future<void> zoomToMaxExtent() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.zoomToMaxExtent(viewId);
+      return;
+    }
     await _runJs('zoomToMaxExtent();');
   }
 
@@ -194,17 +203,40 @@ class TMapController {
 
   /// 지도 크기 재계산 (리사이즈/레이아웃 복구)
   Future<void> relayout() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.relayout(viewId);
+      return;
+    }
     await _runJs('relayout();');
+  }
+
+  /// 지도 옵션(줌 제한, 컨트롤 표시 여부 등)을 업데이트합니다.
+  @visibleForTesting
+  Future<void> updateMapOptions(Map<String, dynamic> options) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.updateMapOptions(viewId, options);
+      return;
+    }
+    await _runJs('updateMapOptions(${jsonEncode(options)});');
   }
 
   /// HTML 문자열을 웹뷰에 다시 로드합니다.
   Future<void> reloadHtml(String htmlString, {String? baseUrl}) async {
     final controller = _webViewController;
     if (controller != null) {
+      final id = DateTime.now().microsecondsSinceEpoch.toString();
+      final marker = '<!-- TMAP_DOC_ID: $id -->';
+      final modifiedHtml = '$marker\n$htmlString';
+
       await controller.loadHtmlString(
-        htmlString,
+        modifiedHtml,
         baseUrl: baseUrl ?? AuthRepository.instance.baseUrl,
       );
+      _lastLoadedHtml = modifiedHtml;
+      _currentDocId = id;
+      _lastLoadedBaseUrl = baseUrl ?? AuthRepository.instance.baseUrl;
     }
   }
 
@@ -212,6 +244,30 @@ class TMapController {
   Future<void> reload() async {
     final controller = _webViewController;
     if (controller != null) {
+      if (_lastLoadedHtml != null && _currentDocId != null) {
+        try {
+          final js = '''
+            (function() {
+              var walker = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT, null, false);
+              while (walker.nextNode()) {
+                if (walker.currentNode.nodeValue.includes('TMAP_DOC_ID: $_currentDocId')) {
+                  return '$_currentDocId';
+                }
+              }
+              return null;
+            })();
+          ''';
+          final result = await controller.runJavaScriptReturningResult(js);
+          final docId = result.toString().replaceAll('"', '').replaceAll("'", '');
+          if (docId == _currentDocId) {
+            await controller.loadHtmlString(_lastLoadedHtml!,
+                baseUrl: _lastLoadedBaseUrl);
+            return;
+          }
+        } catch (e) {
+          debugPrint('[TMapController] failed to verify document: $e');
+        }
+      }
       await controller.reload();
     }
   }
@@ -329,6 +385,11 @@ class TMapController {
 
   /// 텍스트 라벨을 추가합니다.
   Future<void> addLabel(Label label) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addLabel(viewId, label);
+      return;
+    }
     final content = "'${_escapeForJs(label.content)}'";
     final fontColor = "'${label.fontColor.toHexColor()}'";
     final minLevel = label.minLevel;
@@ -341,11 +402,21 @@ class TMapController {
 
   /// 특정 텍스트 라벨을 제거합니다.
   Future<void> clearLabel(String labelId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearLabel(viewId, labelId);
+      return;
+    }
     await _runJs("clearLabel('$labelId');");
   }
 
   /// 모든 텍스트 라벨을 제거합니다.
   Future<void> clearAllLabels() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllLabels(viewId);
+      return;
+    }
     await _runJs('clearAllLabels();');
   }
 
@@ -474,6 +545,11 @@ class TMapController {
 
   /// 커스텀 HTML 오버레이를 추가합니다.
   Future<void> addCustomOverlay(CustomOverlay overlay) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addCustomOverlay(viewId, overlay);
+      return;
+    }
     final content = "'${_escapeForJs(overlay.content)}'";
     final offsetX = overlay.offset?.x;
     final offsetY = overlay.offset?.y;
@@ -481,6 +557,17 @@ class TMapController {
     await _runJs(
       "addCustomOverlay('${overlay.customOverlayId}', ${overlay.position.latitude}, ${overlay.position.longitude}, $content, $offsetX, $offsetY, ${overlay.zIndex});",
     );
+  }
+
+  /// 특정 커스텀 오버레이를 제거합니다.
+  @visibleForTesting
+  Future<void> clearCustomOverlay(String customOverlayId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearCustomOverlay(viewId, customOverlayId);
+      return;
+    }
+    await _runJs("clearCustomOverlay('$customOverlayId');");
   }
 
   /// 모든 폴리라인을 제거합니다.
@@ -493,9 +580,15 @@ class TMapController {
     await _runJs('clearAllPolylines();');
   }
 
-  /// 모든 다각형을 제거합니다.
+  /// 모든 폴리라인과 다각형을 일괄 제거합니다.
   Future<void> clearAllPolylinesAndPolygons() async {
-    await _runJs('clearAllPolygons();');
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllPolylines(viewId);
+      TMapWebBridge.clearAllPolygons(viewId);
+      return;
+    }
+    await _runJs('clearAllPolylines(); clearAllPolygons();');
   }
 
   /// 모든 다각형을 제거합니다.
@@ -530,6 +623,11 @@ class TMapController {
 
   /// 모든 커스텀 오버레이를 제거합니다.
   Future<void> clearAllCustomOverlays() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllCustomOverlays(viewId);
+      return;
+    }
     await _runJs('clearAllCustomOverlays();');
   }
 

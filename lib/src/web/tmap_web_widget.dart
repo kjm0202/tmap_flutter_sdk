@@ -6,8 +6,11 @@ import 'package:web/web.dart' as web;
 
 import '../auth/auth_repository.dart';
 import '../callbacks/callbacks.dart';
+import '../constants/drag_type.dart';
 import '../constants/map_type.dart';
+import '../constants/zoom_type.dart';
 import '../models/lat_lng.dart';
+import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
@@ -18,6 +21,7 @@ import '../overlays/polygon.dart';
 import '../overlays/polyline.dart';
 import '../overlays/rectangle.dart';
 import '../tmap_controller.dart';
+import '../utils/overlay_snapshot.dart';
 import 'tmap_web_bridge.dart';
 import 'tmap_web_loader.dart';
 
@@ -30,6 +34,8 @@ class TMapWebWidget extends StatefulWidget {
   final double bearing;
   final double pitch;
   final TMapType mapType;
+  final bool naviControl;
+  final bool scaleBar;
   final List<Marker>? markers;
   final Clusterer? clusterer;
   final List<InfoWindow>? infoWindows;
@@ -41,18 +47,32 @@ class TMapWebWidget extends StatefulWidget {
   final List<CustomOverlay>? customOverlays;
   final MapCreateCallback? onMapCreated;
   final OnMapTap? onMapTap;
-  final OnMarkerTap? onMarkerTap;
+  final OnMapDoubleTap? onMapDoubleTap;
+  final OnMapLongTap? onMapLongTap;
+  final OnDragChangeCallback? onDragChangeCallback;
+  final OnZoomChangeCallback? onZoomChangeCallback;
+  final OnCenterChangeCallback? onCenterChangeCallback;
+  final OnBoundsChangeCallback? onBoundsChangeCallback;
+  final OnBearingChangeCallback? onBearingChangeCallback;
+  final OnPitchChangeCallback? onPitchChangeCallback;
   final OnCameraIdle? onCameraIdle;
+  final OnMarkerTap? onMarkerTap;
+  final OnMarkerDragChangeCallback? onMarkerDragChangeCallback;
+  final OnMarkerClustererTap? onMarkerClustererTap;
+  final OnInfoWindowTap? onInfoWindowTap;
+  final OnCustomOverlayTap? onCustomOverlayTap;
 
   const TMapWebWidget({
     super.key,
     this.center,
     this.zoom = 16,
-    this.minZoom = 7,
+    this.minZoom = 0,
     this.maxZoom = 19,
     this.bearing = 0,
     this.pitch = 0,
     this.mapType = TMapType.road,
+    this.naviControl = false,
+    this.scaleBar = false,
     this.markers,
     this.clusterer,
     this.infoWindows,
@@ -64,8 +84,20 @@ class TMapWebWidget extends StatefulWidget {
     this.customOverlays,
     this.onMapCreated,
     this.onMapTap,
-    this.onMarkerTap,
+    this.onMapDoubleTap,
+    this.onMapLongTap,
+    this.onDragChangeCallback,
+    this.onZoomChangeCallback,
+    this.onCenterChangeCallback,
+    this.onBoundsChangeCallback,
+    this.onBearingChangeCallback,
+    this.onPitchChangeCallback,
     this.onCameraIdle,
+    this.onMarkerTap,
+    this.onMarkerDragChangeCallback,
+    this.onMarkerClustererTap,
+    this.onInfoWindowTap,
+    this.onCustomOverlayTap,
   });
 
   @override
@@ -78,6 +110,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   late final String _containerId;
   late final String _viewType;
   late final TMapController _controller;
+  final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isInitializing = false;
   bool _isMapInitialized = false;
 
@@ -142,28 +175,92 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         _isInitializing = false;
         if (!mounted) return;
         setState(() => _isMapInitialized = true);
+        _overlaySnapshot.clear();
         _syncAllOverlays();
         widget.onMapCreated?.call(_controller);
       }.toJS;
       callbacks.setProperty('onMapCreated'.toJS, onMapCreatedFn);
 
       final onMapTapFn = (JSNumber lat, JSNumber lng) {
+        if (!mounted) return;
         widget.onMapTap?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
       }.toJS;
       callbacks.setProperty('onMapTap'.toJS, onMapTapFn);
 
-      final onMarkerTapFn =
-          (JSString markerId, JSNumber lat, JSNumber lng, JSNumber zoom) {
-        widget.onMarkerTap?.call(
-          markerId.toDart,
+      final onMapDoubleTapFn = (JSNumber lat, JSNumber lng) {
+        if (!mounted) return;
+        widget.onMapDoubleTap?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+      }.toJS;
+      callbacks.setProperty('onMapDoubleTap'.toJS, onMapDoubleTapFn);
+
+      final onMapLongTapFn = (JSNumber lat, JSNumber lng) {
+        if (!mounted) return;
+        widget.onMapLongTap?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+      }.toJS;
+      callbacks.setProperty('onMapLongTap'.toJS, onMapLongTapFn);
+
+      final onDragChangeFn =
+          (JSNumber lat, JSNumber lng, JSNumber zoom, JSString? phase) {
+        if (!mounted) return;
+        final phaseStr = phase?.toDart;
+        final dragType = phaseStr == 'start'
+            ? DragType.start
+            : (phaseStr == 'move' ? DragType.move : DragType.end);
+        widget.onDragChangeCallback?.call(
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom.toDartInt,
+          dragType,
+        );
+      }.toJS;
+      callbacks.setProperty('onDragChange'.toJS, onDragChangeFn);
+
+      final onCenterChangeFn = (JSNumber lat, JSNumber lng, JSNumber zoom) {
+        if (!mounted) return;
+        widget.onCenterChangeCallback?.call(
           LatLng(lat.toDartDouble, lng.toDartDouble),
           zoom.toDartInt,
         );
       }.toJS;
-      callbacks.setProperty('onMarkerTap'.toJS, onMarkerTapFn);
+      callbacks.setProperty('onCenterChange'.toJS, onCenterChangeFn);
+
+      final onBoundsChangeFn =
+          (JSNumber swLat, JSNumber swLng, JSNumber neLat, JSNumber neLng) {
+        if (!mounted) return;
+        widget.onBoundsChangeCallback?.call(
+          LatLngBounds(
+            southWest: LatLng(swLat.toDartDouble, swLng.toDartDouble),
+            northEast: LatLng(neLat.toDartDouble, neLng.toDartDouble),
+          ),
+        );
+      }.toJS;
+      callbacks.setProperty('onBoundsChange'.toJS, onBoundsChangeFn);
+
+      final onZoomChangeFn = (JSNumber zoom, JSString? phase) {
+        if (!mounted) return;
+        final phaseStr = phase?.toDart;
+        final zoomType = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
+        widget.onZoomChangeCallback?.call(
+          zoom.toDartInt,
+          zoomType,
+        );
+      }.toJS;
+      callbacks.setProperty('onZoomChange'.toJS, onZoomChangeFn);
+
+      final onBearingChangeFn = (JSNumber value) {
+        if (!mounted) return;
+        widget.onBearingChangeCallback?.call(value.toDartDouble);
+      }.toJS;
+      callbacks.setProperty('onBearingChange'.toJS, onBearingChangeFn);
+
+      final onPitchChangeFn = (JSNumber value) {
+        if (!mounted) return;
+        widget.onPitchChangeCallback?.call(value.toDartDouble);
+      }.toJS;
+      callbacks.setProperty('onPitchChange'.toJS, onPitchChangeFn);
 
       final onCameraIdleFn = (JSNumber lat, JSNumber lng, JSNumber zoom,
           JSNumber bearing, JSNumber pitch) {
+        if (!mounted) return;
         widget.onCameraIdle?.call(
           LatLng(lat.toDartDouble, lng.toDartDouble),
           zoom.toDartInt,
@@ -172,6 +269,79 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         );
       }.toJS;
       callbacks.setProperty('onCameraIdle'.toJS, onCameraIdleFn);
+
+      final onMarkerTapFn =
+          (JSString markerId, JSNumber lat, JSNumber lng, JSNumber zoom) {
+        if (!mounted) return;
+        widget.onMarkerTap?.call(
+          markerId.toDart,
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom.toDartInt,
+        );
+      }.toJS;
+      callbacks.setProperty('onMarkerTap'.toJS, onMarkerTapFn);
+
+      final onMarkerDragFn =
+          (JSString id, JSNumber lat, JSNumber lng, JSString? phase) {
+        if (!mounted) return;
+        final phaseStr = phase?.toDart;
+        final dragType = phaseStr == 'start'
+            ? DragType.start
+            : (phaseStr == 'move' ? DragType.move : DragType.end);
+        widget.onMarkerDragChangeCallback?.call(
+          id.toDart,
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+          dragType,
+        );
+      }.toJS;
+      callbacks.setProperty('onMarkerDrag'.toJS, onMarkerDragFn);
+
+      final onMarkerClustererTapFn =
+          (JSNumber lat, JSNumber lng, JSNumber zoom, JSAny? arrayOfStringIds) {
+        if (!mounted) return;
+        final List<String> markerIds = [];
+        if (arrayOfStringIds != null) {
+          if (arrayOfStringIds.isA<JSArray<JSAny?>>()) {
+            final jsArray = arrayOfStringIds as JSArray<JSAny?>;
+            for (int i = 0; i < jsArray.length; i++) {
+              final item = jsArray[i];
+              if (item != null) {
+                if (item.isA<JSString>()) {
+                  markerIds.add((item as JSString).toDart);
+                } else {
+                  markerIds.add(item.toString());
+                }
+              }
+            }
+          }
+        }
+        widget.onMarkerClustererTap?.call(
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom.toDartInt,
+          markerIds,
+        );
+      }.toJS;
+      callbacks.setProperty('onMarkerClustererTap'.toJS, onMarkerClustererTapFn);
+
+      final onInfoWindowTapFn =
+          (JSString id, JSNumber lat, JSNumber lng) {
+        if (!mounted) return;
+        widget.onInfoWindowTap?.call(
+          id.toDart,
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+        );
+      }.toJS;
+      callbacks.setProperty('onInfoWindowTap'.toJS, onInfoWindowTapFn);
+
+      final onCustomOverlayTapFn =
+          (JSString id, JSNumber lat, JSNumber lng) {
+        if (!mounted) return;
+        widget.onCustomOverlayTap?.call(
+          id.toDart,
+          LatLng(lat.toDartDouble, lng.toDartDouble),
+        );
+      }.toJS;
+      callbacks.setProperty('onCustomOverlayTap'.toJS, onCustomOverlayTapFn);
 
       TMapWebBridge.initMap(
         viewId: _viewId,
@@ -183,6 +353,9 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         bearing: widget.bearing,
         pitch: widget.pitch,
         mapType: widget.mapType,
+        naviControl: widget.naviControl,
+        scaleBar: widget.scaleBar,
+        hasOnMapLongTap: widget.onMapLongTap != null,
         callbacks: callbacks,
       );
     } catch (e) {
@@ -214,69 +387,102 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     if (widget.mapType != oldWidget.mapType) {
       TMapWebBridge.setMapType(_viewId, widget.mapType);
     }
+    if (widget.minZoom != oldWidget.minZoom ||
+        widget.maxZoom != oldWidget.maxZoom ||
+        widget.naviControl != oldWidget.naviControl ||
+        widget.scaleBar != oldWidget.scaleBar ||
+        (widget.onMapLongTap != null) != (oldWidget.onMapLongTap != null)) {
+      TMapWebBridge.updateMapOptions(_viewId, {
+        'minZoom': widget.minZoom,
+        'maxZoom': widget.maxZoom,
+        'naviControl': widget.naviControl,
+        'scaleBar': widget.scaleBar,
+        'longTap': widget.onMapLongTap != null,
+      });
+    }
 
     _syncAllOverlays();
   }
 
   void _syncAllOverlays() {
-    // 1. 마커 동기화
-    TMapWebBridge.clearAllMarkers(_viewId);
-    final markers = widget.markers;
-    if (markers != null && markers.isNotEmpty) {
-      for (final m in markers) {
-        TMapWebBridge.addMarker(_viewId, m);
-      }
-    }
-
-    // 2. 클러스터러 동기화
-    final clusterer = widget.clusterer;
-    if (clusterer != null) {
-      TMapWebBridge.addClusterer(_viewId, clusterer);
-    } else {
-      TMapWebBridge.clearClusterer(_viewId);
-    }
-
-    // 3. 인포윈도우 동기화
-    TMapWebBridge.clearAllInfoWindows(_viewId);
-    final infoWindows = widget.infoWindows;
-    if (infoWindows != null && infoWindows.isNotEmpty) {
-      for (final iw in infoWindows) {
-        TMapWebBridge.addInfoWindow(_viewId, iw);
-      }
-    }
-
-    // 4. 폴리라인 동기화
-    TMapWebBridge.clearAllPolylines(_viewId);
-    final polylines = widget.polylines;
-    if (polylines != null && polylines.isNotEmpty) {
-      for (final p in polylines) {
-        TMapWebBridge.addPolyline(_viewId, p);
-      }
-    }
-
-    // 5. 원형, 다각형, 사각형 동기화
-    final circles = widget.circles;
-    if (circles != null && circles.isNotEmpty) {
-      for (final c in circles) {
-        TMapWebBridge.addCircle(_viewId, c);
-      }
-    }
-    final polygons = widget.polygons;
-    if (polygons != null && polygons.isNotEmpty) {
-      for (final pg in polygons) {
-        TMapWebBridge.addPolygon(_viewId, pg);
-      }
-    }
-    final rectangles = widget.rectangles;
-    if (rectangles != null && rectangles.isNotEmpty) {
-      for (final r in rectangles) {
-        TMapWebBridge.addRectangle(_viewId, r);
-      }
-    }
+    if (!_isMapInitialized) return;
+    _overlaySnapshot.sync<Marker>(
+      'markers',
+      widget.markers,
+      idOf: (m) => m.markerId,
+      jsonOf: (m) => m.toJson(),
+      add: (m) => TMapWebBridge.addMarker(_viewId, m),
+      remove: (id) => TMapWebBridge.clearMarker(_viewId, id),
+    );
+    _overlaySnapshot.sync<InfoWindow>(
+      'infoWindows',
+      widget.infoWindows,
+      idOf: (iw) => iw.infoWindowId,
+      jsonOf: (iw) => iw.toJson(),
+      add: (iw) => TMapWebBridge.addInfoWindow(_viewId, iw),
+      remove: (id) => TMapWebBridge.clearInfoWindow(_viewId, id),
+    );
+    _overlaySnapshot.sync<Label>(
+      'labels',
+      widget.labels,
+      idOf: (l) => l.labelId,
+      jsonOf: (l) => l.toJson(),
+      add: (l) => TMapWebBridge.addLabel(_viewId, l),
+      remove: (id) => TMapWebBridge.clearLabel(_viewId, id),
+    );
+    _overlaySnapshot.sync<Polyline>(
+      'polylines',
+      widget.polylines,
+      idOf: (p) => p.polylineId,
+      jsonOf: (p) => p.toJson(),
+      add: (p) => TMapWebBridge.addPolyline(_viewId, p),
+      remove: (id) => TMapWebBridge.clearPolyline(_viewId, id),
+    );
+    _overlaySnapshot.sync<Polygon>(
+      'polygons',
+      widget.polygons,
+      idOf: (p) => p.polygonId,
+      jsonOf: (p) => p.toJson(),
+      add: (p) => TMapWebBridge.addPolygon(_viewId, p),
+      remove: (id) => TMapWebBridge.clearPolygon(_viewId, id),
+    );
+    _overlaySnapshot.sync<Circle>(
+      'circles',
+      widget.circles,
+      idOf: (c) => c.circleId,
+      jsonOf: (c) => c.toJson(),
+      add: (c) => TMapWebBridge.addCircle(_viewId, c),
+      remove: (id) => TMapWebBridge.clearCircle(_viewId, id),
+    );
+    _overlaySnapshot.sync<Rectangle>(
+      'rectangles',
+      widget.rectangles,
+      idOf: (r) => r.rectangleId,
+      jsonOf: (r) => r.toJson(),
+      add: (r) => TMapWebBridge.addRectangle(_viewId, r),
+      remove: (id) => TMapWebBridge.clearRectangle(_viewId, id),
+    );
+    _overlaySnapshot.sync<CustomOverlay>(
+      'customOverlays',
+      widget.customOverlays,
+      idOf: (co) => co.customOverlayId,
+      jsonOf: (co) => co.toJson(),
+      add: (co) => TMapWebBridge.addCustomOverlay(_viewId, co),
+      remove: (id) => TMapWebBridge.clearCustomOverlay(_viewId, id),
+    );
+    _overlaySnapshot.sync<Clusterer>(
+      'clusterer',
+      widget.clusterer == null ? const [] : [widget.clusterer!],
+      idOf: (_) => 'clusterer',
+      jsonOf: (c) => c.toJson(),
+      add: (c) => TMapWebBridge.addClusterer(_viewId, c),
+      remove: (_) => TMapWebBridge.clearClusterer(_viewId),
+    );
   }
 
   @override
   void dispose() {
+    _isMapInitialized = false;
     TMapWebBridge.dispose(_viewId);
     super.dispose();
   }

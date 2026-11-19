@@ -28,8 +28,17 @@ import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
 import 'tmap_controller.dart';
+import 'utils/overlay_snapshot.dart';
 import 'web/tmap_web_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_widget.dart';
+
+class _PointerInfo {
+  final Offset downPosition;
+  final Duration downTime;
+  bool movedBeyondSlop = false;
+
+  _PointerInfo(this.downPosition, this.downTime);
+}
 
 /// TMAP Vector Map (v3) Flutter 위젯입니다.
 class TMap extends StatefulWidget {
@@ -183,6 +192,7 @@ class TMap extends StatefulWidget {
 
 class _TMapState extends State<TMap> with WidgetsBindingObserver {
   late final TMapController _mapController;
+  final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isMapReady = false;
 
   @override
@@ -196,6 +206,14 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _isMapReady = false;
+    if (!kIsWeb) {
+      try {
+        _mapController.webViewController.runJavaScript('if (window.tmap_dispose_mobile) window.tmap_dispose_mobile();');
+      } catch (e) {
+        developer.log('Error disposing TMap: $e', name: 'TMap');
+      }
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -259,6 +277,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         bearing: widget.bearing,
         pitch: widget.pitch,
         mapType: widget.mapType,
+        naviControl: widget.naviControl,
+        scaleBar: widget.scaleBar,
         markers: widget.markers,
         clusterer: widget.clusterer,
         infoWindows: widget.infoWindows,
@@ -270,16 +290,193 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         customOverlays: widget.customOverlays,
         onMapCreated: widget.onMapCreated,
         onMapTap: widget.onMapTap,
-        onMarkerTap: widget.onMarkerTap,
+        onMapDoubleTap: widget.onMapDoubleTap,
+        onMapLongTap: widget.onMapLongTap,
+        onDragChangeCallback: widget.onDragChangeCallback,
+        onZoomChangeCallback: widget.onZoomChangeCallback,
+        onCenterChangeCallback: widget.onCenterChangeCallback,
+        onBoundsChangeCallback: widget.onBoundsChangeCallback,
+        onBearingChangeCallback: widget.onBearingChangeCallback,
+        onPitchChangeCallback: widget.onPitchChangeCallback,
         onCameraIdle: widget.onCameraIdle,
+        onMarkerTap: widget.onMarkerTap,
+        onMarkerDragChangeCallback: widget.onMarkerDragChangeCallback,
+        onMarkerClustererTap: widget.onMarkerClustererTap,
+        onInfoWindowTap: widget.onInfoWindowTap,
+        onCustomOverlayTap: widget.onCustomOverlayTap,
       );
     }
 
-    return WebViewWidget(
-      controller: _mapController.webViewController,
-      gestureRecognizers: widget.gestureRecognizers,
+    return Listener(
+      onPointerDown: _handlePointerDown,
+      onPointerMove: _handlePointerMove,
+      onPointerUp: _handlePointerUp,
+      onPointerCancel: _handlePointerCancel,
+      child: WebViewWidget(
+        controller: _mapController.webViewController,
+        gestureRecognizers: widget.gestureRecognizers,
+      ),
     );
   }
+
+    final Map<int, _PointerInfo> _activePointers = {};
+  bool _isDisqualified = false;
+  Offset? _firstTapPosition;
+  Duration? _firstTapTime;
+  DateTime? _lastDispatchedTime;
+  Future<double?>? _currentBaseline;
+
+  void _handleDoubleTap(LatLng latLng) {
+    final now = DateTime.now();
+    if (_lastDispatchedTime != null && now.difference(_lastDispatchedTime!).inMilliseconds < 300) {
+      return;
+    }
+    _lastDispatchedTime = now;
+    widget.onMapDoubleTap?.call(latLng);
+  }
+
+  void _handlePointerDown(PointerDownEvent event) {
+    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+
+    if (_activePointers.isNotEmpty) {
+      _isDisqualified = true;
+    } else {
+      _isDisqualified = false;
+    }
+
+    _activePointers[event.pointer] = _PointerInfo(event.localPosition, event.timeStamp);
+  }
+
+  void _handlePointerMove(PointerMoveEvent event) {
+    final pointer = _activePointers[event.pointer];
+    if (pointer != null) {
+      if ((event.localPosition - pointer.downPosition).distance > kTouchSlop) {
+        pointer.movedBeyondSlop = true;
+        _isDisqualified = true;
+      }
+    }
+  }
+
+  void _handlePointerUp(PointerUpEvent event) {
+    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+
+    final wasDisqualified = _isDisqualified;
+    final pointer = _activePointers.remove(event.pointer);
+    if (_activePointers.isEmpty) {
+      _isDisqualified = false;
+    }
+
+    if (pointer == null) return;
+
+    final isLongPress = (event.timeStamp - pointer.downTime) > kLongPressTimeout;
+
+    if (wasDisqualified || pointer.movedBeyondSlop || isLongPress) {
+      if (_activePointers.isEmpty) _resetTap();
+      return;
+    }
+
+    if (_activePointers.isEmpty) {
+      if (_firstTapTime != null && _firstTapPosition != null) {
+        if (event.timeStamp - _firstTapTime! < const Duration(milliseconds: 300) &&
+            (event.localPosition - _firstTapPosition!).distance < 50) {
+          final baseline = _currentBaseline;
+          _performDoubleTap(event.localPosition, baseline);
+          _resetTap();
+          return;
+        }
+      }
+
+      _firstTapPosition = event.localPosition;
+      _firstTapTime = event.timeStamp;
+      _currentBaseline = _readCameraZoom();
+    }
+  }
+
+  Future<double?> _readCameraZoom() async {
+    try {
+      final result = await _mapController.webViewController.runJavaScriptReturningResult('''
+        (function() {
+          try {
+            var r = map.vsmMap();
+            if (!r) return null;
+            return r.getCamera().getZoom();
+          } catch(e) { return null; }
+        })();
+      ''');
+      return double.tryParse(result.toString());
+    } catch (e) {
+      return null;
+    }
+  }
+
+
+  void _handlePointerCancel(PointerCancelEvent event) {
+    _activePointers.remove(event.pointer);
+    _resetTap();
+  }
+
+  void _resetTap() {
+    _firstTapPosition = null;
+    _firstTapTime = null;
+    _currentBaseline = null;
+  }
+
+  Future<void> _performDoubleTap(Offset localPosition, Future<double?>? baselineFuture) async {
+    if (!mounted) return;
+
+    final x = localPosition.dx.round();
+    final y = localPosition.dy.round();
+
+    final baseline = await baselineFuture;
+
+    late LatLng latLng;
+    try {
+      final result = await _mapController.webViewController.runJavaScriptReturningResult(
+        'screenToReal($x, $y);'
+      );
+      if (!mounted) return;
+      final json = jsonDecode(result.toString()) as Map<String, dynamic>;
+      latLng = LatLng.fromJson(json);
+    } catch (e) {
+      return;
+    }
+
+    _handleDoubleTap(latLng);
+
+    await Future.delayed(const Duration(milliseconds: 110));
+    if (!mounted || _isDisqualified || baseline == null) {
+      return;
+    }
+
+    final js = '''
+      (function() {
+        try {
+          var r = map.vsmMap();
+          if (!r) return;
+          var cam = r.getCamera();
+          var t = r.getTransform();
+          var raw = cam.getZoom();
+          
+          var opts = r.getInteractive();
+          var enabled = opts === true || (opts && typeof opts==='object' && opts.zoom && (opts.doubleClick || opts.touch));
+          if (!enabled) return;
+
+          if (Math.abs(raw - $baseline) < 1e-4 && !cam.isMoving()) {
+            var maxZoom = Math.min(${widget.maxZoom}, t.getMaxZoom());
+            if (raw < maxZoom) {
+              var target = Math.min(raw + 1, maxZoom);
+              var pivot = t.screenPointToLngLat({x: $x, y: $y});
+              cam.easeTo({zoom: target, pivot: pivot}, {}, {});
+            }
+          }
+        } catch (e) {}
+      })();
+    ''';
+    try {
+      await _mapController.webViewController.runJavaScript(js);
+    } catch (e) {}
+  }
+
 
   Future<void> _loadMap(WebViewController controller) async {
     final scripts = await loadBridgeAssets(const [
@@ -290,6 +487,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     ]);
     if (!mounted) return;
     final config = {
+      'appKey': AuthRepository.instance.appKey,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
       'mapType': widget.mapType.value,
@@ -301,6 +499,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'scaleBar': widget.scaleBar,
       'naviControl': widget.naviControl,
       'hasOnMapTap': widget.onMapTap != null,
+      'hasOnMapDoubleTap': widget.onMapDoubleTap != null,
       'hasOnMapLongTap': widget.onMapLongTap != null,
       'hasOnDragChangeCallback': widget.onDragChangeCallback != null,
       'hasOnZoomChangeCallback': widget.onZoomChangeCallback != null,
@@ -312,8 +511,10 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'hasMarkerClustererTapCallback': widget.onMarkerClustererTap != null,
       'hasMarkerTapCallback': widget.onMarkerTap != null,
       'hasMarkerDragCallback': widget.onMarkerDragChangeCallback != null,
+      'hasOnInfoWindowTap': widget.onInfoWindowTap != null,
+      'hasOnCustomOverlayTap': widget.onCustomOverlayTap != null,
     };
-    await controller.loadHtmlString(
+    await _mapController.reloadHtml(
       htmlWrapper(
           '<script>const config = ${jsonEncode(config)};\n$scripts</script>'),
       baseUrl: AuthRepository.instance.baseUrl,
@@ -324,6 +525,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   void didUpdateWidget(TMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (kIsWeb) return;
+    if (!_isMapReady) return;
 
     if (widget.center != oldWidget.center && widget.center != null) {
       final center = widget.center;
@@ -348,78 +550,95 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       _mapController.setMapType(widget.mapType);
     }
 
+    if (widget.minZoom != oldWidget.minZoom ||
+        widget.maxZoom != oldWidget.maxZoom ||
+        widget.naviControl != oldWidget.naviControl ||
+        widget.scaleBar != oldWidget.scaleBar) {
+      _mapController.updateMapOptions({
+        'minZoom': widget.minZoom,
+        'maxZoom': widget.maxZoom,
+        'naviControl': widget.naviControl,
+        'scaleBar': widget.scaleBar,
+      });
+    }
+
     _syncOverlays();
   }
 
   void _syncOverlays() {
-    final markers = widget.markers;
-    _mapController.clearAllMarkers();
-    if (markers != null && markers.isNotEmpty) {
-      _mapController.addMarkers(markers);
-    }
-
-    final clusterer = widget.clusterer;
-    if (clusterer != null) {
-      _mapController.addMarkerClusterer(clusterer);
-    } else {
-      _mapController.clearMarkerClusterer();
-    }
-
-    final infoWindows = widget.infoWindows;
-    _mapController.clearAllInfoWindows();
-    if (infoWindows != null && infoWindows.isNotEmpty) {
-      for (final iw in infoWindows) {
-        _mapController.addInfoWindow(iw);
-      }
-    }
-
-    final labels = widget.labels;
-    _mapController.clearAllLabels();
-    if (labels != null && labels.isNotEmpty) {
-      for (final lb in labels) {
-        _mapController.addLabel(lb);
-      }
-    }
-
-    final polylines = widget.polylines;
-    _mapController.clearAllPolylines();
-    if (polylines != null && polylines.isNotEmpty) {
-      for (final pl in polylines) {
-        _mapController.addPolyline(pl);
-      }
-    }
-
-    final polygons = widget.polygons;
-    _mapController.clearAllPolygons();
-    if (polygons != null && polygons.isNotEmpty) {
-      for (final pg in polygons) {
-        _mapController.addPolygon(pg);
-      }
-    }
-
-    final circles = widget.circles;
-    _mapController.clearAllCircles();
-    if (circles != null && circles.isNotEmpty) {
-      for (final c in circles) {
-        _mapController.addCircle(c);
-      }
-    }
-
-    final rectangles = widget.rectangles;
-    _mapController.clearAllRectangles();
-    if (rectangles != null && rectangles.isNotEmpty) {
-      for (final r in rectangles) {
-        _mapController.addRectangle(r);
-      }
-    }
-
-    final customOverlays = widget.customOverlays;
-    _mapController.clearAllCustomOverlays();
-    if (customOverlays != null && customOverlays.isNotEmpty) {
-      for (final co in customOverlays) {
-        _mapController.addCustomOverlay(co);
-      }
-    }
+    if (!_isMapReady) return;
+    _overlaySnapshot.sync<Marker>(
+      'markers',
+      widget.markers,
+      idOf: (m) => m.markerId,
+      jsonOf: (m) => m.toJson(),
+      add: (m) => _mapController.addMarker(m),
+      remove: (id) => _mapController.clearMarker(id),
+    );
+    _overlaySnapshot.sync<InfoWindow>(
+      'infoWindows',
+      widget.infoWindows,
+      idOf: (iw) => iw.infoWindowId,
+      jsonOf: (iw) => iw.toJson(),
+      add: (iw) => _mapController.addInfoWindow(iw),
+      remove: (id) => _mapController.clearInfoWindow(id),
+    );
+    _overlaySnapshot.sync<Label>(
+      'labels',
+      widget.labels,
+      idOf: (l) => l.labelId,
+      jsonOf: (l) => l.toJson(),
+      add: (l) => _mapController.addLabel(l),
+      remove: (id) => _mapController.clearLabel(id),
+    );
+    _overlaySnapshot.sync<Polyline>(
+      'polylines',
+      widget.polylines,
+      idOf: (p) => p.polylineId,
+      jsonOf: (p) => p.toJson(),
+      add: (p) => _mapController.addPolyline(p),
+      remove: (id) => _mapController.clearPolyline(id),
+    );
+    _overlaySnapshot.sync<Polygon>(
+      'polygons',
+      widget.polygons,
+      idOf: (p) => p.polygonId,
+      jsonOf: (p) => p.toJson(),
+      add: (p) => _mapController.addPolygon(p),
+      remove: (id) => _mapController.clearPolygon(id),
+    );
+    _overlaySnapshot.sync<Circle>(
+      'circles',
+      widget.circles,
+      idOf: (c) => c.circleId,
+      jsonOf: (c) => c.toJson(),
+      add: (c) => _mapController.addCircle(c),
+      remove: (id) => _mapController.clearCircle(id),
+    );
+    _overlaySnapshot.sync<Rectangle>(
+      'rectangles',
+      widget.rectangles,
+      idOf: (r) => r.rectangleId,
+      jsonOf: (r) => r.toJson(),
+      add: (r) => _mapController.addRectangle(r),
+      remove: (id) => _mapController.clearRectangle(id),
+    );
+    _overlaySnapshot.sync<CustomOverlay>(
+      'customOverlays',
+      widget.customOverlays,
+      idOf: (co) => co.customOverlayId,
+      jsonOf: (co) => co.toJson(),
+      add: (co) => _mapController.addCustomOverlay(co),
+      remove: (id) => _mapController.clearCustomOverlay(id),
+    );
+    _overlaySnapshot.sync<Clusterer>(
+      'clusterer',
+      widget.clusterer == null ? const [] : [widget.clusterer!],
+      idOf: (_) => 'clusterer',
+      jsonOf: (c) => c.toJson(),
+      add: (c) => _mapController.addMarkerClusterer(c),
+      remove: (_) => _mapController.clearMarkerClusterer(),
+    );
   }
 
   void _addJavaScriptChannels(WebViewController controller) {
@@ -429,6 +648,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
           _isMapReady = true;
+          _overlaySnapshot.clear();
           _syncOverlays();
           final onMapCreated = widget.onMapCreated;
           if (onMapCreated != null) {
@@ -439,6 +659,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'onMapTap',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onMapTap = widget.onMapTap;
           if (onMapTap != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -447,8 +668,17 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         },
       )
       ..addJavaScriptChannel(
+        'onMapDoubleTap',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          _handleDoubleTap(LatLng.fromJson(json));
+        },
+      )
+      ..addJavaScriptChannel(
         'onMapLongTap',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onMapLongTap = widget.onMapLongTap;
           if (onMapLongTap != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -459,10 +689,11 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'onMarkerTap',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onMarkerTap = widget.onMarkerTap;
           if (onMarkerTap != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = json['markerId'] as String? ?? '';
+            final id = (json['markerId'] ?? json['id'] ?? '') as String;
             final latLng = LatLng.fromJson(json);
             final zoom = (json['zoom'] as num? ?? 16).toInt();
             onMarkerTap(id, latLng, zoom);
@@ -472,6 +703,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'onMarkerClustererTap',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onMarkerClustererTap = widget.onMarkerClustererTap;
           if (onMarkerClustererTap != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -488,55 +720,115 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'onMarkerDragChangeCallback',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onMarkerDragChange = widget.onMarkerDragChangeCallback;
           if (onMarkerDragChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = json['markerId'] as String? ?? '';
+            final id = (json['markerId'] ?? json['id'] ?? '') as String;
             final latLng = LatLng.fromJson(json);
-            final typeStr = json['dragType'] as String? ?? '';
-            final type = typeStr == 'start' ? DragType.start : DragType.end;
+            final typeStr =
+                json['dragType'] as String? ?? json['phase'] as String? ?? '';
+            final type = typeStr == 'start'
+                ? DragType.start
+                : (typeStr == 'move' ? DragType.move : DragType.end);
             onMarkerDragChange(id, latLng, type);
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onInfoWindowTap',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final onInfoWindowTap = widget.onInfoWindowTap;
+          if (onInfoWindowTap != null) {
+            final json = jsonDecode(result.message) as Map<String, dynamic>;
+            final id = (json['id'] ?? json['infoWindowId'] ?? '') as String;
+            final latLng = LatLng.fromJson(json);
+            onInfoWindowTap(id, latLng);
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onCustomOverlayTap',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final onCustomOverlayTap = widget.onCustomOverlayTap;
+          if (onCustomOverlayTap != null) {
+            final json = jsonDecode(result.message) as Map<String, dynamic>;
+            final id = (json['id'] ?? json['customOverlayId'] ?? '') as String;
+            final latLng = LatLng.fromJson(json);
+            onCustomOverlayTap(id, latLng);
           }
         },
       )
       ..addJavaScriptChannel(
         'dragStart',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onDragChange = widget.onDragChangeCallback;
           if (onDragChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
             final latLng = LatLng.fromJson(json);
             final zoom = (json['zoom'] as num? ?? 16).toInt();
-            onDragChange(latLng, zoom, DragType.start);
+            final phaseStr = json['phase'] as String?;
+            final phase = phaseStr == 'move'
+                ? DragType.move
+                : (phaseStr == 'end' ? DragType.end : DragType.start);
+            onDragChange(latLng, zoom, phase);
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'dragMove',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final onDragChange = widget.onDragChangeCallback;
+          if (onDragChange != null) {
+            final json = jsonDecode(result.message) as Map<String, dynamic>;
+            final latLng = LatLng.fromJson(json);
+            final zoom = (json['zoom'] as num? ?? 16).toInt();
+            onDragChange(latLng, zoom, DragType.move);
           }
         },
       )
       ..addJavaScriptChannel(
         'dragEnd',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onDragChange = widget.onDragChangeCallback;
           if (onDragChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
             final latLng = LatLng.fromJson(json);
             final zoom = (json['zoom'] as num? ?? 16).toInt();
-            onDragChange(latLng, zoom, DragType.end);
+            final phaseStr = json['phase'] as String?;
+            final phase = phaseStr == 'start'
+                ? DragType.start
+                : (phaseStr == 'move' ? DragType.move : DragType.end);
+            onDragChange(latLng, zoom, phase);
           }
         },
       )
       ..addJavaScriptChannel(
         'zoomChanged',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onZoomChange = widget.onZoomChangeCallback;
           if (onZoomChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final zoom = (json['zoomLevel'] as num? ?? 16).toInt();
-            onZoomChange(zoom, ZoomType.end);
+            final zoom = (json['zoomLevel'] as num? ??
+                    json['zoom'] as num? ??
+                    16)
+                .toInt();
+            final phaseStr = json['phase'] as String?;
+            final phase = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
+            onZoomChange(zoom, phase);
           }
         },
       )
       ..addJavaScriptChannel(
         'centerChanged',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onCenterChange = widget.onCenterChangeCallback;
           if (onCenterChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -549,6 +841,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'cameraIdle',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onCameraIdle = widget.onCameraIdle;
           if (onCameraIdle != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -563,6 +856,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'bearingChanged',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onBearingChange = widget.onBearingChangeCallback;
           if (onBearingChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -574,6 +868,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'pitchChanged',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onPitchChange = widget.onPitchChangeCallback;
           if (onPitchChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
@@ -585,6 +880,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'boundsChanged',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           final onBoundsChange = widget.onBoundsChangeCallback;
           if (onBoundsChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
