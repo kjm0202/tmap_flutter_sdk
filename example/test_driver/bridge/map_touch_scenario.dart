@@ -67,8 +67,9 @@ Future<void> testMapTouchEvents() async {
 
 /// Right-click triggers the separate ContextMenu SDK event in Chrome.
 Future<void> testMapContextMenu() async {
-  if (!kIsWeb)
+  if (!kIsWeb) {
     throw StateError('map_context_menu requires Chrome CDP input driver');
+  }
   final contextMenus = <LatLng>[];
   final controller = await mountLiveMap((created) => TMap(
         center: const LatLng(37.5665, 126.978),

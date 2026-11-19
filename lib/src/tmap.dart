@@ -538,7 +538,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     _handleDoubleTap(latLng);
 
-    await Future.delayed(const Duration(milliseconds: 110));
+    await Future<void>.delayed(const Duration(milliseconds: 110));
     if (!mounted || _isDisqualified || baseline == null) {
       return;
     }
@@ -569,7 +569,9 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     ''';
     try {
       await _mapController.webViewController.runJavaScript(js);
-    } catch (e) {}
+    } catch (_) {
+      // The WebView may have been disposed before this optional probe completes.
+    }
   }
 
 

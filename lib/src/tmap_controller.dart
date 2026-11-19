@@ -310,7 +310,6 @@ class TMapController {
   }
 
   /// 지도 옵션(줌 제한, 컨트롤 표시 여부 등)을 업데이트합니다.
-  @visibleForTesting
   Future<void> updateMapOptions(Map<String, dynamic> options) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -658,7 +657,6 @@ class TMapController {
   }
 
   /// 특정 커스텀 오버레이를 제거합니다.
-  @visibleForTesting
   Future<void> clearCustomOverlay(String customOverlayId) async {
     final viewId = _webViewId;
     if (viewId != null) {
