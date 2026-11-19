@@ -69,15 +69,16 @@ Future<void> main(List<String> arguments) async {
       documented,
       result.entries.map((e) => e.id).toSet(),
     );
-    stdout.writeln('Docs drift: ${drift.documented.length} documented, '
+    stdout.writeln('Docs drift: ${drift.hasDrift ? 'FAIL' : 'PASS'} '
+        '(${drift.documented.length} documented, '
         '${drift.manifest.length} manifest, '
         '${drift.missingFromManifest.length} missing from manifest, '
-        '${drift.absentFromDocs.length} absent from docs');
+        '${drift.absentFromDocs.length} manifest-only/info)');
     for (final id in drift.missingFromManifest) {
       stdout.writeln('docs-only: $id');
     }
     for (final id in drift.absentFromDocs) {
-      stdout.writeln('manifest-only: $id');
+      stdout.writeln('manifest-only (info): $id');
     }
     if (drift.hasDrift) exitCode = 1;
     return;

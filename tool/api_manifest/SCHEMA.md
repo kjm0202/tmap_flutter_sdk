@@ -15,6 +15,18 @@ constructor options, methods, properties, events).
   One row = one documented member.
 - REST (webservice) endpoints are listed once per endpoint, not per response field.
 
+## Documentation sources and drift
+
+`source` is an optional absolute HTTP(S) URL to the public page that documents
+that specific row. Use it for API members whose evidence is in a separate sample
+or REST page instead of the main WebDocs.html document. A URL must contain a
+valid host; relative paths and non-HTTP schemes are rejected.
+
+`bin/check.dart --docs <path-or-url>` fails only for members found in the given
+documentation but missing from the manifest (`docs-only`). Members present
+only in the manifest (`manifest-only`) are printed as informational findings:
+they may be documented by the individual `source` pages.
+
 ## File shape
 
 ```yaml
@@ -32,6 +44,7 @@ entries:
       - example/test_driver/bridge/camera_scenarios.dart::setCenter moves the camera
     platforms: [web, android, ios]    # optional, default all three
     reason: ...                       # required for adapt and exclude; one line
+    source: https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html # optional public documentation page URL
 ```
 
 ## Decisions
