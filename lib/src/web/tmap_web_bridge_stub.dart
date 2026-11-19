@@ -64,6 +64,9 @@ class TMapWebBridge {
   static void addGroundOverlay(String viewId, GroundOverlay overlay) {}
   static void clearGroundOverlay(String viewId, String id) {}
   static void clearAllGroundOverlays(String viewId) {}
+  static void addVisualization(
+      String viewId, String type, Map<String, dynamic> data) {}
+  static void removeVisualization(String viewId, String type, String id) {}
   static bool polygonContains(String viewId, String id, LatLng point) => false;
   static String? polygonAreaJson(String viewId, String id) => null;
   static void startDrawing(

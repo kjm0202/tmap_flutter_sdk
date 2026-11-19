@@ -28,6 +28,7 @@ import 'overlays/marker.dart';
 import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
+import 'overlays/visualization.dart';
 import 'services/tdata_service.dart';
 import 'utils/hex_color.dart';
 import 'web/tmap_web_bridge_stub.dart'
@@ -748,6 +749,62 @@ class TMapController {
     }
     await _runJs('clearAllGroundOverlays();');
   }
+
+  // ========================================
+  // 데이터 시각화 (DotMap, SquareMap, HeatMap)
+  // ========================================
+
+  Future<void> _addVisualization(String type, Map<String, dynamic> data) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addVisualization(viewId, type, data);
+      return;
+    }
+    await _runJs('addVisualization(${jsonEncode(type)}, ${jsonEncode(data)});');
+  }
+
+  Future<void> _removeVisualization(String type, String id) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.removeVisualization(viewId, type, id);
+      return;
+    }
+    await _runJs(
+        'removeVisualization(${jsonEncode(type)}, ${jsonEncode(id)});');
+  }
+
+  /// Creates a dot-density visualization on this map.
+  Future<void> addDotMap(DotMap layer) =>
+      _addVisualization('dot', layer.toJson());
+
+  /// Replaces an existing dot layer with the same ID and new options/data.
+  Future<void> updateDotMap(DotMap layer) => addDotMap(layer);
+
+  /// Calls the underlying DotMap's `destroy()` and releases its ID.
+  Future<void> removeDotMap(String dotMapId) =>
+      _removeVisualization('dot', dotMapId);
+
+  /// Creates a geographic grid visualization on this map.
+  Future<void> addSquareMap(SquareMap layer) =>
+      _addVisualization('square', layer.toJson());
+
+  /// Replaces an existing square layer with the same ID and new options/data.
+  Future<void> updateSquareMap(SquareMap layer) => addSquareMap(layer);
+
+  /// Calls the underlying SquareMap's `destroy()` and releases its ID.
+  Future<void> removeSquareMap(String squareMapId) =>
+      _removeVisualization('square', squareMapId);
+
+  /// Creates a heat-density visualization on this map.
+  Future<void> addHeatMap(HeatMap layer) =>
+      _addVisualization('heat', layer.toJson());
+
+  /// Replaces an existing heat layer with the same ID and new options/data.
+  Future<void> updateHeatMap(HeatMap layer) => addHeatMap(layer);
+
+  /// Calls the underlying HeatMap's `destroy()` and releases its ID.
+  Future<void> removeHeatMap(String heatMapId) =>
+      _removeVisualization('heat', heatMapId);
 
   /// Queries the SDK's polygon hit-test (including any interior rings).
   Future<bool> polygonContains(String polygonId, LatLng point) async {
