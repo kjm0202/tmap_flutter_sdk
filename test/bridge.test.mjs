@@ -354,3 +354,44 @@ test('disposing a web map calls tmapBridge.disposeControls', () => {
   host.tmap_dispose('first');
   assert.equal(disposeControlsCalled, true);
 });
+
+for (const platform of ['web', 'mobile']) {
+  test(`${platform} cluster members forward published marker options and bind drag`, () => {
+    const host = load(platform === 'web' ? 'web' : 'mobile_overlays');
+    host.Tmapv3.Size = class { constructor(width, height) { Object.assign(this, {width, height}); } };
+    host.Tmapv3.Point = class { constructor(x, y) { Object.assign(this, {x, y}); } };
+    host.Tmapv3.extension = {MarkerCluster: class {
+      constructor(options) { this.options = options; }
+      clearMarkers() {}
+    }};
+    const map = {getZoom: () => 12};
+    let state;
+    if (platform === 'web') state = host.tmap_instances.first = {map, callbacks: {}};
+    else { host.map = map; host.markerCluster = null; }
+    const members = [
+      {markerId: 'styled', position: {latitude: 1, longitude: 2},
+        icon: {iconUrl: 'icon.png', size: {width: 24, height: 32}, offset: {x: 0, y: -4}},
+        color: '#123456', title: 'Title', label: 'Label', labelBackgroundColor: '#abcdef',
+        labelTextColor: '#123456', opacity: 0, visible: false, draggable: true, zIndex: 0, anchor: 'center'},
+      {markerId: 'default', position: {latitude: 3, longitude: 4}},
+      {id: 'legacy', lat: 5, lng: 6, iconHtml: '<b>legacy</b>', iconW: 12, iconH: 13, offsetX: 0, offsetY: 0},
+    ];
+    if (platform === 'web') host.tmap_addClusterer('first', {markers: members});
+    else host.addMarkerClusterer(members, 19, 2, 80, 1, true);
+    const cluster = platform === 'web' ? state.clusterer : host.markerCluster;
+    const [styled, defaults, legacy] = cluster.options.markers;
+    const o = styled.options;
+    assert.equal(styled._customMarkerId, 'styled');
+    assert.deepEqual([o.position.lat(), o.position.lng(), o.anchor, o.opacity, o.visible, o.draggable, o.zIndex], [1, 2, 'center', 0, false, false, 0]);
+    assert.deepEqual([o.icon, o.iconSize.width, o.iconSize.height, o.offset.x, o.offset.y], ['icon.png', 24, 32, 0, -4]);
+    assert.deepEqual([o.color, o.title, o.label, o.labelOption.backgroundColor, o.labelOption.color], ['#123456', 'Title', 'Label', '#abcdef', '#123456']);
+    assert.deepEqual([defaults.options.anchor, defaults.options.opacity, defaults.options.visible, defaults.options.draggable, defaults.options.zIndex], ['bottom', 1, true, false, 100]);
+    assert.deepEqual([legacy.options.iconHTML, legacy.options.iconSize.width, legacy.options.offset.x, legacy.options.offset.y], ['<b>legacy</b>', 12, 0, 0]);
+    const bindings = platform === 'web' ? state.clusterDragListeners : host.clusterMarkerDragListeners;
+    assert.equal(typeof bindings.styled.dispose, 'function');
+    assert.equal(bindings.default, undefined);
+    if (platform === 'web') host.tmap_clearClusterer('first');
+    else host.clearMarkerClusterer();
+    assert.equal(Object.keys(platform === 'web' ? state.clusterDragListeners : host.clusterMarkerDragListeners).length, 0);
+  });
+}

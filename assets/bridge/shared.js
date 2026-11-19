@@ -229,6 +229,50 @@ function bindTmapMarkerDrag(marker, map, callback) {
   };
 }
 
+// Cluster members use the same published marker options as standalone markers,
+// but their pointer adapter owns dragging instead of the SDK's native handler.
+function tmapMarkerOptions(data, nativeDraggable) {
+  const position = data.position ?? (data.lat !== undefined && data.lng !== undefined ? {latitude: data.lat, longitude: data.lng} : null);
+  const options = {
+    position: new Tmapv3.LatLng(position.latitude, position.longitude),
+    anchor: data.anchor || 'bottom',
+    opacity: data.opacity !== undefined ? data.opacity : 1.0,
+    visible: data.visible !== false,
+    draggable: nativeDraggable && !!data.draggable,
+    zIndex: data.zIndex !== undefined ? data.zIndex : 100
+  };
+  if (data.color) options.color = data.color;
+  if (data.title) options.title = data.title;
+  if (data.label) {
+    options.label = data.label;
+    if (data.labelBackgroundColor || data.labelTextColor) {
+      options.labelOption = {
+        backgroundColor: data.labelBackgroundColor || '#ffffff',
+        color: data.labelTextColor || '#000000',
+        fontSize: '13px',
+        padding: '4px 8px',
+        borderRadius: '4px'
+      };
+    }
+  }
+  const icon = data.icon;
+  if (icon) {
+    if (icon.iconUrl) options.icon = icon.iconUrl;
+    else if (icon.iconHtml) options.iconHTML = icon.iconHtml;
+    if (icon.size) options.iconSize = new Tmapv3.Size(icon.size.width, icon.size.height);
+    if (icon.offset) options.offset = new Tmapv3.Point(icon.offset.x, icon.offset.y);
+  } else {
+    if (data.iconUrl) options.icon = data.iconUrl;
+    else if (data.iconHtml) options.iconHTML = data.iconHtml;
+    if (data.iconW != null && data.iconH != null) options.iconSize = new Tmapv3.Size(data.iconW, data.iconH);
+    if (data.offsetX !== undefined && data.offsetY !== undefined && data.offsetX !== null && data.offsetY !== null) {
+      options.offset = new Tmapv3.Point(data.offsetX, data.offsetY);
+    }
+  }
+
+  return options;
+}
+
 const tmapBridge = {
   setCenter(map, lat, lng) {
     map.setCenter(new Tmapv3.LatLng(lat, lng));
@@ -245,45 +289,8 @@ const tmapBridge = {
   addMarker(map, markers, data, callbacks, dragListeners) {
     const id = data.markerId ?? data.id;
     tmapBridge.clearMarker(markers, id, dragListeners);
-    const position = data.position ?? (data.lat !== undefined && data.lng !== undefined ? {latitude: data.lat, longitude: data.lng} : null);
-    const options = {
-      map,
-      position: new Tmapv3.LatLng(position.latitude, position.longitude),
-      anchor: data.anchor || 'bottom',
-      opacity: data.opacity !== undefined ? data.opacity : 1.0,
-      visible: data.visible !== false,
-      draggable: !!data.draggable,
-      zIndex: data.zIndex !== undefined ? data.zIndex : 100
-    };
-    if (data.color) options.color = data.color;
-    if (data.title) options.title = data.title;
-    if (data.label) {
-      options.label = data.label;
-      if (data.labelBackgroundColor || data.labelTextColor) {
-        options.labelOption = {
-          backgroundColor: data.labelBackgroundColor || '#ffffff',
-          color: data.labelTextColor || '#000000',
-          fontSize: '13px',
-          padding: '4px 8px',
-          borderRadius: '4px'
-        };
-      }
-    }
-    const icon = data.icon;
-    if (icon) {
-      if (icon.iconUrl) options.icon = icon.iconUrl;
-      else if (icon.iconHtml) options.iconHTML = icon.iconHtml;
-      if (icon.size) options.iconSize = new Tmapv3.Size(icon.size.width, icon.size.height);
-      if (icon.offset) options.offset = new Tmapv3.Point(icon.offset.x, icon.offset.y);
-    } else {
-      if (data.iconUrl) options.icon = data.iconUrl;
-      else if (data.iconHtml) options.iconHTML = data.iconHtml;
-      if (data.iconW != null && data.iconH != null) options.iconSize = new Tmapv3.Size(data.iconW, data.iconH);
-      if (data.offsetX !== undefined && data.offsetY !== undefined && data.offsetX !== null && data.offsetY !== null) {
-        options.offset = new Tmapv3.Point(data.offsetX, data.offsetY);
-      }
-    }
-
+    const options = tmapMarkerOptions(data, true);
+    options.map = map;
     const marker = new Tmapv3.Marker(options);
     marker._customMarkerId = id;
     markers[id] = marker;

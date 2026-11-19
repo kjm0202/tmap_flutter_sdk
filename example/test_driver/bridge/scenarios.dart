@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 import 'shape_scenarios.dart';
 import 'cluster_scenarios.dart';
+import 'cluster_members_scenario.dart';
 import 'tdata_scenarios.dart';
 import 'camera_scenarios.dart';
 import 'info_window_scenarios.dart';
@@ -70,6 +71,7 @@ void main() async {
     'overlay_regression': testOverlayRegression,
     'polygon_zindex': testPolygonZIndex,
     'shape_zindex': testShapeZIndex,
+    'cluster_members': testClusterMembers,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');

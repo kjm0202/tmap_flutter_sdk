@@ -159,14 +159,7 @@ class TMapWebBridge {
       'gridSize': clusterer.gridSize,
       'visible': clusterer.visible,
       'opacity': clusterer.opacity,
-      'markers': clusterer.markers
-          .map((m) => {
-                'id': m.markerId,
-                'lat': m.position.latitude,
-                'lng': m.position.longitude,
-                if (m.title != null) 'title': m.title,
-              })
-          .toList(),
+      'markers': clusterer.markers.map((m) => m.toJson()).toList(),
     };
     _call('addClusterer', [viewId, data]);
   }

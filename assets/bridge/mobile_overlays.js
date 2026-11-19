@@ -200,42 +200,8 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
   for (var i = 0; i < markersData.length; i++) {
     var m = markersData[i];
     var mId = m.markerId || m.id;
-    var pos = new Tmapv3.LatLng(m.position ? m.position.latitude : m.lat, m.position ? m.position.longitude : m.lng);
-    var mOptions = {
-      position: pos,
-      anchor: m.anchor || "bottom",
-      opacity: m.opacity !== undefined ? m.opacity : 1,
-      visible: m.visible !== undefined ? m.visible : true,
-      draggable: false,
-      zIndex: m.zIndex || 100
-    };
-
-    if (m.color) mOptions.color = m.color;
-    if (m.title) mOptions.title = m.title;
-    if (m.label) {
-      mOptions.label = m.label;
-      if (m.labelBackgroundColor || m.labelTextColor) {
-        mOptions.labelOption = {
-          backgroundColor: m.labelBackgroundColor || "#ffffff",
-          color: m.labelTextColor || "#000000",
-          fontSize: "13px",
-          padding: "4px 8px",
-          borderRadius: "4px"
-        };
-      }
-    }
-
-    if (m.icon) {
-      if (m.icon.iconUrl) mOptions.icon = m.icon.iconUrl;
-      else if (m.icon.iconHtml) mOptions.iconHTML = m.icon.iconHtml;
-      if (m.icon.size) mOptions.iconSize = new Tmapv3.Size(m.icon.size.width, m.icon.size.height);
-      if (m.icon.offset) mOptions.offset = new Tmapv3.Point(m.icon.offset.x, m.icon.offset.y);
-    } else {
-      if (m.iconUrl) mOptions.icon = m.iconUrl;
-      else if (m.iconHtml) mOptions.iconHTML = m.iconHtml;
-      if (m.iconW != null && m.iconH != null) mOptions.iconSize = new Tmapv3.Size(m.iconW, m.iconH);
-      if (m.offsetX !== undefined && m.offsetY !== undefined) mOptions.offset = new Tmapv3.Point(m.offsetX, m.offsetY);
-    }
+    var mOptions = tmapMarkerOptions(m, false);
+    var pos = mOptions.position;
 
     var marker = new Tmapv3.Marker(mOptions);
     marker._customMarkerId = mId;
