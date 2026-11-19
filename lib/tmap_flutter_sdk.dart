@@ -47,3 +47,4 @@ export 'src/tmap_controller.dart';
 
 // Utils
 export 'src/utils/hex_color.dart';
+export 'src/utils/projection.dart';

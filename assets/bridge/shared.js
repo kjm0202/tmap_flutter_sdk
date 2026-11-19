@@ -794,6 +794,94 @@ const tmapBridge = {
   }
 };
 
+// Map readback is shared by Web (synchronous window entry point) and mobile
+// (runJavaScriptReturningResult). Returning JSON keeps numeric and coordinate
+// data identical across the two Dart runtimes.
+tmapBridge.readMapData = function(map, name, args) {
+  if (!map) throw new Error('Map is not initialized');
+  args = args || {};
+  var value;
+  switch (name) {
+    case 'getBearing':
+    case 'getPitch':
+    case 'getZoom':
+    case 'getMinZoom':
+    case 'getMaxZoom':
+      if (typeof map[name] !== 'function') throw new Error('Unsupported Map method: ' + name);
+      value = {value: map[name]()};
+      break;
+    case 'getCenter':
+      var center = map.getCenter();
+      value = {latitude: latitudeOf(center), longitude: longitudeOf(center)};
+      break;
+    case 'getBounds':
+      var bounds = extractMapBounds(map);
+      if (!bounds) throw new Error('Map bounds unavailable');
+      value = {
+        southWest: {latitude: bounds.swLat, longitude: bounds.swLng},
+        northEast: {latitude: bounds.neLat, longitude: bounds.neLng}
+      };
+      break;
+    case 'realToScreen':
+      var pixel = map.realToScreen(new Tmapv3.LatLng(args.latitude, args.longitude));
+      value = {x: typeof pixel.getX === 'function' ? pixel.getX() : (pixel.x ?? pixel._x),
+        y: typeof pixel.getY === 'function' ? pixel.getY() : (pixel.y ?? pixel._y)};
+      break;
+    case 'screenToReal':
+      var coordinate = map.screenToReal(new Tmapv3.Point(args.x, args.y));
+      value = {latitude: latitudeOf(coordinate), longitude: longitudeOf(coordinate)};
+      break;
+    case 'screenSize':
+      var size = map.screenSize();
+      value = {
+        width: typeof size.getWidth === 'function' ? size.getWidth() : (size.width ?? size._width),
+        height: typeof size.getHeight === 'function' ? size.getHeight() : (size.height ?? size._height)
+      };
+      break;
+    default:
+      throw new Error('Unsupported Map read: ' + name);
+  }
+  return JSON.stringify(value);
+};
+
+tmapBridge.setZoomLimit = function(map, minZoom, maxZoom) {
+  if (!map || typeof map.setZoomLimit !== 'function') {
+    throw new Error('Map.setZoomLimit is unavailable');
+  }
+  map.setZoomLimit(minZoom, maxZoom);
+};
+
+// Bessel and KATEC conversions deliberately delegate to the vendor SDK: its
+// datum shift and TM parameters must agree with the map's coordinate system.
+tmapBridge.convertProjection = function(method, data) {
+  var methods = {
+    convertBesselGEOToWGS84GEO: 'geographic',
+    convertBesselTMToWGS84GEO: 'projected',
+    convertWGS84GEOToBesselGEO: 'geographic',
+    convertWGS84GEOToBesselTM: 'geographic',
+    convertWGS84GEOToKatec: 'geographic'
+  };
+  if (!Object.prototype.hasOwnProperty.call(methods, method)) {
+    throw new Error('Unsupported projection conversion: ' + method);
+  }
+  var projection = new Tmapv3.Projection();
+  var source = methods[method] === 'projected'
+    ? new Tmapv3.Point(data.x, data.y)
+    : new Tmapv3.LatLng(data.latitude, data.longitude);
+  // The documented functions are exposed as static methods by the 20231206
+  // SDK build; older builds may also provide instance methods.
+  var fn = typeof projection[method] === 'function'
+    ? projection[method] : Tmapv3.Projection[method];
+  if (typeof fn !== 'function') throw new Error('Projection method unavailable: ' + method);
+  var target = fn.call(projection, source);
+  if (!target) throw new Error('Projection conversion returned no coordinate');
+  var geographic = method.endsWith('ToWGS84GEO') || method.endsWith('ToBesselGEO');
+  return JSON.stringify(geographic
+    ? {latitude: latitudeOf(target), longitude: longitudeOf(target)}
+    : {x: typeof target.getX === 'function' ? target.getX() : (target.x ?? target._x),
+       y: typeof target.getY === 'function' ? target.getY() : (target.y ?? target._y)});
+};
+
 if (typeof window !== 'undefined') {
   window.tmapBridge = tmapBridge;
 }

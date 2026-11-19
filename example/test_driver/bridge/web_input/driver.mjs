@@ -137,6 +137,9 @@ async function handleAction(cdpCall, gesture) {
     await cdpCall('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
     await setTimeout(1000);
     await cdpCall('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } else if (action === 'contextMenu') {
+    await cdpCall('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'right', buttons: 2, clickCount: 1 });
+    await cdpCall('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'right', buttons: 0, clickCount: 1 });
   } else if (action === 'dragTouch') {
     await cdpCall('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
     try {

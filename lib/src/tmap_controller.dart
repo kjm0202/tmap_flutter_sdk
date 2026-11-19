@@ -13,7 +13,9 @@ import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
 import 'models/overlay_interaction.dart';
 import 'models/poi_item.dart';
+import 'models/point.dart';
 import 'models/route_info.dart';
+import 'models/size.dart' as tmap_size;
 import 'overlays/circle.dart';
 import 'overlays/clusterer.dart';
 import 'overlays/custom_overlay.dart';
@@ -111,6 +113,102 @@ class TMapController {
       return;
     }
     await _runJs('setZoom($zoom);');
+  }
+
+  Map<String, dynamic> _parseJsData(Object? raw, String operation) {
+    if (raw == null) {
+      throw StateError('$operation returned no data; the map may be disposed');
+    }
+    dynamic decoded = raw;
+    // WKWebView returns JSON strings directly, while Android can return a
+    // JSON-encoded representation of the string. Web already returns a String.
+    for (var i = 0; i < 2 && decoded is String; i++) {
+      decoded = jsonDecode(decoded);
+    }
+    if (decoded is! Map) {
+      throw StateError('$operation returned an unexpected result: $decoded');
+    }
+    return Map<String, dynamic>.from(decoded);
+  }
+
+  Future<Map<String, dynamic>> _readMap(
+      String name, [Map<String, dynamic> args = const {}]) async {
+    final viewId = _webViewId;
+    final Object? response;
+    if (viewId != null) {
+      response = TMapWebBridge.readMapData(viewId, name, args);
+    } else {
+      response = await _webViewController!.runJavaScriptReturningResult(
+        'readMapData(${jsonEncode(name)}, ${jsonEncode(args)});',
+      );
+    }
+    return _parseJsData(response, name);
+  }
+
+  Future<double> _getNumber(String getter) async {
+    final value = (await _readMap(getter))['value'];
+    if (value is! num) throw StateError('$getter did not return a number');
+    return value.toDouble();
+  }
+
+  /// 현재 지도의 중심 좌표를 SDK로부터 읽습니다.
+  Future<LatLng> getCenter() async => LatLng.fromJson(await _readMap('getCenter'));
+
+  /// 현재 화면에서 보이는 지도 경계를 반환합니다.
+  Future<LatLngBounds> getBounds() async =>
+      LatLngBounds.fromJson(await _readMap('getBounds'));
+
+  /// 현재 줌을 반환합니다. 애니메이션 중에는 소수점 줌일 수 있습니다.
+  Future<double> getZoom() => _getNumber('getZoom');
+
+  Future<double> getMinZoom() => _getNumber('getMinZoom');
+
+  Future<double> getMaxZoom() => _getNumber('getMaxZoom');
+
+  Future<double> getBearing() => _getNumber('getBearing');
+
+  Future<double> getPitch() => _getNumber('getPitch');
+
+  /// 지도상 위경도를 지도 컨테이너 기준 화면 픽셀로 변환합니다.
+  Future<Point> realToScreen(LatLng position) async => Point.fromJson(
+        await _readMap('realToScreen', position.toJson()),
+      );
+
+  /// 지도 컨테이너 기준 화면 픽셀을 위경도로 변환합니다.
+  Future<LatLng> screenToReal(Point pixel) async => LatLng.fromJson(
+        await _readMap('screenToReal', pixel.toJson()),
+      );
+
+  /// 지도 SDK가 사용 중인 화면 크기를 픽셀로 반환합니다.
+  Future<tmap_size.Size> screenSize() async =>
+      tmap_size.Size.fromJson(await _readMap('screenSize'));
+
+  /// 최소/최대 허용 줌을 변경합니다.
+  Future<void> setZoomLimit(int minZoom, int maxZoom) async {
+    if (minZoom > maxZoom) {
+      throw ArgumentError.value(minZoom, 'minZoom', 'Must be <= maxZoom');
+    }
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.setZoomLimit(viewId, minZoom, maxZoom);
+      return;
+    }
+    await _runJs('setZoomLimit($minZoom, $maxZoom);');
+  }
+
+  /// SDK 고유의 Bessel 및 KATEC 좌표 변환용 내부 전달 함수입니다.
+  Future<Map<String, dynamic>> convertProjection(
+      String method, Map<String, dynamic> args) async {
+    final viewId = _webViewId;
+    final Object? response;
+    if (viewId != null) {
+      response = TMapWebBridge.convertProjection(viewId, method, args);
+    } else {
+      response = await _webViewController!.runJavaScriptReturningResult(
+        'convertProjection(${jsonEncode(method)}, ${jsonEncode(args)});',
+      );
+    }
+    return _parseJsData(response, method);
   }
 
   /// 1레벨 확대합니다.
@@ -219,7 +317,6 @@ class TMapController {
   }
 
   /// 지도 옵션(줌 제한, 컨트롤 표시 여부 등)을 업데이트합니다.
-  @visibleForTesting
   Future<void> updateMapOptions(Map<String, dynamic> options) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -630,7 +727,6 @@ class TMapController {
   }
 
   /// 특정 커스텀 오버레이를 제거합니다.
-  @visibleForTesting
   Future<void> clearCustomOverlay(String customOverlayId) async {
     final viewId = _webViewId;
     if (viewId != null) {

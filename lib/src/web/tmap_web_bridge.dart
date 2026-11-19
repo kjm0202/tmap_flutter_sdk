@@ -45,11 +45,15 @@ class TMapWebBridge {
     required String viewId,
     required String containerId,
     LatLng? center,
+    LatLngBounds? bounds,
+    LatLngBounds? maxBounds,
     int? zoom,
     int? minZoom,
     int? maxZoom,
     double? bearing,
     double? pitch,
+    double? minPitch,
+    double? maxPitch,
     TMapType? mapType,
     bool? naviControl,
     bool? scaleBar,
@@ -60,11 +64,15 @@ class TMapWebBridge {
     final options = {
       if (appKey.isNotEmpty) 'appKey': appKey,
       if (center != null) 'center': [center.latitude, center.longitude],
+      if (bounds != null) 'bounds': bounds.toJson(),
+      if (maxBounds != null) 'maxBounds': maxBounds.toJson(),
       if (zoom != null) 'zoom': zoom,
       if (minZoom != null) 'minZoom': minZoom,
       if (maxZoom != null) 'maxZoom': maxZoom,
       if (bearing != null) 'bearing': bearing,
       if (pitch != null) 'pitch': pitch,
+      if (minPitch != null) 'minPitch': minPitch,
+      if (maxPitch != null) 'maxPitch': maxPitch,
       if (mapType != null) 'mapType': mapType.name.toUpperCase(),
       if (naviControl != null) 'naviControl': naviControl,
       if (scaleBar != null) 'scaleBar': scaleBar,
@@ -87,6 +95,26 @@ class TMapWebBridge {
 
   static void setZoom(String viewId, int zoom) {
     _call('setZoom', [viewId, zoom]);
+  }
+
+  static String? readMapData(
+      String viewId, String method, Map<String, dynamic> args) {
+    return (web.window as JSObject).callMethodVarArgs<JSString?>(
+      'tmap_readMapData'.toJS,
+      [viewId.toJS, method.toJS, args.jsify()],
+    )?.toDart;
+  }
+
+  static String? convertProjection(
+      String viewId, String method, Map<String, dynamic> args) {
+    return (web.window as JSObject).callMethodVarArgs<JSString?>(
+      'tmap_convertProjection'.toJS,
+      [viewId.toJS, method.toJS, args.jsify()],
+    )?.toDart;
+  }
+
+  static void setZoomLimit(String viewId, int minZoom, int maxZoom) {
+    _call('setZoomLimit', [viewId, minZoom, maxZoom]);
   }
 
   static void zoomIn(String viewId) {
