@@ -20,6 +20,7 @@ import 'shape_style_scenario.dart';
 import 'scroll_screen_scenario.dart';
 import 'place_area_popup_scenario.dart';
 import 'place_response_capture.dart';
+import 'overlay_contract_scenarios.dart';
 
 void main() async {
   const filter = String.fromEnvironment('SCENARIO_FILTER');
@@ -89,6 +90,10 @@ Future<void> _runScenarios() async {
     'shape_zindex': testShapeZIndex,
     'shape_style': testShapeStyle,
     'cluster_members': testClusterMembers,
+    'marker_contract': testMarkerContract,
+    'cluster_contract': testClusterContract,
+    'info_window_contract': testInfoWindowContract,
+    'label_contract': testLabelContract,
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
     'place_area_popup': testPlaceAreaPopupScenario,
@@ -123,10 +128,12 @@ Future<void> _runScenarios() async {
           debugPrint('SCENARIO $name FAIL: unknown scenario');
         }
       }
-      suitesToRun = scenarios.keys.where((name) =>
-          filterSet.contains(name) &&
-          !(name == 'scroll_screen_dynamic' &&
-              filterSet.contains('scroll_screen'))).toList();
+      suitesToRun = scenarios.keys
+          .where((name) =>
+              filterSet.contains(name) &&
+              !(name == 'scroll_screen_dynamic' &&
+                  filterSet.contains('scroll_screen')))
+          .toList();
     }
   }
 

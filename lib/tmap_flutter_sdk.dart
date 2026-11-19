@@ -18,6 +18,7 @@ export 'src/models/address_info.dart';
 export 'src/models/auto_complete_item.dart';
 export 'src/models/lat_lng.dart';
 export 'src/models/lat_lng_bounds.dart';
+export 'src/models/overlay_interaction.dart';
 export 'src/models/poi_item.dart';
 export 'src/models/point.dart';
 export 'src/models/route_info.dart';

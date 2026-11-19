@@ -18,6 +18,7 @@ import 'constants/map_type.dart';
 import 'constants/zoom_type.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
+import 'models/overlay_interaction.dart';
 import 'overlays/circle.dart';
 import 'overlays/clusterer.dart';
 import 'overlays/custom_overlay.dart';
@@ -762,14 +763,50 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         'onMarkerTap',
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final id = (json['markerId'] ?? json['id'] ?? '') as String;
+          final latLng = LatLng.fromJson(json);
+          final zoom = (json['zoom'] as num? ?? 16).toInt();
+          _mapController.dispatchMarkerInteraction(MarkerInteraction(
+            markerId: id,
+            type: MarkerInteractionType.click,
+            position: latLng,
+            zoom: zoom,
+          ));
           final onMarkerTap = widget.onMarkerTap;
           if (onMarkerTap != null) {
-            final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = (json['markerId'] ?? json['id'] ?? '') as String;
-            final latLng = LatLng.fromJson(json);
-            final zoom = (json['zoom'] as num? ?? 16).toInt();
             onMarkerTap(id, latLng, zoom);
           }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onMarkerInteraction',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final type =
+              MarkerInteractionType.values.byName(json['event'] as String);
+          _mapController.dispatchMarkerInteraction(MarkerInteraction(
+            markerId: (json['markerId'] ?? '') as String,
+            type: type,
+            position: LatLng.fromJson(json),
+            zoom: (json['zoom'] as num? ?? 16).toInt(),
+          ));
+        },
+      )
+      ..addJavaScriptChannel(
+        'onClusterInteraction',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          _mapController.dispatchClusterInteraction(ClusterInteraction(
+            type: ClusterInteractionType.values.byName(json['event'] as String),
+            center: LatLng.fromJson(json),
+            zoom: (json['zoom'] as num? ?? 16).toInt(),
+            markerIds: (json['markers'] as List<dynamic>? ?? [])
+                .map((e) => e.toString())
+                .toList(),
+          ));
         },
       )
       ..addJavaScriptChannel(
@@ -793,13 +830,23 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         'onMarkerDragChangeCallback',
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final id = (json['markerId'] ?? json['id'] ?? '') as String;
+          final latLng = LatLng.fromJson(json);
+          final typeStr =
+              json['dragType'] as String? ?? json['phase'] as String? ?? '';
+          if (typeStr == 'move' || typeStr == 'end') {
+            _mapController.dispatchMarkerInteraction(MarkerInteraction(
+              markerId: id,
+              type: typeStr == 'move'
+                  ? MarkerInteractionType.drag
+                  : MarkerInteractionType.dragend,
+              position: latLng,
+              zoom: widget.zoom,
+            ));
+          }
           final onMarkerDragChange = widget.onMarkerDragChangeCallback;
           if (onMarkerDragChange != null) {
-            final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = (json['markerId'] ?? json['id'] ?? '') as String;
-            final latLng = LatLng.fromJson(json);
-            final typeStr =
-                json['dragType'] as String? ?? json['phase'] as String? ?? '';
             final type = typeStr == 'start'
                 ? DragType.start
                 : (typeStr == 'move' ? DragType.move : DragType.end);

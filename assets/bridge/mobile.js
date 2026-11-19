@@ -521,6 +521,13 @@ function addMarker(data) {
       }
     };
   }
+  for (const event of ['mouseenter', 'mouseleave']) {
+    callbacks[event] = (markerId, latitude, longitude, zoom) => {
+      if (window.onMarkerInteraction) {
+        onMarkerInteraction.postMessage(JSON.stringify({markerId, latitude, longitude, zoom, event}));
+      }
+    };
+  }
   if ((config.hasMarkerDragCallback || window.onMarkerDragChangeCallback) && data.draggable) {
     callbacks.drag = (markerId, latitude, longitude, dragType) => {
       if (window.onMarkerDragChangeCallback) {
