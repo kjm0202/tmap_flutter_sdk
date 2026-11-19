@@ -1,0 +1,15 @@
+{
+  "fixedPairs": 18,
+  "primarySdkCore": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+  "officialRequestObservation": "The original TData method was invoked and produced the endpoint, HTTP method and non-secret parameters. The measurement sent the key in the authenticated HTTPS header instead of the query and supplied the official JSON dependency. It does not validate unmodified credential transport.",
+  "iosInvalidRequestBodies": "POST and response status were observed for both invalid requests. Their body fields were not retained.",
+  "validatedProductFiles": {
+    "lib/src/tmap_controller.dart": "bea92644449d4959bfcc46be9a31eaf038f5ea17bf43b93e294a81a022629ea7",
+    "lib/src/services/tdata_service.dart": "b2df638ea7fc4225710a8d91edefe9faf5d60631285d5027339e855f9e06f08d",
+    "lib/src/models/route_info.dart": "580ef713be665321429ad8df1e8582705156e4014c8eaefe01755bb5bb6fdd1a",
+    "example/lib/main.dart": "d09756b4fb8c69fd2f2e2964043848be2321f71e4ca60960ba673b1adb824004"
+  },
+  "checkedAgainst": "a385a30",
+  "observationScriptSha256": "663dec75cb607b2ee3853f369c4088e2dcc55520c39c356b65593ffa68b311fd",
+  "receiptSha256": "77925396bfda079aa2702474fe70f9fabd8206b14d6741a7f09960504c621c64"
+}

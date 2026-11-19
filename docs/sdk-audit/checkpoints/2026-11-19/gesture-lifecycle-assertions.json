@@ -1,0 +1,503 @@
+{
+  "snapshot": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+  "checkpointCommit": "9cc80c8e046f9268ec008f6ad00a8ab7c2e2011f",
+  "checkpoint": "docs/sdk-audit/checkpoints/2026-11-19/release-scenarios.json",
+  "checkpointSha256": "48d4448d6b2621e1bb7f2a5b6f367cf5dc9b45fc9c3ac82646ae1f1becb2f96f",
+  "tests": {
+    "map_gestures": {
+      "path": "example/test_driver/bridge/map_gestures_scenario.dart",
+      "sha256": "84d333baa31a34a405826d0b6f97b4cce70bead07631c5fa941a0e6563613575"
+    },
+    "widget_lifecycle": {
+      "path": "example/test_driver/bridge/widget_lifecycle_scenario.dart",
+      "sha256": "056f78bafadb3432a2d075cabcdfb58b68d908566b4e3f3ae77681828b3b4c98"
+    }
+  },
+  "logs": {
+    "integrated-b010-web": {
+      "executionLogSha256": "fd80cd42f5f4e5822edd71b66b67e73d54d77bf79820bc57b24366da47bf9cc2",
+      "summarySha256": "3daf49dd546684e90e3cd2849f7c4e688f645f5e2168eef106664bdd0cb53274",
+      "results": [
+        "SCENARIO map_gestures PASS",
+        "SCENARIO widget_lifecycle PASS"
+      ]
+    },
+    "integrated-b010-android": {
+      "executionLogSha256": "d6dd0ab868179d0da87c351fccfe408272a07e5eab6e56f82c7fff982395c12a",
+      "summarySha256": "9fe25d6368e0bbab7c21b817e1a583001d8fc0a0b60fe3fecfcf18e52dc042d1",
+      "results": [
+        "SCENARIO map_gestures PASS",
+        "SCENARIO widget_lifecycle FAIL: timed out after 75s"
+      ]
+    },
+    "integrated-b010-ios": {
+      "executionLogSha256": "7d463d88c37b273dda546ff1be15d1269f1e9d693e0176ef61d52fc2cd53a178",
+      "summarySha256": "2ba92f4d19a3af0080e37d46599738a9df0e240bae77b99244e99bae612ab354",
+      "results": [
+        "SCENARIO map_gestures FAIL: Timed out waiting for map double tap callback",
+        "SCENARIO widget_lifecycle FAIL: Timed out waiting for webview page reloaded: sentinel retained and transient JS flag reset"
+      ]
+    },
+    "isolated-b010-android": {
+      "executionLogSha256": "a543c95dc4140a8d7a53330b3a0b35c18bca08c3cf6906347ae3464b9b052509",
+      "summarySha256": "1c11023b99d946da0718135cf9ebe450bef67c20f2c997649e40a1d5412ef3f7",
+      "results": [
+        "SCENARIO widget_lifecycle PASS"
+      ]
+    },
+    "isolated-b010-ios": {
+      "executionLogSha256": "12a7b74e5f1e95ca5b72b93cd824da567696dbabe0974f3424539b0faa1d6ab0",
+      "summarySha256": "743271d90ca361bd1a7e2770be4fb95bc840bd1e87fd468d00093ab415521df6",
+      "results": [
+        "SCENARIO widget_lifecycle FAIL: Timed out waiting for webview page reloaded: sentinel retained and transient JS flag reset"
+      ]
+    }
+  },
+  "earlierDiagnostics": {
+    "native-pointer-ios": {
+      "sourceSnapshot": "a2a342f016b19baf9f4a3f9ecc58830768ae6fdc777ea044c946a92e20e274a5",
+      "logSha256": "8cc9d167a5f8e35994d51ff85ed54447616422868708725747a57f898cda4ba6"
+    },
+    "control-trace-android": {
+      "sourceSnapshot": "85f1bd4699dc1fe31648063eee345d8737c9b35b62537890e2e2dce6351fd2f5",
+      "logSha256": "fafc0c836a710fe0e9b250d7241c0df5096e2ea0d97c4bd347774cd43c882612"
+    },
+    "gesture-public1-android": {
+      "sourceSnapshot": "a3cb1d464907fb534ff292019e83eadac4f942d5b88ac5bf35b31980bb1de6a2",
+      "logSha256": "6ba5d9f61c6f91c49fa5987aac4f15195506c6092efe798a5c8a75c39e5956b3"
+    },
+    "gesture-trusted1-ios": {
+      "sourceSnapshot": "0c8f981027d59beeff5823d0bbb304f01962fda085d3d05f9b1e3604bd13c1bd",
+      "logSha256": "ef2e246b1206b652d8bb7385a08adbd0f80c444ff0255ad028764914f4f62444"
+    },
+    "life-trace-ios": {
+      "sourceSnapshot": "1011651ffe220f60866fcf9a1f176a7b01c1454cb7137e310beedbfcfa8f340a",
+      "logSha256": "0d9c95f69120771632efaf8d440535479db957e1c8deb734a81157eb901fa0b5"
+    }
+  },
+  "rows": [
+    {
+      "suite": "map_gestures",
+      "testLines": "83–94",
+      "assertion": "지도 준비·양수인 캔버스 크기",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "생성 콜백은 명시. 내부 캔버스 선택자와 크기는 준비 확인 방법.",
+      "sourceRefs": "F1; D58–61",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "passed before timeout"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "96–104",
+      "assertion": "초기 중심과 줌 16",
+      "category": "공식 동등성",
+      "documentation": "명시",
+      "assessment": "center·zoom 옵션과 읽기 결과를 대조. ±0.005°는 테스트 허용치.",
+      "sourceRefs": "F2; D58–65",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "passed before timeout"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "107–121",
+      "assertion": "탭 콜백과 탭 위치",
+      "category": "Flutter 고유 계약",
+      "documentation": "명시",
+      "assessment": "공식 Click 위치를 전달하는 Dart 콜백. 중심에서만 ±0.01°로 검사하여 중심 상수 반환도 통과 가능.",
+      "sourceRefs": "F1; E45–47",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "passed before timeout"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "123–133",
+      "assertion": "두 번 탭하면 정확히 1레벨 확대",
+      "category": "기대 근거 부족",
+      "documentation": "보장 미확인",
+      "assessment": "Dart 타입/설명에는 확대 부수효과가 없다. 초기+1만 비교하며 Callback 전달과 독립. b010 iOS에선 이 단언을 통과했지만 이전 별도 실행에서 실패.",
+      "sourceRefs": "F1; B528628",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "passed before timeout"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "66–70, 135–146",
+      "assertion": "두 번 탭 시 Dart 콜백에 위치 전달",
+      "category": "Flutter 고유 계약",
+      "documentation": "명시",
+      "assessment": "DoubleClick은 SDK의 DOM dblclick 경로에 존재. iOS에서 터치 두 번을 해당 이벤트로 해석하는 조건은 문서에 없다. b010은 콜백을 받지 못해 위치 검사에 미도달. 중복 위치는 테스트가 버린다.",
+      "sourceRefs": "F1; B528628",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "callback-timeout; position not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "71–75, 149–162, 345–413",
+      "assertion": "롱 탭/컨텍스트 메뉴 콜백과 위치",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "0.1.1은 롱 탭(ContextMenu)로 명시하고 모바일 JS에서 ContextMenu에만 연결했다. 공식 예제는 우클릭을 시연. SDK의 LongTap은 입력 설정과 타이머 조건부. Web/Android는 동기 touch·우클릭 조합, iOS만 실제 hold. b010 iOS 미실행. 중복도 측정 불가.",
+      "sourceRefs": "F1; F4; E69–82; B521126",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "167–180",
+      "assertion": "드래그 후 최종 중심 이동",
+      "category": "공식 동등성",
+      "documentation": "관찰",
+      "assessment": "지도 이동은 공식 기능. 0.0001°·동쪽으로 일정량 이동은 이 시나리오의 입력에 대한 판정이며 프레임별 보장이 아니다.",
+      "sourceRefs": "E51–58; F4",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "182–188",
+      "assertion": "드래그가 추가 탭 콜백을 만들지 않음",
+      "category": "Flutter 고유 계약",
+      "documentation": "추론",
+      "assessment": "독립된 클릭·드래그 이벤트의 사용자 의미. 300ms는 검사 창. SDK판 클릭 처리에 이동량 조건이 있다.",
+      "sourceRefs": "F1; E45–58; B528628",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "190–216",
+      "assertion": "시작/종료 순서와 사이의 이동 이벤트",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "공식 DragStart/DragEnd와 DragType 공개. 이동 이벤트가 하나도 없어도 이 코드는 통과하며 모든 시작/종료가 정확히 하나임도 보이지 않는다. 0.1.1 모바일은 start/end만 중계.",
+      "sourceRefs": "F1; F4; E51–58; B479450",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "218–234",
+      "assertion": "드래그 시작 위치 근접, 시작/종료 줌 15–19",
+      "category": "공식 동등성",
+      "documentation": "부분",
+      "assessment": "각 이벤트 시점 중심·줌이 의미 있는 비교 대상. 고정 범위와 원래 중심 ±0.01° 검사는 실제 SDK 이벤트별 값 일치를 입증하지 않는다.",
+      "sourceRefs": "F4; E51–64",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "map_gestures",
+      "testLines": "236–241",
+      "assertion": "시작과 종료 중심 차이 ≥0.00001°",
+      "category": "기대 근거 부족",
+      "documentation": "보장 미확인",
+      "assessment": "공식 예제는 각 핸들러 시점 중심을 별개로 읽는다. 차이·최소량·카메라 갱신 시점은 명시하지 않는다. a3cb 실패와 b010 Android PASS를 구분. 이벤트별 SDK 값과 Dart payload, 별도로 안정화된 카메라 이동을 검증할 수 있다.",
+      "sourceRefs": "E51–58; F4",
+      "snapshotEvidence": {
+        "web": "pass",
+        "android": "pass",
+        "ios": "not reached"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "157–171, 277–286",
+      "assertion": "초기·재빌드 중심/줌",
+      "category": "공식 동등성",
+      "documentation": "명시/구현",
+      "assessment": "SDK 옵션/카메라와 Flutter didUpdateWidget 전달. 캔버스 준비는 시나리오 선행 조건.",
+      "sourceRefs": "D58–65; F2; F3",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "172–204, 287–325",
+      "assertion": "초기/교체/삭제된 마커·팝업·도형·라벨·커스텀 오버레이와 클러스터",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "공개 목록과 0.1.1의 재동기화. 커스텀 DOM·라벨 레이어에는 실제 부착 증거가 있으나 모양 registry에 항목이 있다는 검사만으로 모든 도형의 표시나 제거를 증명하지 못한다.",
+      "sourceRefs": "F2; D3480,4117",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "326–342",
+      "assertion": "교체된 마커 클릭 1회, 이전 콜백 0회",
+      "category": "Flutter 고유 계약",
+      "documentation": "추론/구현",
+      "assessment": "공개 onMarkerTap에 탭을 전달할 때 현재 위젯의 콜백을 사용한다. 테스트는 그 시점 횟수를 읽으며 물리적 화면 히트 테스트는 수행하지 않는다.",
+      "sourceRefs": "F1; F2",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "345–370",
+      "assertion": "Web unmount registry 해제와 재마운트된 지도 준비",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "리소스 정리·새 위젯 생성. 전역 registry가 0이어야 하는 조건은 이 격리된 테스트 내부 구조에 의존한다. 다른 지도와 공존하는 경우까지 포괄하지 않는다.",
+      "sourceRefs": "F1; F2",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "not applicable to Web-only registry check; remount passed",
+        "iosIntegratedAndIsolated": "not applicable to Web-only registry check; remount passed"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "399–403, 453–457",
+      "assertion": "초기 10–18, 재빌드 8–17 줌 제한",
+      "category": "공식 동등성",
+      "documentation": "명시/추론",
+      "assessment": "공식 min/max·setZoomLimit는 명시. Flutter 위젯 재빌드 반영은 래퍼 기대. 0.1.1 모바일 didUpdateWidget은 해당 옵션을 갱신하지 않았다.",
+      "sourceRefs": "D64–65,583–589; F2",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "404–412, 458–465",
+      "assertion": "초기 UI 표시 및 재빌드 후 탐색/축척 컨트롤 숨김",
+      "category": "Flutter 고유 계약",
+      "documentation": "부분",
+      "assessment": "생성 옵션 표시 여부는 공식 명시. 재빌드 반영은 래퍼. 플래그 OR 일반 DOM 클래스, 제거 시 옵션/핸들만 보므로 b010 PASS가 시각적 제거를 증명하지 않는다.",
+      "sourceRefs": "D70–71; F2",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "414–439, 468–493",
+      "assertion": "범위 안 14와 양 경계(10/18, 8/17) 도달",
+      "category": "공식 동등성",
+      "documentation": "명시/배포본",
+      "assessment": "문서상 setZoom과 제한 기능. 양 경계는 이 배포본의 setZoom 비교식에서 허용.",
+      "sourceRefs": "D357–373,583–589; B1264095; F3",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "420–425, 439–443, 474–479, 493–497",
+      "assertion": "범위 밖 5/22 요청을 무시하고 기존 줌 유지",
+      "category": "공식 동등성",
+      "documentation": "배포본/관찰",
+      "assessment": "공식 배포 JS에서 범위 밖 요청 시 조기 반환. 공개 가이드는 제한을 설명하나 무시 정책은 이 배포본에서 확인. setZoomLimit이 기존 카메라를 새 한도로 조정하는 별도 동작과 구별.",
+      "sourceRefs": "D583–589; B1264095,1264842",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "499–529",
+      "assertion": "동일 위젯 컨테이너 크기 변경·relayout 후 캔버스 크기 변경",
+      "category": "공식 동등성",
+      "documentation": "명시/부분",
+      "assessment": "공식 resize는 외부 div 변경용. 이 검사는 폭/높이 중 하나의 변화만 읽고, relayout 호출만이 변화 원인이라는 비교는 없다.",
+      "sourceRefs": "D955–962; F3",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "531–550",
+      "assertion": "변경된 뷰포트에서 fitBounds 후 대상 영역 포함",
+      "category": "공식 동등성",
+      "documentation": "명시",
+      "assessment": "공식 표시 영역과 컨트롤러 fitBounds. 테스트 비교에는 경계별 0.0005° 여유가 있다.",
+      "sourceRefs": "D194–200; F3",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "566–577, 594",
+      "assertion": "Web getter UnsupportedError, 모바일 WebViewController 반환",
+      "category": "Flutter 고유 계약",
+      "documentation": "명시/구현",
+      "assessment": "0.1.1 getter 소스에 모바일 전용과 예외가 명시됨.",
+      "sourceRefs": "F3",
+      "snapshotEvidence": {
+        "web": "web branch only",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "mobile branch only",
+        "iosIntegratedAndIsolated": "mobile branch only"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "579–591",
+      "assertion": "Web reloadHtml/reload 후 살아 있는 지도·DOM 유지",
+      "category": "Flutter 고유 계약",
+      "documentation": "구현",
+      "assessment": "0.1.1은 모바일 controller가 있을 때만 실행. 두 호출을 연속 검사하므로 개별 효과의 별도 측정은 없다.",
+      "sourceRefs": "F3",
+      "snapshotEvidence": {
+        "web": "pass",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "not applicable",
+        "iosIntegratedAndIsolated": "not applicable"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "596–610",
+      "assertion": "모바일 reloadHtml 결과 새 HTML 표시, 임시 JS 상태 설정 확인",
+      "category": "Flutter 고유 계약",
+      "documentation": "명시/선행조건",
+      "assessment": "reloadHtml은 입력 문자열 로드. 센티널과 임시 플래그는 다음 단계의 확인 수단.",
+      "sourceRefs": "F3",
+      "snapshotEvidence": {
+        "web": "not applicable",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "passed before reload failure"
+      }
+    },
+    {
+      "suite": "widget_lifecycle",
+      "testLines": "612–621",
+      "assertion": "reload 후 동일 인라인 HTML 보존과 JS 전역 초기화",
+      "category": "기대 근거 부족",
+      "documentation": "실사용 기대/명세 미확인",
+      "assessment": "iOS에서 이 조합이 두 번 실패했다. 0.1.1은 WebView.reload를 위임. 플러그인은 현재 URL 재로드, WebKit은 현재 페이지 재로드를 문서화한다. 직전 HTML 문자열 재생성·baseUrl 재현은 명시하지 않는다. URL 기반 새로고침과 인라인 재로딩이라는 별도 요구를 구분한다.",
+      "sourceRefs": "F3; W; A",
+      "snapshotEvidence": {
+        "web": "not applicable",
+        "androidIntegrated": "75 s timeout, individual stage unreported",
+        "androidIsolated": "pass",
+        "iosIntegratedAndIsolated": "combined predicate failed"
+      }
+    }
+  ],
+  "sources": {
+    "P": {
+      "title": "pub.dev 0.1.1 원본",
+      "url": "https://pub.dev/api/archives/tmap_flutter_sdk-0.1.1.tar.gz",
+      "sha256": "dae54a154deb0b979e27c18d7d49d00faedd93bc8dfff8c732f11438a7fbb056",
+      "note": "pub.dev 버전 API의 체크섬과 직접 내려받은 바이트가 일치. F1–F3의 파일은 줄바꿈 정규화 후 Git 버전과 일치."
+    },
+    "F1": {
+      "title": "0.1.1 callbacks.dart L7–20, 43–48",
+      "url": "https://github.com/kjm0202/tmap_flutter_sdk/blob/fec1b1cb867922d9cef943c835a0af31035085a3/lib/src/callbacks/callbacks.dart#L7",
+      "extra": "https://github.com/kjm0202/tmap_flutter_sdk/blob/fec1b1cb867922d9cef943c835a0af31035085a3/lib/src/constants/drag_type.dart#L2"
+    },
+    "F2": {
+      "title": "0.1.1 TMap L44–73, 93–145, 269–287, 345–440, 469–488",
+      "url": "https://github.com/kjm0202/tmap_flutter_sdk/blob/fec1b1cb867922d9cef943c835a0af31035085a3/lib/src/tmap.dart#L44"
+    },
+    "F3": {
+      "title": "0.1.1 컨트롤러 L35–41, 84–102, 178–212",
+      "url": "https://github.com/kjm0202/tmap_flutter_sdk/blob/fec1b1cb867922d9cef943c835a0af31035085a3/lib/src/tmap_controller.dart#L178"
+    },
+    "F4": {
+      "title": "0.1.1 모바일 이벤트 연결 L98–136",
+      "url": "https://github.com/kjm0202/tmap_flutter_sdk/blob/fec1b1cb867922d9cef943c835a0af31035085a3/lib/src/js/js_map_init.dart#L98"
+    },
+    "E": {
+      "title": "공식 TMAP Vector JS 이벤트 예제 원본 HTML 행",
+      "url": "https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html",
+      "sha256": "6c5ce735ead64c0195e3875ed1fc4d00d25dc6aca75be596eb5b34fec0c7e121"
+    },
+    "D": {
+      "title": "공식 TMAP Vector JS 레퍼런스 원본 HTML 행",
+      "url": "https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html",
+      "sha256": "bae9de2c73bf9be412694e92f26f95007f6d46e81845bf271bd20b1e1481e214"
+    },
+    "B": {
+      "title": "실제 TMAP 배포 JS. 위치는 0부터 시작하는 바이트 오프셋",
+      "url": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+      "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+      "note": "참조 배포본 해시. b010 실행마다 내려받은 네트워크 응답 바이트가 같았는지 이 증거만으로 확인되지 않는다."
+    },
+    "W": {
+      "title": "b010의 webview_flutter 4.10.0, lib/src/webview_controller.dart L150–153, 214–216",
+      "url": "https://pub.dev/api/archives/webview_flutter-4.10.0.tar.gz",
+      "sha256": "889a0a678e7c793c308c68739996227c9661590605e70b1f6cf6b9a6634f7aec",
+      "apiView": "https://pub.dev/documentation/webview_flutter/latest/webview_flutter/WebViewController/reload.html"
+    },
+    "A": {
+      "title": "Apple WKWebView.reload",
+      "url": "https://developer.apple.com/documentation/webkit/wkwebview/reload%28%29"
+    }
+  },
+  "notes": [
+    "0.1.1 배포 당시 코드에 콜백 선언이 있어도 플랫폼별 전달 성공은 보장되지 않는다. 출시된 모바일 코드에서 double 플래그는 받아도 이를 등록하는 onMapDoubleTap 채널/리스너는 확인되지 않는다. b010은 이후 수정된 소스다.",
+    "같은 절차에서 iOS만 XCTest로 실제 입력을 보냈다. Web/Android는 SDK 캔버스에 DOM 이벤트를 dispatch했다. callback 도착은 확인해도 실제 터치 하드웨어/브라우저 제스처 인식과의 완전 동등성을 뜻하지 않는다.",
+    "별도 a2a342f0 진단에서 iOS double 동작은 Flutter down/up 두 쌍, WK DOM touch 시작/끝 한 쌍이었고 Dart double이 없었다. 750ms hold 때 WK 터치 시간은 약 625ms였고 Dart long 콜백이 없었다. 이 기록은 b010에서 long/drag를 실행했다는 근거가 아니다.",
+    "이전 a3cb1d46 Android의 시작/종료 좌표차 검사 실패, 0c8f9810 iOS의 확대(+1) 검사 실패가 각각 있었다. 별도 85f1bd46 Android 기록은 실제 드래그 시작/종료 중심과 settle 이후 중심이 서로 달라질 수 있음을 보여준다.",
+    "b010의 iOS reload 실패는 결합 조건이 충족되지 않았음을 뜻한다. 이전 별도 iOS 즉시 관찰은 새로고침 직후 문서 센티널과 임시 JS 변수가 모두 존재했다. b010은 최종 DOM이나 JS 상태 각각을 독립 채집하지 않았다.",
+    "표에서 ‘명시’는 공개 선언이나 문서의 직접 설명, ‘구현/배포본’은 특정 소스의 동작, ‘추론/관찰’은 시나리오 수준의 기대 또는 측정, ‘보장 미확인’은 인용 자료에서 조건을 찾지 못했다는 뜻이다. 문서화된 동작도 개별 스모크 통과만으로 공식 SDK와의 쌍대 검증이 완료되지는 않는다."
+  ]
+}

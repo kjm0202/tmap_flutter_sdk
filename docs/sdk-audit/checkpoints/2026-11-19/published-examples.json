@@ -1,0 +1,112 @@
+{
+  "toolchain": {
+    "flutter": "3.50.0 stable",
+    "dart": "3.14.0 stable"
+  },
+  "source": "pub.dev 0.1.1",
+  "archiveSha256": "dae54a154deb0b979e27c18d7d49d00faedd93bc8dfff8c732f11438a7fbb056",
+  "method": "Dart analyze --format=machine. All 12 Dart fences in README. Material and SDK imports where implied, function context and trailing statement terminator for widget expressions, application widget stub for auth startup. Line numbers refer to original README. Static analysis only.",
+  "control": "Repeated independently with only maxZoom renamed to maxClusterZoom and minClusterSize renamed to minClusterCount in both Clusterer examples.",
+  "results": {
+    "pub011": {
+      "publishedText": {
+        "compilerErrors": [
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "en_cluster",
+            "readmeLine": 471,
+            "message": "The named parameter 'maxZoom' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "en_cluster",
+            "readmeLine": 472,
+            "message": "The named parameter 'minClusterSize' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "ko_cluster",
+            "readmeLine": 189,
+            "message": "The named parameter 'maxZoom' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "ko_cluster",
+            "readmeLine": 190,
+            "message": "The named parameter 'minClusterSize' isn't defined."
+          }
+        ],
+        "otherDiagnosticsBySeverity": {
+          "WARNING": 2,
+          "INFO": 12
+        },
+        "analyzerExitCode": 3
+      },
+      "control": {
+        "compilerErrors": [],
+        "otherDiagnosticsBySeverity": {
+          "WARNING": 2,
+          "INFO": 12
+        },
+        "analyzerExitCode": 2
+      },
+      "snippetCount": 12,
+      "readmeSha256": "3769f157a3306d523d3c6fb564d5d873ffc6ade9d85f028f375cc43eb2381d11",
+      "clustererDartSha256": "39136850b98035b5b043ab3cbfb80058512058af4f30099302c718efab1b0fbb"
+    },
+    "current": {
+      "publishedText": {
+        "compilerErrors": [
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "en_cluster",
+            "readmeLine": 492,
+            "message": "The named parameter 'maxZoom' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "en_cluster",
+            "readmeLine": 493,
+            "message": "The named parameter 'minClusterSize' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "ko_cluster",
+            "readmeLine": 210,
+            "message": "The named parameter 'maxZoom' isn't defined."
+          },
+          {
+            "severity": "ERROR",
+            "code": "UNDEFINED_NAMED_PARAMETER",
+            "snippet": "ko_cluster",
+            "readmeLine": 211,
+            "message": "The named parameter 'minClusterSize' isn't defined."
+          }
+        ],
+        "otherDiagnosticsBySeverity": {
+          "WARNING": 2,
+          "INFO": 12
+        },
+        "analyzerExitCode": 3
+      },
+      "control": {
+        "compilerErrors": [],
+        "otherDiagnosticsBySeverity": {
+          "WARNING": 2,
+          "INFO": 12
+        },
+        "analyzerExitCode": 2
+      },
+      "snippetCount": 12,
+      "readmeSha256": "702bd3dd61223ab9103d13146960c9af49e1622fbd99a27f178be930d4ef1d1c",
+      "clustererDartSha256": "a718c805de6829d10d31d199b4b337be12dfc8bdaff5acb66dca9d9972fbef9a"
+    }
+  }
+}

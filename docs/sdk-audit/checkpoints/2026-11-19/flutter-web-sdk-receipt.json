@@ -1,0 +1,92 @@
+{
+  "kind": "actual-flutter-web-network-observation",
+  "build": "Flutter 3.50.0 profile, same frozen inputs as b010; map_display filter",
+  "fingerprint": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+  "start": "2026-11-18T20:07:31.557Z",
+  "completed": "2026-11-18T20:07:38.517Z",
+  "browser": "157.0.8103.79",
+  "bodies": [
+    {
+      "url": "https://apis.openapi.sk.com/tmap/vectorjs?version=1",
+      "httpStatus": 200,
+      "utc": "2026-11-18T20:07:32.789Z",
+      "requestType": "script",
+      "bytes": 1212,
+      "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e"
+    },
+    {
+      "url": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/vsm.css",
+      "httpStatus": 200,
+      "utc": "2026-11-18T20:07:32.798Z",
+      "requestType": "stylesheet",
+      "bytes": 7552,
+      "sha256": "4f2019e06a10b9de6852984a860e3b64e3682e88fe9cd21949b2a0276aa0119a"
+    },
+    {
+      "url": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+      "httpStatus": 200,
+      "utc": "2026-11-18T20:07:32.853Z",
+      "requestType": "script",
+      "bytes": 1281499,
+      "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e"
+    }
+  ],
+  "workers": [
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    },
+    {
+      "bytes": 434287,
+      "sha256": "26e4ef4f3e4aadd6fd7bf669bfa64963263288d4b98438876f48e3087de75f27"
+    }
+  ],
+  "markers": [
+    "SCENARIO map_display PASS",
+    "SCENARIOS_PASS"
+  ],
+  "errors": [],
+  "method": "Dedicated fresh Chrome context. Passive response-body and parsed-script inspection. The application and vendor responses were not patched or rerouted. Workers were queried through their live Blob URLs.",
+  "parsedScripts": [
+    {
+      "url": "https://apis.openapi.sk.com/tmap/vectorjs?version=1",
+      "sourceUtf8Bytes": 1212,
+      "sourceUtf8Sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e"
+    },
+    {
+      "url": "https://toptmaptile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206",
+      "sourceUtf8Bytes": 1281499,
+      "sourceUtf8Sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e"
+    }
+  ],
+  "referenceContentId": "46b6767a1798276d0091e7958d5074413da81c8ba549bad80b6cc717465431ac",
+  "referenceCaptureId": "6c32e172952da67a5b66a1e06553db31b787fe482fb9192b93b5de196405979c",
+  "fixtureSha256": "bb67b15debce5b6ff2309870cf0ccb1dbe6b2e80f7fc8b754cedfb87302ba243",
+  "compiledFlutterMainJsSha256": "77eb42cdaf8ba57fd490bd3d4eafeecc83970367dae312fea9afcc7959416563",
+  "platform": "web",
+  "appliesTo": "Focused profile-mode map_display execution only. The independent earlier 13-group execution used debug mode."
+}

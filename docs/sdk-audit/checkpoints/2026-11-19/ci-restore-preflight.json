@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-18T20:44:32.263109+00:00",
+  "node": "v22.23.5",
+  "reproductionCommit": "e40c194fe4754724434bc86ca0a834604e5fe3cf",
+  "currentBaseline": {
+    "id": "7d936078411af8606d98ce1f06d8bb60a40c21855a2a29f3af0607003dc3f0b5",
+    "contentId": "46fa62a7bb271dd3887572278705a131a7fabf3d845728f306b4c539ac72811b",
+    "count": 158
+  },
+  "oldBaseline": {
+    "id": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+    "count": 80
+  },
+  "runs": [
+    {
+      "label": "current-with-default-restore",
+      "stateBefore": "fresh source cache",
+      "exitCode": 2,
+      "error": "HTTP 401"
+    },
+    {
+      "label": "current-with-archive",
+      "stateBefore": "after cold restore; local sealed archive provided",
+      "exitCode": 0,
+      "output": {
+        "baselineId": "7d936078411af8606d98ce1f06d8bb60a40c21855a2a29f3af0607003dc3f0b5",
+        "verifiedSources": 158
+      }
+    },
+    {
+      "label": "workflow-default-restore",
+      "stateBefore": "all 158 current records restored",
+      "exitCode": 0,
+      "output": {
+        "baselineId": "82f84e9f0d35001b7ae3605d970fb1645916494ba172a6144665573b0d2d7714",
+        "verifiedSources": 80
+      }
+    },
+    {
+      "label": "restore-missing-official-key-authenticated-bootstrap",
+      "stateBefore": "Current archive restored; only this body removed. Valid credential file supplied in environment and via CLI option.",
+      "exitCode": 2,
+      "error": "HTTP 401"
+    },
+    {
+      "label": "restore-missing-documentation-example-generated-map-worker",
+      "stateBefore": "Current archive restored; only this body removed. Valid credential file supplied in environment and via CLI option.",
+      "exitCode": 2,
+      "error": "Missing source a236811e719c6307d7d021784b60d8d6e3b6ff715a72a94ab6143d1bffef228f; run restore (or supply original cached bytes)."
+    }
+  ],
+  "candidateWorkflow": {
+    "path": ".github/workflows/sdk-audit.yml",
+    "sha256": "a4705828f2af5c2abc0d29ec6accc8525a047cb0579db9335fda7f283f97a51e",
+    "trackedInVerificationCommit": false,
+    "testedScope": "Local commands from the candidate workflow on Node 22; no hosted Actions run. The candidate cache key and default CLI both reference the 80-source snapshot. The restore step has no input archive and precedes credential creation.",
+    "runtimeBootstrap": "Authenticated capture in runtime.mjs fetches the SDK bootstrap afresh and explicitly skips /auth.js in its response-body digest collector. In the b010 authenticated audit runtime.json records script-executed and only one network script, the production core. Independently measured application sessions also recorded bootstrap bytes."
+  },
+  "sourceHash": {
+    "cli.mjs": "3da27807ccbd8c19d6db8a1450385fb54c31e5659f41acc307b614e546065069",
+    "sources.mjs": "a55279d59f2576bd3c70add30f2d0be9ebb861a2776650954142d958daab28a6",
+    "runtime.mjs": "3815520a153fb4966f45ebdb4635f57f3d2b4248732f65caf0f5af5a8d1c0116"
+  }
+}

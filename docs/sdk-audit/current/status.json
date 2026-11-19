@@ -1,0 +1,45 @@
+{
+  "status": "INCOMPLETE",
+  "contentId": "46fa62a7bb271dd3887572278705a131a7fabf3d845728f306b4c539ac72811b",
+  "manifestId": "7d936078411af8606d98ce1f06d8bb60a40c21855a2a29f3af0607003dc3f0b5",
+  "baselineFileSha256": "49db8bbc0a8bc8c824974a6f38f86473281ad9597fba81de2c616a1ec947e4cd",
+  "rawEntityArchive": {
+    "baselineId": "7d936078411af8606d98ce1f06d8bb60a40c21855a2a29f3af0607003dc3f0b5",
+    "sha256": "c7d32c82c1170c491c6fd76127026934ef59232e6b72e96b335cc3d73d46566e",
+    "bytes": 4620403,
+    "sources": 158
+  },
+  "sourceInputs": 158,
+  "uniqueBodies": 148,
+  "ledgerSha256": "338159cfb3a1d0fc3f2c473f6df460afe9331e2137a93440245846f4f537c792",
+  "runAt": "2026-11-19T06:26:47.646Z",
+  "auditExitCode": 1,
+  "checkExitCode": 1,
+  "strictGate": {
+    "ok": false,
+    "status": "INCOMPLETE",
+    "reasons": [
+      "unresolved-extraction-or-runtime-issues",
+      "unresolved-api-contracts",
+      "unresolved-platform-contracts",
+      "contract-observation-differences",
+      "unresolved-contract-drift"
+    ],
+    "canPass": false
+  },
+  "declaredCandidateRows": 4046,
+  "rowsWithDartDeclarationCandidate": 213,
+  "reportedIssues": 82,
+  "dynamicSitesRecorded": 10,
+  "parsedSdkBytes": 1716998,
+  "auditCommit": "a977bf1be82378e5ee408f2eb10d82d1e0ad5f11",
+  "publishedDartDeclarations": 331,
+  "releaseScenarios": {
+    "web": 13,
+    "android": 13,
+    "ios": 13,
+    "sourceFingerprint": "8c6855811b7e851b4728963bbda0514434d658fcc898a36ade753f7d3c31fddf"
+  },
+  "observedProjectionInitializers": 44,
+  "integrityExitCode": 0
+}

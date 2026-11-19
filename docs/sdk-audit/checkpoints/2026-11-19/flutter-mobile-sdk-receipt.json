@@ -1,0 +1,327 @@
+{
+  "kind": "runtime-sdk-body-observation",
+  "scope": "New, separate stable-Flutter map_display-only executions with the frozen b010 inputs; prior integrated releases are separate runs.",
+  "sourceFingerprintAlgorithm": "tool/sdk_audit/release_scenarios.mjs fingerprint",
+  "runSourceBefore": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+  "runSourceAfter": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+  "entry": "example/test_driver/bridge/scenarios.dart",
+  "entrySha256": "716b8218025bdcc974186ed45822afc8817923afd6fb13dd6a555f4dfe99c499",
+  "filter": "map_display",
+  "scenarioSha256": "bb67b15debce5b6ff2309870cf0ccb1dbe6b2e80f7fc8b754cedfb87302ba243",
+  "flutter": {
+    "version": "3.50.0",
+    "channel": "stable",
+    "revision": "ab2912035e160d9cad6306df307576da6128ebdb"
+  },
+  "sdkCore": {
+    "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+    "decodedBytes": 1281499
+  },
+  "sdkBootstrap": {
+    "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+    "decodedBytes": 1212
+  },
+  "representation": "SHA-256 of UTF-8 encoding of inspector-decoded script body/source, matching independent reference bytes. Transport metrics are separately labeled.",
+  "platforms": {
+    "android": {
+      "outcome": [
+        "SCENARIO map_display PASS",
+        "SCENARIOS_PASS"
+      ],
+      "executionLogSha256": "2746dccbd9a6cb444adb268f737bf286da441c193588120d79a7eff0d8c23068",
+      "sourceBefore": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+      "sourceAfter": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+      "captureSessionEndedUTC": "2026-11-18T20:16:44.173772+00:00",
+      "mounts": [
+        {
+          "ordinal": 1,
+          "targetIdHash": "4ce5d82d80b1a95c",
+          "attachedAt": "2026-11-18T20:14:37.679Z",
+          "bodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1212,
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "base64": false
+            },
+            {
+              "kind": "core",
+              "method": "Network.getResponseBody",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false,
+              "status": 200,
+              "diskCache": false,
+              "serviceWorker": false,
+              "prefetchCache": false,
+              "encodedDataLength": 1281802,
+              "requestServedFromCache": false
+            },
+            {
+              "kind": "core",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false
+            }
+          ]
+        },
+        {
+          "ordinal": 2,
+          "targetIdHash": "44c99acb1afdce4a",
+          "attachedAt": "2026-11-18T20:14:40.510Z",
+          "bodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1212,
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "base64": false
+            },
+            {
+              "kind": "core",
+              "method": "Network.getResponseBody",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false,
+              "status": 200,
+              "diskCache": false,
+              "serviceWorker": false,
+              "prefetchCache": false,
+              "encodedDataLength": 1281802,
+              "requestServedFromCache": false
+            },
+            {
+              "kind": "core",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false
+            }
+          ]
+        },
+        {
+          "ordinal": 3,
+          "targetIdHash": "b109ab311a570d99",
+          "attachedAt": "2026-11-18T20:14:43.653Z",
+          "bodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1212,
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "base64": false
+            },
+            {
+              "kind": "core",
+              "method": "Network.getResponseBody",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false,
+              "status": 200,
+              "diskCache": false,
+              "serviceWorker": false,
+              "prefetchCache": false,
+              "encodedDataLength": 1281802,
+              "requestServedFromCache": false
+            },
+            {
+              "kind": "core",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false
+            }
+          ]
+        },
+        {
+          "ordinal": 4,
+          "targetIdHash": "adce6a506f4223e6",
+          "attachedAt": "2026-11-18T20:14:51.172Z",
+          "bodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1212,
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "base64": false
+            },
+            {
+              "kind": "core",
+              "method": "Debugger.getScriptSource",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false
+            },
+            {
+              "kind": "core",
+              "method": "Network.getResponseBody",
+              "bytes": 1281499,
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "base64": false,
+              "status": 200,
+              "diskCache": false,
+              "serviceWorker": false,
+              "prefetchCache": false,
+              "encodedDataLength": 0,
+              "requestServedFromCache": true
+            }
+          ]
+        }
+      ],
+      "environment": "Android 17 API 37 emulator, example app only",
+      "observer": "CDP attached using package PID and its WebView socket. Requested Network and Debugger observation on each selected app target; disabled caching on attached targets. Used request-specific response body and parsed script source.",
+      "observerEvidenceSha256": "d9e2ee1c11ad136c22a23e675ccb3c026a2b5863b00fd7287d3c3a7f8fc98fa5"
+    },
+    "ios": {
+      "outcome": [
+        "SCENARIO map_display PASS",
+        "SCENARIOS_PASS"
+      ],
+      "executionLogSha256": "2d4776e92fbce7b368a943d8dda03b9b904975034bc11c57a7c59264e8acaa8b",
+      "sourceBefore": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+      "sourceAfter": "b010793ead2384bac90ae8d6e37e695d4991d38625c077b7ec0d709528ee3a95",
+      "captureSessionEndedUTC": "2026-11-18T20:16:44.383443+00:00",
+      "mounts": [
+        {
+          "ordinal": 1,
+          "targetIdHash": "01223588304c5397",
+          "inspectorEvidenceSha256": "c7f5e3e47fb047da59a1f664a05174dcd43476d8896b4f066917df6f0a60b3de",
+          "hasMapAndSdkCanvas": true,
+          "documentBodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Page.getResourceContent",
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "bytes": 1212,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            },
+            {
+              "kind": "core",
+              "method": "Page.getResourceContent",
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "bytes": 1281499,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            }
+          ],
+          "networkEventPairs": [
+            {
+              "kind": "bootstrap",
+              "requestId": "0.23",
+              "source": "network",
+              "httpStatus": 200,
+              "responseBodyBytesReceived": 758,
+              "responseBodyDecodedSize": 1212
+            },
+            {
+              "kind": "core",
+              "requestId": "0.25",
+              "source": "network",
+              "httpStatus": 200,
+              "responseBodyBytesReceived": 1281499,
+              "responseBodyDecodedSize": 1281499
+            }
+          ],
+          "transferEvidence": "current target response/finish matched by request ID"
+        },
+        {
+          "ordinal": 2,
+          "targetIdHash": "1b54d395dbc32043",
+          "inspectorEvidenceSha256": "842182c1f459fbfa13b9d0888e179614ea7a7b009ff3b516c48c67e4ec1c58c3",
+          "hasMapAndSdkCanvas": true,
+          "documentBodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Page.getResourceContent",
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "bytes": 1212,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            },
+            {
+              "kind": "core",
+              "method": "Page.getResourceContent",
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "bytes": 1281499,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            }
+          ],
+          "networkEventPairs": [],
+          "transferEvidence": "document bodies only; transfer origin unobserved"
+        },
+        {
+          "ordinal": 3,
+          "targetIdHash": "154ba430c44d9386",
+          "inspectorEvidenceSha256": "abafebb5661480649cad847789e245d3892cfc1e6e3e743c4c5d29943c626d2b",
+          "hasMapAndSdkCanvas": true,
+          "documentBodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Page.getResourceContent",
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "bytes": 1212,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            },
+            {
+              "kind": "core",
+              "method": "Page.getResourceContent",
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "bytes": 1281499,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            }
+          ],
+          "networkEventPairs": [],
+          "transferEvidence": "document bodies only; transfer origin unobserved"
+        },
+        {
+          "ordinal": 4,
+          "targetIdHash": "5946ed72775e1481",
+          "inspectorEvidenceSha256": "df2f790b7d50ca93a7c52e4b7abceaf29e7a2de870d12e8123c2c4d07bbd2932",
+          "hasMapAndSdkCanvas": true,
+          "documentBodies": [
+            {
+              "kind": "bootstrap",
+              "method": "Page.getResourceContent",
+              "sha256": "784ee06ed3dc974cc9839f6302346bd60616209b4d8635e5372d93577c59f01e",
+              "bytes": 1212,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            },
+            {
+              "kind": "core",
+              "method": "Page.getResourceContent",
+              "sha256": "5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e",
+              "bytes": 1281499,
+              "base64": false,
+              "resourceType": "Script",
+              "resourceSource": null
+            }
+          ],
+          "networkEventPairs": [],
+          "transferEvidence": "document bodies only; transfer origin unobserved"
+        }
+      ],
+      "environment": "iOS 27.2 Simulator, example app only",
+      "observer": "In a start-paused debug run, Dart VM breakpoints bracketed HTML loading and onMapCreated; the public WebKitWebViewController.setInspectable(true) opted in each newly created WKWebView. Appium Web Inspector was scoped to the example bundle. Each current page resource tree yielded the two Script bodies while the SDK map canvas was present. Cache disabling applied after observer attachment. No separate URL fetch or historical cache file was used.",
+      "vmTraceSha256": "834238854a56c6814cde4f505dcec1c8275aa03ece51fe2c49566f83ea2d7bc2"
+    }
+  },
+  "limitations": [
+    "The network was observed only where request-specific evidence is reported. Other document-body or parsed-script observations are not standalone proof of another network transfer.",
+    "The process mounted an initial map followed by three map_display mounts; order is supported by the unchanged source and four sequential WebView targets.",
+    "These observations cover official bootstrap and core, not workers, map tiles, optional dependencies, TData or other release scenarios. They do not independently prove behavioral equivalence."
+  ]
+}
