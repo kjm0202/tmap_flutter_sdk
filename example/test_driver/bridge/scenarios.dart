@@ -18,8 +18,20 @@ import 'overlay_regression_scenario.dart';
 import 'polygon_zindex_scenario.dart';
 import 'shape_style_scenario.dart';
 import 'scroll_screen_scenario.dart';
+import 'place_area_popup_scenario.dart';
+import 'place_response_capture.dart';
 
 void main() async {
+  const filter = String.fromEnvironment('SCENARIO_FILTER');
+  final names = filter.split(',').map((s) => s.trim()).toSet();
+  if (filter.trim().isEmpty || names.contains('place_area_popup')) {
+    await runWithPlaceCaptureClient(_runScenarios);
+  } else {
+    await _runScenarios();
+  }
+}
+
+Future<void> _runScenarios() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final key = const String.fromEnvironment('TMAP_APP_KEY');
@@ -79,6 +91,7 @@ void main() async {
     'cluster_members': testClusterMembers,
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
+    'place_area_popup': testPlaceAreaPopupScenario,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
@@ -122,7 +135,7 @@ void main() async {
   for (final name in suitesToRun) {
     final runner = scenarios[name]!;
     final timeoutSeconds =
-        name == 'scroll_screen' ? 150 : 75;
+        name == 'scroll_screen' || name == 'place_area_popup' ? 150 : 75;
     ranCount++;
 
     try {
