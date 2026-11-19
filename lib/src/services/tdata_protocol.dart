@@ -1,5 +1,6 @@
 import '../models/address_info.dart';
 import '../models/auto_complete_item.dart';
+import '../models/auto_complete_v2_item.dart';
 import '../models/poi_item.dart';
 import '../models/route_info.dart';
 
@@ -99,6 +100,27 @@ class TDataResponse {
     } else if (data is List) {
       for (final item in data as List<dynamic>) {
         list.add(AutoCompleteItem.fromJson(item));
+      }
+    }
+    return list;
+  }
+
+  List<AutoCompleteV2Item> toAutoCompleteV2List() {
+    if (_failed) return [];
+    final list = <AutoCompleteV2Item>[];
+    if (data is Map<String, dynamic>) {
+      final mapData = data as Map<String, dynamic>;
+      final response = mapData['response'];
+      dynamic suggestions = mapData['suggestions'];
+      if (response is Map<String, dynamic>) {
+        suggestions ??= response['suggestions'];
+      }
+      if (suggestions is List) {
+        for (final item in suggestions) {
+          if (item is Map<String, dynamic>) {
+            list.add(AutoCompleteV2Item.fromJson(item));
+          }
+        }
       }
     }
     return list;

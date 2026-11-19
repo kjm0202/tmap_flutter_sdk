@@ -103,6 +103,10 @@ await capture('reverse_geo.json', '/tmap/geo/reversegeocoding', {
 await capture('autocomplete.json', '/tmap/poi/autoComplete', {
   searchKeyword: '서울역',
 });
+await capture('autocomplete_v2.json', '/tmap/poi/V2autoComplete', {
+  searchKeyword: '서울역', centerLat: station.latitude,
+  centerLon: station.longitude, radius: 5, numResults: 3,
+});
 await capture('traffic.json', '/tmap/traffic', {
   minLat: 37.56, minLon: 126.97, maxLat: 37.575, maxLon: 126.99,
   zoomLevel: 14, reqCoordType: 'WGS84GEO', resCoordType: 'WGS84GEO',

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../auth/auth_repository.dart';
 import '../models/address_info.dart';
 import '../models/auto_complete_item.dart';
+import '../models/auto_complete_v2_item.dart';
 import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
 import '../models/poi_detail_info.dart';
@@ -278,6 +279,44 @@ class TDataService {
       }
     } catch (e, st) {
       developer.log('getAutoCompleteSearch error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return [];
+  }
+
+  /// Location-aware keyword autocomplete.
+  ///
+  /// Implements the documented `Tmapv3.TData#getAutoCompleteSearchv3Json`
+  /// through the SDK's V2 REST endpoint `/tmap/poi/V2autoComplete`. Results are
+  /// sorted by distance from [center]; [radius] is in kilometres (1-33) and
+  /// [numResults] is limited to 1-100.
+  static Future<List<AutoCompleteV2Item>> getAutoCompleteSearchV2({
+    required String keyword,
+    required LatLng center,
+    int? radius,
+    int? numResults,
+  }) async {
+    try {
+      final appKey = AuthRepository.instance.appKey;
+      final params = <String, String>{
+        'version': '1',
+        'format': 'json',
+        'searchKeyword': keyword.trim(),
+        'centerLat': center.latitude.toString(),
+        'centerLon': center.longitude.toString(),
+        if (radius != null) 'radius': radius.clamp(1, 33).toString(),
+        if (numResults != null)
+          'numResults': numResults.clamp(1, 100).toString(),
+      };
+      final uri =
+          Uri.https('apis.openapi.sk.com', '/tmap/poi/V2autoComplete', params);
+      final json = await _get(uri, appKey);
+      if (json != null) {
+        return TDataResponse(requestId: '', success: true, data: json)
+            .toAutoCompleteV2List();
+      }
+    } catch (e, st) {
+      developer.log('getAutoCompleteSearchV2 error: $e',
           name: 'TDataService', error: e, stackTrace: st);
     }
     return [];
