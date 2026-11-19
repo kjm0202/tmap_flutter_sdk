@@ -29,6 +29,8 @@ Android와 iOS에서는 `chrome`을 기기 ID로 바꿉니다. 지도 생성, �
 flutter run -d chrome -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
 ```
 
+Circle, Rectangle, Polyline의 `zIndex` 전달과 같은 ID 교체를 확인하려면 위 명령에 `--dart-define=SCENARIO_FILTER=shape_zindex`를 추가합니다. Polygon은 기존 `--dart-define=SCENARIO_FILTER=polygon_zindex`로 확인할 수 있습니다. 이 시나리오들은 SDK의 저장 값과 레이어 정리를 확인하며 화면상의 겹침 순서는 검증하지 않습니다.
+
 각 시나리오가 완료될 때마다 콘솔에 `SCENARIO <이름> PASS` 또는 `SCENARIO <이름> FAIL` 형식의 줄이 출력되고, 마지막에 `SCENARIOS_PASS` 또는 `SCENARIOS_FAIL`로 전체 결과가 표시됩니다. AppKey가 필요 없는 픽스처 기반 테스트는 저장소 루트에서 `flutter test test/tdata_scenarios_test.dart`로 실행합니다.
 
 ## ✨ 주요 기능

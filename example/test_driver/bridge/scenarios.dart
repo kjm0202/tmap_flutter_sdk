@@ -12,6 +12,8 @@ import 'overlay_interactions_scenario.dart';
 import 'overlay_tools_scenario.dart';
 import 'widget_lifecycle_scenario.dart';
 import 'overlay_presentation_scenario.dart';
+import 'overlay_regression_scenario.dart';
+import 'polygon_zindex_scenario.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +67,9 @@ void main() async {
     'overlay_tools': testOverlayTools,
     'widget_lifecycle': testWidgetLifecycle,
     'overlay_presentation': testOverlayPresentation,
+    'overlay_regression': testOverlayRegression,
+    'polygon_zindex': testPolygonZIndex,
+    'shape_zindex': testShapeZIndex,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');

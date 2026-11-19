@@ -994,7 +994,7 @@
 
     var circle = new Tmapv3.Circle({
       center: new Tmapv3.LatLng(c.lat, c.lng),
-      radius: c.radius || 100,
+      radius: c.radius === 0 ? 0 : (c.radius || 100),
       fillColor: c.fillColor || "#FF0000",
       fillOpacity: c.fillOpacity !== undefined ? c.fillOpacity : 0.3,
       strokeColor: c.strokeColor || "#FF0000",

@@ -402,14 +402,16 @@ function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeW
     path.push(new Tmapv3.LatLng(pointsData[i].latitude, pointsData[i].longitude));
   }
 
-  var polyline = new Tmapv3.Polyline({
+  var options = {
     path: path,
     strokeColor: strokeColor || "#0066FF",
     strokeOpacity: strokeOpacity !== undefined ? strokeOpacity : 1.0,
     strokeWeight: strokeWidth || 5,
     direction: direction || false,
     map: map
-  });
+  };
+  if (zIndex !== undefined) options.zIndex = zIndex;
+  var polyline = new Tmapv3.Polyline(options);
 
   polylines[polylineId] = polyline;
 }
@@ -428,7 +430,7 @@ function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, 
     paths.push(new Tmapv3.LatLng(pointsData[i].latitude, pointsData[i].longitude));
   }
 
-  var polygon = new Tmapv3.Polygon({
+  var options = {
     paths: paths,
     fillColor: fillColor || "#0066FF",
     fillOpacity: fillOpacity !== undefined ? fillOpacity : 0.4,
@@ -436,7 +438,9 @@ function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, 
     strokeOpacity: strokeOpacity !== undefined ? strokeOpacity : 1.0,
     strokeWeight: strokeWidth || 2,
     map: map
-  });
+  };
+  if (zIndex !== undefined) options.zIndex = zIndex;
+  var polygon = new Tmapv3.Polygon(options);
 
   polygons[polygonId] = polygon;
 }
@@ -450,7 +454,7 @@ function addCircle(circleId, lat, lng, radius, fillColor, fillOpacity, strokeCol
   }
 
   var center = new Tmapv3.LatLng(lat, lng);
-  var circle = new Tmapv3.Circle({
+  var options = {
     center: center,
     radius: radius,
     fillColor: fillColor || "#FF0000",
@@ -459,7 +463,9 @@ function addCircle(circleId, lat, lng, radius, fillColor, fillOpacity, strokeCol
     strokeOpacity: strokeOpacity !== undefined ? strokeOpacity : 1.0,
     strokeWeight: strokeWidth || 2,
     map: map
-  });
+  };
+  if (zIndex !== undefined) options.zIndex = zIndex;
+  var circle = new Tmapv3.Circle(options);
 
   circles[circleId] = circle;
 }
@@ -478,7 +484,7 @@ function addRectangle(rectangleId, swLat, swLng, neLat, neLng, fillColor, fillOp
   bounds.extend(sw);
   bounds.extend(ne);
 
-  var rectangle = new Tmapv3.Rectangle({
+  var options = {
     bounds: bounds,
     fillColor: fillColor || "#00AA00",
     fillOpacity: fillOpacity !== undefined ? fillOpacity : 0.3,
@@ -486,7 +492,9 @@ function addRectangle(rectangleId, swLat, swLng, neLat, neLng, fillColor, fillOp
     strokeOpacity: strokeOpacity !== undefined ? strokeOpacity : 1.0,
     strokeWeight: strokeWidth || 2,
     map: map
-  });
+  };
+  if (zIndex !== undefined) options.zIndex = zIndex;
+  var rectangle = new Tmapv3.Rectangle(options);
 
   rectangles[rectangleId] = rectangle;
 }

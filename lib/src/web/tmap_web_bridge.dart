@@ -157,6 +157,8 @@ class TMapWebBridge {
       'maxZoom': clusterer.maxClusterZoom,
       'minClusterSize': clusterer.minClusterCount,
       'gridSize': clusterer.gridSize,
+      'visible': clusterer.visible,
+      'opacity': clusterer.opacity,
       'markers': clusterer.markers
           .map((m) => {
                 'id': m.markerId,

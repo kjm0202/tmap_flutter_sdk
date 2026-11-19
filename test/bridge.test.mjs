@@ -35,6 +35,61 @@ function load(...files) {
   return window;
 }
 
+test('polygon zIndex is forwarded, including zero, and mobile omission stays omitted', () => {
+  class Polygon {
+    constructor(options) { this.options = options; }
+    setMap(map) { this.options.map = map; }
+  }
+  for (const platform of ['mobile', 'web']) {
+    const host = load(platform === 'mobile' ? 'mobile_overlays' : 'web');
+    host.Tmapv3.Polygon = Polygon;
+    const map = {};
+    const polygons = {};
+    if (platform === 'mobile') {
+      host.map = map;
+      host.polygons = polygons;
+    } else {
+      host.tmap_instances.first = {map, polygons};
+    }
+    const add = z => platform === 'mobile'
+      ? host.addPolygon('p', [], '#fff', 0.4, '#000', 1, 2, z)
+      : host.tmap_addPolygon('first', {id: 'p', points: [], zIndex: z});
+    for (const z of [0, 5, 10, 50]) {
+      const previous = polygons.p;
+      add(z);
+      assert.equal(polygons.p.options.zIndex, z);
+      if (previous) assert.equal(previous.options.map, null);
+    }
+    if (platform === 'mobile') {
+      host.addPolygon('p', [], '#fff', 0.4, '#000', 1, 2);
+      assert.equal(Object.hasOwn(polygons.p.options, 'zIndex'), false);
+    }
+  }
+});
+
+test('mobile shape constructors receive zero but omit an absent zIndex', () => {
+  const host = load('mobile_overlays');
+  class Shape {
+    constructor(options) { this.options = options; }
+    setMap(map) { this.options.map = map; }
+  }
+  host.Tmapv3.LatLngBounds = class { extend() {} };
+  host.map = {};
+  for (const [name, collection, args] of [
+    ['Polyline', 'polylines', ['p', [], '#000', 1, 2, false]],
+    ['Circle', 'circles', ['p', 1, 2, 100, '#fff', 0.4, '#000', 1, 2]],
+    ['Rectangle', 'rectangles', ['p', 1, 2, 3, 4, '#fff', 0.4, '#000', 1, 2]],
+  ]) {
+    host.Tmapv3[name] = Shape;
+    host[collection] = {};
+    host['add' + name](...args);
+    assert.equal(Object.hasOwn(host[collection].p.options, 'zIndex'), false, name);
+    host['add' + name](...args, 0);
+    assert.equal(Object.hasOwn(host[collection].p.options, 'zIndex'), true, name);
+    assert.equal(host[collection].p.options.zIndex, 0, name);
+  }
+});
+
 for (const platform of ['web', 'mobile']) {
   test(platform + ' forwards camera commands and delivers taps only from the current marker', () => {
     const host = load(platform);
@@ -97,6 +152,48 @@ test('disposing a web map cancels initialization while its container is missing'
   assert.equal(timers.size, 1);
   host.tmap_dispose('first');
   assert.equal(timers.size, 0);
+});
+
+test('web cluster options preserve visibility and opacity and retain tap identities', () => {
+  const host = load('web');
+  host.Tmapv3.extension = {MarkerCluster: class {
+    constructor(options) { this.options = options; }
+    clearMarkers() {}
+  }};
+  const taps = [];
+  const map = {getZoom: () => 10};
+  const state = host.tmap_instances.first = {
+    map, callbacks: {onMarkerClustererTap: (...args) => taps.push(args)},
+  };
+  const markers = [{id: 'a', lat: 1, lng: 2}, {id: 'b', lat: 1.1, lng: 2.1}];
+  for (const [visible, opacity] of [[true, 1], [false, 1], [true, 0.35], [true, 0]]) {
+    host.tmap_addClusterer('first', {markers, visible, opacity});
+    const options = state.clusterer.options;
+    assert.equal(options.visible, visible);
+    assert.equal(options.opacity, opacity);
+    options.onClusterClick({center: new LatLng(1, 2), markers: options.markers});
+    assert.deepEqual(Array.from(taps.at(-1)[3]), ['a', 'b']);
+    const count = taps.length;
+    host.tmap_clearClusterer('first');
+    options.onClusterClick({center: new LatLng(1, 2), markers: options.markers});
+    assert.equal(taps.length, count);
+  }
+  host.tmap_addClusterer('first', {markers});
+  assert.equal(state.clusterer.options.visible, true);
+  assert.equal(state.clusterer.options.opacity, 1);
+});
+
+test('web circle retains zero and positive radii and the omitted default', () => {
+  const host = load('web');
+  host.Tmapv3.Circle = class {
+    constructor(options) { this.options = options; }
+    setMap(map) { this.options.map = map; }
+  };
+  const state = host.tmap_instances.first = {map: {}, circles: {}};
+  for (const [input, expected] of [[0, 0], [250, 250], [undefined, 100], [null, 100]]) {
+    host.tmap_addCircle('first', {id: 'c', lat: 1, lng: 2, radius: input});
+    assert.equal(state.circles.c.options.radius, expected);
+  }
 });
 
 test('web overlay clearing operations handle single and bulk removal safely', () => {
