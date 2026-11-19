@@ -28,6 +28,7 @@ import 'map_contract_scenario.dart';
 import 'map_options_scenario.dart';
 import 'map_touch_scenario.dart';
 import 'value_types_scenario.dart';
+import 'visualization_scenario.dart';
 
 void main() async {
   const filter = String.fromEnvironment('SCENARIO_FILTER');
@@ -113,6 +114,7 @@ Future<void> _runScenarios() async {
     'map_touch': testMapTouchEvents,
     'map_context_menu': testMapContextMenu,
     'value_types': testValueTypes,
+    'visualization': () => testVisualizationScenario(controller),
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');

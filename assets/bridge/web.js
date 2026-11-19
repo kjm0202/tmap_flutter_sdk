@@ -108,6 +108,7 @@
           circles: {},
           rectangles: {},
           groundOverlays: {},
+          visualizations: {},
           drawingSession: null,
           clusterer: null,
           clusterGeneration: 0,
@@ -1134,6 +1135,20 @@
     if (state) removeAllOverlays(state.groundOverlays);
   };
 
+  window.tmap_addVisualization = function(viewId, type, payload) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map || state.disposed) return;
+    if (!state.visualizations) state.visualizations = {};
+    addTmapVisualization(state.visualizations, type, state.map, payload);
+  };
+
+  window.tmap_removeVisualization = function(viewId, type, id) {
+    var state = window.tmap_instances[viewId];
+    if (state && state.visualizations) {
+      removeTmapVisualization(state.visualizations, type, id);
+    }
+  };
+
   window.tmap_polygonContains = function(viewId, id, lat, lng) {
     var state = window.tmap_instances[viewId];
     var shape = state && state.polygons[id];
@@ -1227,6 +1242,7 @@
       removeAllOverlays(state.circles);
       removeAllOverlays(state.rectangles);
       removeAllOverlays(state.groundOverlays);
+      if (state.visualizations) clearTmapVisualizations(state.visualizations);
       if (state.drawingSession) state.drawingSession.clear();
     }
   };

@@ -378,6 +378,15 @@ class TMapWebBridge {
     _call('clearAllGroundOverlays', [viewId]);
   }
 
+  static void addVisualization(
+      String viewId, String type, Map<String, dynamic> data) {
+    _call('addVisualization', [viewId, type, data]);
+  }
+
+  static void removeVisualization(String viewId, String type, String id) {
+    _call('removeVisualization', [viewId, type, id]);
+  }
+
   static bool polygonContains(String viewId, String id, LatLng point) {
     final result = (web.window as JSObject).callMethodVarArgs<JSBoolean?>(
       'tmap_polygonContains'.toJS,

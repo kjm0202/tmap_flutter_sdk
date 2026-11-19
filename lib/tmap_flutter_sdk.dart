@@ -40,6 +40,7 @@ export 'src/overlays/marker_icon.dart';
 export 'src/overlays/polygon.dart';
 export 'src/overlays/polyline.dart';
 export 'src/overlays/rectangle.dart';
+export 'src/overlays/visualization.dart';
 
 // Services
 export 'src/services/tdata_protocol.dart';
