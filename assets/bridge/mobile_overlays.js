@@ -453,6 +453,7 @@ function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, 
   if (zIndex !== undefined) options.zIndex = zIndex;
   var polygon = new Tmapv3.Polygon(options);
 
+  prepareTmapPolygonContains(polygon);
   polygons[polygonId] = polygon;
 }
 
@@ -508,6 +509,55 @@ function addRectangle(rectangleId, swLat, swLng, neLat, neLng, fillColor, fillOp
   var rectangle = new Tmapv3.Rectangle(options);
 
   rectangles[rectangleId] = rectangle;
+}
+
+function addGroundOverlay(id, url, swLat, swLng, neLat, neLng, opacity) {
+  if (!map) return;
+  clearGroundOverlay(id);
+  groundOverlays[id] = new Tmapv3.GroundOverlay({
+    url: url,
+    bounds: new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(swLat, swLng), new Tmapv3.LatLng(neLat, neLng)),
+    opacity: opacity,
+    map: map
+  });
+}
+
+function clearGroundOverlay(id) {
+  if (!Object.prototype.hasOwnProperty.call(groundOverlays, id)) return;
+  if (groundOverlays[id] && typeof groundOverlays[id].setMap === 'function') {
+    groundOverlays[id].setMap(null);
+  }
+  delete groundOverlays[id];
+}
+
+function clearAllGroundOverlays() {
+  Object.keys(groundOverlays).forEach(clearGroundOverlay);
+}
+
+function polygonContains(id, lat, lng) {
+  return !!(polygons[id] && polygons[id].contains(new Tmapv3.LatLng(lat, lng)));
+}
+
+function polygonAreaJson(id) {
+  return JSON.stringify(polygons[id] ? polygons[id].getArea() : null);
+}
+
+function startDrawing(mode, options) {
+  if (!map) return;
+  if (!drawingSession) {
+    drawingSession = createTmapDrawingSession(map, function(payload) {
+      if (window.onDrawingComplete &&
+          typeof window.onDrawingComplete.postMessage === 'function') {
+        window.onDrawingComplete.postMessage(payload);
+      }
+    });
+  }
+  drawingSession.start(mode, options);
+}
+
+function clearDrawings() {
+  if (drawingSession) drawingSession.clear();
 }
 
 function addCustomOverlay(customOverlayId, lat, lng, content, offsetX, offsetY, zIndex) {
@@ -699,5 +749,7 @@ function clearAll() {
   clearAllPolygons();
   clearAllCircles();
   clearAllRectangles();
+  clearAllGroundOverlays();
+  clearDrawings();
   clearAllCustomOverlays();
 }

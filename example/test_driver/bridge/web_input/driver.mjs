@@ -126,6 +126,9 @@ async function handleAction(cdpCall, gesture) {
   if (action === 'tap') {
     await cdpCall('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
     await cdpCall('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', buttons: 0, clickCount: 1 });
+  } else if (action === 'rightClick') {
+    await cdpCall('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'right', buttons: 2, clickCount: 1 });
+    await cdpCall('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'right', buttons: 0, clickCount: 1 });
   } else if (action === 'doubleTap') {
     // Four presses/releases in total
     await cdpCall('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
