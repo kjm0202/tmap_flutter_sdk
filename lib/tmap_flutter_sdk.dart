@@ -20,10 +20,13 @@ export 'src/models/lat_lng.dart';
 export 'src/models/lat_lng_bounds.dart';
 export 'src/models/overlay_interaction.dart';
 export 'src/models/poi_item.dart';
+export 'src/models/poi_detail_info.dart';
 export 'src/models/point.dart';
 export 'src/models/polygon_area.dart';
+export 'src/models/projected_coordinate.dart';
 export 'src/models/route_info.dart';
 export 'src/models/size.dart';
+export 'src/models/traffic_segment.dart';
 
 // Overlays
 export 'src/overlays/base_draw.dart';
