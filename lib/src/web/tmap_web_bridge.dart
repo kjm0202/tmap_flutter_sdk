@@ -90,6 +90,10 @@ class TMapWebBridge {
     _call('panTo', [viewId, target.latitude, target.longitude]);
   }
 
+  static void panBy(String viewId, int x, int y) {
+    _call('panBy', [viewId, x, y]);
+  }
+
   static void setBearing(String viewId, double bearing) {
     _call('setBearing', [viewId, bearing]);
   }
@@ -189,6 +193,30 @@ class TMapWebBridge {
 
   static void clearAllPolylines(String viewId) {
     _call('clearAllPolylines', [viewId]);
+  }
+
+  static void clearPolygon(String viewId, String polygonId) {
+    _call('clearPolygon', [viewId, polygonId]);
+  }
+
+  static void clearAllPolygons(String viewId) {
+    _call('clearAllPolygons', [viewId]);
+  }
+
+  static void clearCircle(String viewId, String circleId) {
+    _call('clearCircle', [viewId, circleId]);
+  }
+
+  static void clearAllCircles(String viewId) {
+    _call('clearAllCircles', [viewId]);
+  }
+
+  static void clearRectangle(String viewId, String rectangleId) {
+    _call('clearRectangle', [viewId, rectangleId]);
+  }
+
+  static void clearAllRectangles(String viewId) {
+    _call('clearAllRectangles', [viewId]);
   }
 
   static void addCircle(String viewId, Circle circle) {

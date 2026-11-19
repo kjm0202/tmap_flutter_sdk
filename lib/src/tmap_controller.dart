@@ -141,6 +141,11 @@ class TMapController {
 
   /// 화면 픽셀 거리(x, y)만큼 지도를 이동합니다.
   Future<void> panBy(int x, int y) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.panBy(viewId, x, y);
+      return;
+    }
     await _runJs('panBy($x, $y);');
   }
 
@@ -399,6 +404,11 @@ class TMapController {
 
   /// 특정 다각형을 제거합니다.
   Future<void> clearPolygon(String polygonId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearPolygon(viewId, polygonId);
+      return;
+    }
     await _runJs("clearPolygon('$polygonId');");
   }
 
@@ -423,6 +433,11 @@ class TMapController {
 
   /// 특정 원을 제거합니다.
   Future<void> clearCircle(String circleId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearCircle(viewId, circleId);
+      return;
+    }
     await _runJs("clearCircle('$circleId');");
   }
 
@@ -449,6 +464,11 @@ class TMapController {
 
   /// 특정 사각형을 제거합니다.
   Future<void> clearRectangle(String rectangleId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearRectangle(viewId, rectangleId);
+      return;
+    }
     await _runJs("clearRectangle('$rectangleId');");
   }
 
@@ -480,16 +500,31 @@ class TMapController {
 
   /// 모든 다각형을 제거합니다.
   Future<void> clearAllPolygons() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllPolygons(viewId);
+      return;
+    }
     await _runJs('clearAllPolygons();');
   }
 
   /// 모든 원을 제거합니다.
   Future<void> clearAllCircles() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllCircles(viewId);
+      return;
+    }
     await _runJs('clearAllCircles();');
   }
 
   /// 모든 사각형을 제거합니다.
   Future<void> clearAllRectangles() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllRectangles(viewId);
+      return;
+    }
     await _runJs('clearAllRectangles();');
   }
 

@@ -23,6 +23,14 @@ flutter run -d chrome -t test_driver/bridge/main.dart --dart-define-from-file=/p
 
 Android와 iOS에서는 `chrome`을 기기 ID로 바꿉니다. 지도 생성, 중심·줌 변경, 마커 클릭과 삭제를 확인하면 콘솔에 `BRIDGE_PROBE_PASS`가 표시됩니다.
 
+유스케이스 시나리오 전체를 실행하려면 예제 디렉터리에서 `scenarios.dart`를 대상으로 지정하세요. Android·iOS에서는 `-d chrome` 대신 기기 ID를 사용합니다.
+
+```sh
+flutter run -d chrome -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
+```
+
+각 시나리오가 완료될 때마다 콘솔에 `SCENARIO <이름> PASS` 또는 `SCENARIO <이름> FAIL` 형식의 줄이 출력되고, 마지막에 `SCENARIOS_PASS` 또는 `SCENARIOS_FAIL`로 전체 결과가 표시됩니다. AppKey가 필요 없는 픽스처 기반 테스트는 저장소 루트에서 `flutter test test/tdata_scenarios_test.dart`로 실행합니다.
+
 ## ✨ 주요 기능
 
 - **3D 벡터 지도 & 카메라 제어**

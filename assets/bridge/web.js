@@ -144,6 +144,13 @@
     }
   };
 
+  window.tmap_panBy = function(viewId, x, y) {
+    var state = window.tmap_instances[viewId];
+    if (state && state.map) {
+      state.map.panBy(x, y);
+    }
+  };
+
   window.tmap_setBearing = function(viewId, bearing) {
     var state = window.tmap_instances[viewId];
     if (state && state.map) {
@@ -388,6 +395,55 @@
     });
 
     state.rectangles[r.id] = rectangle;
+  };
+
+  function removeOverlay(collection, id) {
+    if (collection && Object.prototype.hasOwnProperty.call(collection, id)) {
+      var item = collection[id];
+      if (item && typeof item.setMap === 'function') {
+        item.setMap(null);
+      }
+      delete collection[id];
+    }
+  }
+
+  function removeAllOverlays(collection) {
+    if (collection) {
+      var keys = Object.keys(collection);
+      for (var i = 0; i < keys.length; i++) {
+        removeOverlay(collection, keys[i]);
+      }
+    }
+  }
+
+  window.tmap_clearPolygon = function(viewId, polygonId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeOverlay(state.polygons, polygonId);
+  };
+
+  window.tmap_clearAllPolygons = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeAllOverlays(state.polygons);
+  };
+
+  window.tmap_clearCircle = function(viewId, circleId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeOverlay(state.circles, circleId);
+  };
+
+  window.tmap_clearAllCircles = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeAllOverlays(state.circles);
+  };
+
+  window.tmap_clearRectangle = function(viewId, rectangleId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeOverlay(state.rectangles, rectangleId);
+  };
+
+  window.tmap_clearAllRectangles = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeAllOverlays(state.rectangles);
   };
 
   window.tmap_clearAll = function(viewId) {

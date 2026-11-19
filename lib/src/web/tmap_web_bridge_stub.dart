@@ -16,6 +16,7 @@ class TMapWebBridge {
   static void zoomIn(String viewId) {}
   static void zoomOut(String viewId) {}
   static void panTo(String viewId, LatLng target) {}
+  static void panBy(String viewId, int x, int y) {}
   static void setBearing(String viewId, double bearing) {}
   static void setPitch(String viewId, double pitch) {}
   static void setMapType(String viewId, TMapType mapType) {}
@@ -31,6 +32,12 @@ class TMapWebBridge {
   static void addPolyline(String viewId, Polyline polyline) {}
   static void clearPolyline(String viewId, String polylineId) {}
   static void clearAllPolylines(String viewId) {}
+  static void clearPolygon(String viewId, String polygonId) {}
+  static void clearAllPolygons(String viewId) {}
+  static void clearCircle(String viewId, String circleId) {}
+  static void clearAllCircles(String viewId) {}
+  static void clearRectangle(String viewId, String rectangleId) {}
+  static void clearAllRectangles(String viewId) {}
   static void addCircle(String viewId, Circle circle) {}
   static void addPolygon(String viewId, Polygon polygon) {}
   static void addRectangle(String viewId, Rectangle rect) {}
