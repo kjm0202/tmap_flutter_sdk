@@ -222,31 +222,7 @@ class TMapController {
       TMapWebBridge.addMarker(viewId, marker);
       return;
     }
-    final title =
-        marker.title != null ? "'${_escapeForJs(marker.title ?? '')}'" : 'null';
-    final label =
-        marker.label != null ? "'${_escapeForJs(marker.label ?? '')}'" : 'null';
-    final labelBg = marker.labelBackgroundColor != null
-        ? "'${marker.labelBackgroundColor?.toHexColor()}'"
-        : 'null';
-    final labelColor = marker.labelTextColor != null
-        ? "'${marker.labelTextColor?.toHexColor()}'"
-        : 'null';
-    final iconUrl =
-        marker.icon?.iconUrl != null ? "'${marker.icon?.iconUrl}'" : 'null';
-    final iconHtml = marker.icon?.iconHtml != null
-        ? "'${_escapeForJs(marker.icon?.iconHtml ?? '')}'"
-        : 'null';
-    final iconW = marker.icon?.size?.width ?? 'null';
-    final iconH = marker.icon?.size?.height ?? 'null';
-    final offsetX = marker.icon?.offset?.x ?? 'null';
-    final offsetY = marker.icon?.offset?.y ?? 'null';
-    final color =
-        marker.color != null ? "'${marker.color?.toHexColor()}'" : 'null';
-
-    await _runJs(
-      "addMarker('${marker.markerId}', ${marker.position.latitude}, ${marker.position.longitude}, $title, $label, $labelBg, $labelColor, $iconUrl, $iconHtml, $iconW, $iconH, $offsetX, $offsetY, $color, '${marker.anchor}', ${marker.opacity}, ${marker.visible}, ${marker.draggable}, ${marker.zIndex});",
-    );
+    await _runJs('addMarker(${jsonEncode(marker.toJson())});');
   }
 
   /// 여러 마커를 일괄 추가합니다.
@@ -263,7 +239,7 @@ class TMapController {
       TMapWebBridge.clearMarker(viewId, markerId);
       return;
     }
-    await _runJs("clearMarker('$markerId');");
+    await _runJs('clearMarker(${jsonEncode(markerId)});');
   }
 
   /// 모든 마커를 제거합니다.

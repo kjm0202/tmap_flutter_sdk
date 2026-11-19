@@ -10,7 +10,7 @@ void main() {
   // SK OpenAPI 포털(https://openapi.sk.com)에서 발급받은 AppKey를 입력하거나,
   // 앱 실행 후 상단 열쇠(🔑) 아이콘을 눌러 키를 설정할 수 있습니다.
   AuthRepository.initialize(
-    appKey: 'YOUR_TMAP_APP_KEY_HERE',
+    appKey: const String.fromEnvironment('TMAP_APP_KEY'),
   );
 
   runApp(const TMapExampleApp());
@@ -75,8 +75,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
   @override
   void initState() {
     super.initState();
-    final key = AuthRepository.instance.appKey;
-    if (key.isEmpty || key == 'YOUR_TMAP_APP_KEY_HERE') {
+    if (AuthRepository.instance.appKey.isEmpty) {
       _statusMessage = '상단 열쇠(🔑) 버튼을 눌러 TMAP AppKey를 입력해주세요.';
     }
   }
@@ -396,32 +395,33 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
           Expanded(
             child: Stack(
               children: [
-                TMap(
-                  key: ValueKey(AuthRepository.instance.appKey),
-                  center: _center,
-                  zoom: _zoom,
-                  bearing: _bearing,
-                  pitch: _pitch,
-                  mapType: _mapType,
-                  markers: _markers,
-                  clusterer: _clusterer,
-                  polylines: _polylines,
-                  polygons: _polygons,
-                  circles: _circles,
-                  rectangles: _rectangles,
-                  infoWindows: _infoWindows,
-                  onMapCreated: _onMapCreated,
-                  onMapTap: _onMapTap,
-                  onMarkerTap: _onMarkerTap,
-                  onCameraIdle: (center, zoom, bearing, pitch) {
-                    setState(() {
-                      _center = center;
-                      _zoom = zoom;
-                      _bearing = bearing;
-                      _pitch = pitch;
-                    });
-                  },
-                ),
+                if (AuthRepository.instance.appKey.isNotEmpty)
+                  TMap(
+                    key: ValueKey(AuthRepository.instance.appKey),
+                    center: _center,
+                    zoom: _zoom,
+                    bearing: _bearing,
+                    pitch: _pitch,
+                    mapType: _mapType,
+                    markers: _markers,
+                    clusterer: _clusterer,
+                    polylines: _polylines,
+                    polygons: _polygons,
+                    circles: _circles,
+                    rectangles: _rectangles,
+                    infoWindows: _infoWindows,
+                    onMapCreated: _onMapCreated,
+                    onMapTap: _onMapTap,
+                    onMarkerTap: _onMarkerTap,
+                    onCameraIdle: (center, zoom, bearing, pitch) {
+                      setState(() {
+                        _center = center;
+                        _zoom = zoom;
+                        _bearing = bearing;
+                        _pitch = pitch;
+                      });
+                    },
+                  ),
 
                 // 우측 빠른 줌 컨트롤
                 Positioned(

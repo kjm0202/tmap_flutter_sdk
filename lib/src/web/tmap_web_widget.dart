@@ -78,6 +78,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   late final String _containerId;
   late final String _viewType;
   late final TMapController _controller;
+  bool _isInitializing = false;
   bool _isMapInitialized = false;
 
   @override
@@ -109,25 +110,36 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   }
 
   Future<void> _initWebMap() async {
+    if (_isInitializing) return;
     final appKey = AuthRepository.instance.appKey;
-    debugPrint(
-        '[TMapWebWidget] _initWebMap starting for viewId=$_viewId, appKey=$appKey');
+    debugPrint('[TMapWebWidget] _initWebMap starting for viewId=$_viewId');
     if (appKey.isEmpty || appKey == 'YOUR_TMAP_APP_KEY_HERE') {
       debugPrint(
           '[TMapWebWidget] AppKey is empty or placeholder, aborting init.');
       return;
     }
 
+    _isInitializing = true;
     try {
-      await TMapWebLoader.loadScript(appKey);
+      await Future.wait([
+        TMapWebLoader.loadScript(appKey),
+        TMapWebBridge.injectHelperScripts(),
+      ]);
+      if (!mounted) return;
       debugPrint(
           '[TMapWebLoader] loadScript completed, initializing map in DOM...');
 
       // 콜백 객체 생성
       final callbacks = JSObject();
+      callbacks.setProperty(
+          'onInitError'.toJS,
+          (() {
+            _isInitializing = false;
+          }).toJS);
 
       final onMapCreatedFn = (JSString _) {
         debugPrint('[TMapWebWidget] Map JS onMapCreated callback triggered!');
+        _isInitializing = false;
         if (!mounted) return;
         setState(() => _isMapInitialized = true);
         _syncAllOverlays();
@@ -174,6 +186,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         callbacks: callbacks,
       );
     } catch (e) {
+      _isInitializing = false;
       debugPrint('[TMapWebWidget] init error: $e');
     }
   }
@@ -260,6 +273,12 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         TMapWebBridge.addRectangle(_viewId, r);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    TMapWebBridge.dispose(_viewId);
+    super.dispose();
   }
 
   @override

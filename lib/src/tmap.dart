@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
@@ -9,22 +10,12 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import 'auth/auth_repository.dart';
+import 'bridge_assets.dart';
 import 'callbacks/callbacks.dart';
 import 'constants/drag_type.dart';
 import 'constants/html_wrapper.dart';
 import 'constants/map_type.dart';
 import 'constants/zoom_type.dart';
-import 'js/js_clusterer.dart';
-import 'js/js_global_variables.dart';
-import 'js/js_info_window.dart';
-import 'js/js_label.dart';
-import 'js/js_map_control.dart';
-import 'js/js_map_init.dart';
-import 'js/js_marker.dart';
-import 'js/js_overlay_clear.dart';
-import 'js/js_overlay_draw.dart';
-import 'js/js_tdata.dart';
-import 'js/js_utils.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
 import 'overlays/circle.dart';
@@ -242,11 +233,6 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..setBackgroundColor(const Color(0x00000000));
     _addJavaScriptChannels(controller);
 
-    controller.loadHtmlString(
-      _loadMap(),
-      baseUrl: AuthRepository.instance.baseUrl,
-    );
-
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
       final androidController = controller.platform as AndroidWebViewController;
@@ -259,6 +245,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     }
 
     _mapController = TMapController(controller);
+    unawaited(_loadMap(controller));
   }
 
   @override
@@ -294,51 +281,43 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     );
   }
 
-  String _loadMap() {
-    return htmlWrapper('''
-<script>
-  ${JsGlobalVariables.getScript()}
-  ${JsMapInit.getScript(
-      center: widget.center,
-      zoom: widget.zoom,
-      minZoom: widget.minZoom,
-      maxZoom: widget.maxZoom,
-      bearing: widget.bearing,
-      pitch: widget.pitch,
-      mapType: widget.mapType,
-      naviControl: widget.naviControl,
-      scaleBar: widget.scaleBar,
-      hasOnMapTap: widget.onMapTap != null,
-      hasOnMapDoubleTap: widget.onMapDoubleTap != null,
-      hasOnMapLongTap: widget.onMapLongTap != null,
-      hasOnDragChangeCallback: widget.onDragChangeCallback != null,
-      hasOnZoomChangeCallback: widget.onZoomChangeCallback != null,
-      hasOnCenterChangeCallback: widget.onCenterChangeCallback != null,
-      hasOnBoundsChangeCallback: widget.onBoundsChangeCallback != null,
-      hasOnCameraIdle: widget.onCameraIdle != null,
-      hasOnBearingChangeCallback: widget.onBearingChangeCallback != null,
-      hasOnPitchChangeCallback: widget.onPitchChangeCallback != null,
-    )}
-  ${JsMapControl.getScript()}
-  ${JsMarker.getScript(
-      hasMarkerTapCallback: widget.onMarkerTap != null,
-      hasMarkerDragCallback: widget.onMarkerDragChangeCallback != null,
-    )}
-  ${JsInfoWindow.getScript(
-      hasInfoWindowTapCallback: widget.onInfoWindowTap != null,
-    )}
-  ${JsLabel.getScript()}
-  ${JsClusterer.getScript(
-      hasMarkerClustererTapCallback: widget.onMarkerClustererTap != null,
-    )}
-  ${JsOverlayDraw.getScript(
-      hasCustomOverlayTapCallback: widget.onCustomOverlayTap != null,
-    )}
-  ${JsOverlayClear.getScript()}
-  ${JsTData.getScript()}
-  ${JsUtils.getScript()}
-</script>
-''');
+  Future<void> _loadMap(WebViewController controller) async {
+    final scripts = await loadBridgeAssets(const [
+      'shared.js',
+      'mobile.js',
+      'mobile_overlays.js',
+      'mobile_tdata.js',
+    ]);
+    if (!mounted) return;
+    final config = {
+      'centerLat': widget.center?.latitude ?? 37.5665,
+      'centerLng': widget.center?.longitude ?? 126.9780,
+      'mapType': widget.mapType.value,
+      'zoom': widget.zoom,
+      'minZoom': widget.minZoom,
+      'maxZoom': widget.maxZoom,
+      'bearing': widget.bearing,
+      'pitch': widget.pitch,
+      'scaleBar': widget.scaleBar,
+      'naviControl': widget.naviControl,
+      'hasOnMapTap': widget.onMapTap != null,
+      'hasOnMapLongTap': widget.onMapLongTap != null,
+      'hasOnDragChangeCallback': widget.onDragChangeCallback != null,
+      'hasOnZoomChangeCallback': widget.onZoomChangeCallback != null,
+      'hasOnCameraIdle': widget.onCameraIdle != null,
+      'hasOnCenterChangeCallback': widget.onCenterChangeCallback != null,
+      'hasOnBoundsChangeCallback': widget.onBoundsChangeCallback != null,
+      'hasOnBearingChangeCallback': widget.onBearingChangeCallback != null,
+      'hasOnPitchChangeCallback': widget.onPitchChangeCallback != null,
+      'hasMarkerClustererTapCallback': widget.onMarkerClustererTap != null,
+      'hasMarkerTapCallback': widget.onMarkerTap != null,
+      'hasMarkerDragCallback': widget.onMarkerDragChangeCallback != null,
+    };
+    await controller.loadHtmlString(
+      htmlWrapper(
+          '<script>const config = ${jsonEncode(config)};\n$scripts</script>'),
+      baseUrl: AuthRepository.instance.baseUrl,
+    );
   }
 
   @override
@@ -448,6 +427,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       ..addJavaScriptChannel(
         'onMapCreated',
         onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
           _isMapReady = true;
           _syncOverlays();
           final onMapCreated = widget.onMapCreated;

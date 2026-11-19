@@ -5,3 +5,4 @@ build/
 .flutter-plugins-dependencies
 *.log
 .system_generated/
+.u111-worktrees/

@@ -29,7 +29,7 @@ class TMapWebLoader {
 
     _loadCompleter = Completer<void>();
 
-    debugPrint('[TMapWebLoader] Loading TMAP SDK for appKey: $appKey');
+    debugPrint('[TMapWebLoader] Loading TMAP SDK');
 
     // 1. Tmapvector 전역 객체 설정 (SK TMAP SDK 요구사항)
     const domain = 'https://toptmaptile1.tmap.co.kr/scriptSDKV3/';

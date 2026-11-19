@@ -10,6 +10,19 @@ Flutter 환경에서 **TMAP Vector Map v3**와 **TMAP OpenAPI**를 손쉽게 사
 
 `webview_flutter`와 JavaScript SDK를 이용하여 구현하였으며 **Web 플랫폼에서의 구현은 아직 실험 단계이기 때문에 다소 불안정할 수 있습니다.** Flutter SDK 3.27 이상에서 작동합니다.
 
+## 브리지 개발 및 테스트
+
+공식 TMAP Vector Map JS는 AppKey로 로드합니다. Flutter와 SDK를 연결하는 코드는 `assets/bridge/`에 있습니다. 지도 중심·줌 변경과 마커는 `shared.js`에서 처리하고, 웹 DOM과 모바일 WebView의 초기화 및 콜백 전달은 각 플랫폼 파일에서 처리합니다.
+
+저장소 루트에서 `flutter test`와 `node --test test/bridge.test.mjs`를 실행하면 AppKey 없이 Dart 모델과 브리지를 검증할 수 있습니다. 실제 지도에서는 예제 디렉터리에서 아래 명령을 실행하세요. 키 파일은 `TMAP_APP_KEY`가 들어 있는 로컬 JSON 파일입니다.
+
+```sh
+cd example
+flutter run -d chrome -t test_driver/bridge/main.dart --dart-define-from-file=/path/to/key.json
+```
+
+Android와 iOS에서는 `chrome`을 기기 ID로 바꿉니다. 지도 생성, 중심·줌 변경, 마커 클릭과 삭제를 확인하면 콘솔에 `BRIDGE_PROBE_PASS`가 표시됩니다.
+
 ## ✨ 주요 기능
 
 - **3D 벡터 지도 & 카메라 제어**
