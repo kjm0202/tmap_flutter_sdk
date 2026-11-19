@@ -23,6 +23,7 @@ class ApiEntry {
     required this.status,
     this.dartSymbol,
     this.reason,
+    this.source,
   });
 
   final String id;
@@ -31,6 +32,7 @@ class ApiEntry {
   final String status;
   final String? dartSymbol;
   final String? reason;
+  final String? source;
 
   bool get excluded => decision == 'exclude';
   bool get done => !excluded && status == 'done';
@@ -126,6 +128,7 @@ ValidationResult validateManifest(String yamlText, Directory repoRoot) {
     final status = _nonEmpty(raw['status']);
     final dartSymbol = _nonEmpty(raw['dart']);
     final reason = _nonEmpty(raw['reason']);
+    final source = _nonEmpty(raw['source']);
     for (final field in ['id', 'kind', 'decision', 'status']) {
       if (_nonEmpty(raw[field]) == null) error('$field is required');
     }
@@ -148,6 +151,15 @@ ValidationResult validateManifest(String yamlText, Directory repoRoot) {
     }
     if (decision == 'exclude' && status != 'done') {
       error('excluded entries must have status done');
+    }
+    if (raw.containsKey('source')) {
+      final uri = source == null ? null : Uri.tryParse(source);
+      if (uri == null ||
+          (uri.scheme != 'https' && uri.scheme != 'http') ||
+          uri.host.isEmpty ||
+          source!.contains(RegExp(r'\s'))) {
+        error('source must be an absolute HTTP(S) URL with a host');
+      }
     }
 
     final platforms = raw['platforms'];
@@ -218,6 +230,7 @@ ValidationResult validateManifest(String yamlText, Directory repoRoot) {
         status: status,
         dartSymbol: dartSymbol,
         reason: reason,
+        source: source,
       ));
     }
   }

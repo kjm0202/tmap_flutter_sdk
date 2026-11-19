@@ -20,6 +20,7 @@ import 'shape_style_scenario.dart';
 import 'scroll_screen_scenario.dart';
 import 'place_area_popup_scenario.dart';
 import 'place_response_capture.dart';
+import 'value_types_scenario.dart';
 
 void main() async {
   const filter = String.fromEnvironment('SCENARIO_FILTER');
@@ -92,6 +93,7 @@ Future<void> _runScenarios() async {
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
     'place_area_popup': testPlaceAreaPopupScenario,
+    'value_types': testValueTypes,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
