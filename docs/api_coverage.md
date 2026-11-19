@@ -20,7 +20,7 @@ Generated from tool/api_manifest/api_manifest.yaml.
 | Tmapv3.Projection | 9 | 0 | 0 | 9 | 100.0% |
 | Tmapv3.Rectangle | 12 | 0 | 0 | 12 | 100.0% |
 | Tmapv3.Size | 7 | 0 | 0 | 7 | 100.0% |
-| Tmapv3.TData | 11 | 2 | 6 | 19 | 84.6% |
+| Tmapv3.TData | 12 | 0 | 7 | 19 | 100.0% |
 | Tmapv3.extension.DotMap | 14 | 0 | 0 | 14 | 100.0% |
 | Tmapv3.extension.Drawing | 13 | 0 | 0 | 13 | 100.0% |
 | Tmapv3.extension.HeatMap | 10 | 0 | 0 | 10 | 100.0% |
@@ -31,8 +31,6 @@ Generated from tool/api_manifest/api_manifest.yaml.
 
 | ID | Kind | Decision | Dart | Reason |
 | --- | --- | --- | --- | --- |
-| Tmapv3.TData | class | adapt | — | Callback-based JS TData is offered as static asynchronous TDataService methods. |
-| Tmapv3.TData#getAutoCompleteSearchv3Json | method | adapt | — | Documented v3 method is absent from the pinned SDK core; no verified REST endpoint implements its location-aware result. |
 
 ## Excluded
 
@@ -44,6 +42,7 @@ Generated from tool/api_manifest/api_manifest.yaml.
 | Tmapv3.TData#EVENT_TYPE | property | JavaScript callback names are replaced by Dart Future completion and failure semantics. |
 | Tmapv3.TData#constructor | constructor | The Flutter REST service uses static Future methods and needs no JavaScript TData instance. |
 | Tmapv3.TData#events | property | Request-specific results are returned as typed Futures, without a JavaScript event registry. |
+| Tmapv3.TData#getAutoCompleteSearchv3Json | method | Documented but not implemented in SDK core (sha 5290e0fd) nor reachable as a REST endpoint; existing autocomplete is TDataService.getAutoCompleteSearch. |
 | Tmapv3.TData@onComplete | event | A Dart Future completes with the typed result; a separate JavaScript completion event is redundant. |
 | Tmapv3.TData@onError | event | REST failures return null or empty results through Future APIs instead of JavaScript callbacks. |
 | Tmapv3.TData@onProgress | event | The Dart REST calls return completed parsed values, with no JavaScript request-progress callback. |
