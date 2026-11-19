@@ -238,7 +238,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     _isMapReady = false;
     if (!kIsWeb) {
       try {
-        _mapController.webViewController.runJavaScript('if (window.tmap_dispose_mobile) window.tmap_dispose_mobile();');
+        _mapController.webViewController.runJavaScript(
+            'if (window.tmap_dispose_mobile) window.tmap_dispose_mobile();');
       } catch (e) {
         developer.log('Error disposing TMap: $e', name: 'TMap');
       }
@@ -348,7 +349,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     );
   }
 
-    final Map<int, _PointerInfo> _activePointers = {};
+  final Map<int, _PointerInfo> _activePointers = {};
   bool _isDisqualified = false;
   Offset? _firstTapPosition;
   Duration? _firstTapTime;
@@ -357,7 +358,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   void _handleDoubleTap(LatLng latLng) {
     final now = DateTime.now();
-    if (_lastDispatchedTime != null && now.difference(_lastDispatchedTime!).inMilliseconds < 300) {
+    if (_lastDispatchedTime != null &&
+        now.difference(_lastDispatchedTime!).inMilliseconds < 300) {
       return;
     }
     _lastDispatchedTime = now;
@@ -365,10 +367,13 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   }
 
   void _updateIosScrollGuard() {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || !_isMapReady) return;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || !_isMapReady)
+      return;
     final position = _iosScrollPosition;
-    final enabled = widget.gestureRecognizers.isEmpty && position != null &&
-        position.hasContentDimensions && position.physics.shouldAcceptUserOffset(position);
+    final enabled = widget.gestureRecognizers.isEmpty &&
+        position != null &&
+        position.hasContentDimensions &&
+        position.physics.shouldAcceptUserOffset(position);
     _iosGuardDesired = enabled ? position.axis.name : '';
     if (!_iosGuardSyncing && _iosGuardDesired != _iosGuardApplied) {
       unawaited(_syncIosScrollGuard());
@@ -395,14 +400,17 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       }
     } catch (error) {
       // Navigation or disposal may invalidate the WebView while a write is pending.
-      developer.log('iOS scroll guard synchronization failed: ${error.runtimeType}', name: 'TMap');
+      developer.log(
+          'iOS scroll guard synchronization failed: ${error.runtimeType}',
+          name: 'TMap');
     } finally {
       _iosGuardSyncing = false;
     }
   }
 
   void _handlePointerDown(PointerDownEvent event) {
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.android) return;
     _updateIosScrollGuard();
 
     if (_activePointers.isNotEmpty) {
@@ -411,7 +419,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       _isDisqualified = false;
     }
 
-    _activePointers[event.pointer] = _PointerInfo(event.localPosition, event.timeStamp);
+    _activePointers[event.pointer] =
+        _PointerInfo(event.localPosition, event.timeStamp);
   }
 
   void _handlePointerMove(PointerMoveEvent event) {
@@ -425,7 +434,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   }
 
   void _handlePointerUp(PointerUpEvent event) {
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.android) return;
 
     final wasDisqualified = _isDisqualified;
     final pointer = _activePointers.remove(event.pointer);
@@ -435,7 +445,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (pointer == null) return;
 
-    final isLongPress = (event.timeStamp - pointer.downTime) > kLongPressTimeout;
+    final isLongPress =
+        (event.timeStamp - pointer.downTime) > kLongPressTimeout;
 
     if (wasDisqualified || pointer.movedBeyondSlop || isLongPress) {
       if (_activePointers.isEmpty) _resetTap();
@@ -444,7 +455,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (_activePointers.isEmpty) {
       if (_firstTapTime != null && _firstTapPosition != null) {
-        if (event.timeStamp - _firstTapTime! < const Duration(milliseconds: 300) &&
+        if (event.timeStamp - _firstTapTime! <
+                const Duration(milliseconds: 300) &&
             (event.localPosition - _firstTapPosition!).distance < 50) {
           final baseline = _currentBaseline;
           _performDoubleTap(event.localPosition, baseline);
@@ -461,7 +473,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   Future<double?> _readCameraZoom() async {
     try {
-      final result = await _mapController.webViewController.runJavaScriptReturningResult('''
+      final result = await _mapController.webViewController
+          .runJavaScriptReturningResult('''
         (function() {
           try {
             var r = map.vsmMap();
@@ -476,7 +489,6 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     }
   }
 
-
   void _handlePointerCancel(PointerCancelEvent event) {
     _activePointers.remove(event.pointer);
     _resetTap();
@@ -488,7 +500,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     _currentBaseline = null;
   }
 
-  Future<void> _performDoubleTap(Offset localPosition, Future<double?>? baselineFuture) async {
+  Future<void> _performDoubleTap(
+      Offset localPosition, Future<double?>? baselineFuture) async {
     if (!mounted) return;
 
     final x = localPosition.dx.round();
@@ -498,9 +511,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     late LatLng latLng;
     try {
-      final result = await _mapController.webViewController.runJavaScriptReturningResult(
-        'screenToReal($x, $y);'
-      );
+      final result = await _mapController.webViewController
+          .runJavaScriptReturningResult('screenToReal($x, $y);');
       if (!mounted) return;
       final json = jsonDecode(result.toString()) as Map<String, dynamic>;
       latLng = LatLng.fromJson(json);
@@ -510,7 +522,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     _handleDoubleTap(latLng);
 
-    await Future.delayed(const Duration(milliseconds: 110));
+    await Future<void>.delayed(const Duration(milliseconds: 110));
     if (!mounted || _isDisqualified || baseline == null) {
       return;
     }
@@ -543,7 +555,6 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       await _mapController.webViewController.runJavaScript(js);
     } catch (e) {}
   }
-
 
   Future<void> _loadMap(WebViewController controller) async {
     final scripts = await loadBridgeAssets(const [
@@ -887,10 +898,9 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           final onZoomChange = widget.onZoomChangeCallback;
           if (onZoomChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final zoom = (json['zoomLevel'] as num? ??
-                    json['zoom'] as num? ??
-                    16)
-                .toInt();
+            final zoom =
+                (json['zoomLevel'] as num? ?? json['zoom'] as num? ?? 16)
+                    .toInt();
             final phaseStr = json['phase'] as String?;
             final phase = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
             onZoomChange(zoom, phase);
@@ -958,6 +968,13 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
             onBoundsChange(LatLngBounds.fromJson(json));
           }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onDrawingComplete',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          _mapController.handleDrawingComplete(result.message);
         },
       )
       ..addJavaScriptChannel(

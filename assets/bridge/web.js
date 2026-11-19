@@ -96,6 +96,8 @@
           polygons: {},
           circles: {},
           rectangles: {},
+          groundOverlays: {},
+          drawingSession: null,
           clusterer: null,
           clusterGeneration: 0,
           clusterMarkersList: [],
@@ -996,6 +998,7 @@
       zIndex: p.zIndex || 0
     });
 
+    prepareTmapPolygonContains(polygon);
     state.polygons[p.id] = polygon;
   };
 
@@ -1022,6 +1025,60 @@
     });
 
     state.rectangles[r.id] = rectangle;
+  };
+
+  window.tmap_addGroundOverlay = function(viewId, p) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) return;
+    removeOverlay(state.groundOverlays, p.id);
+    var bounds = new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(p.bounds.southWest.latitude, p.bounds.southWest.longitude),
+      new Tmapv3.LatLng(p.bounds.northEast.latitude, p.bounds.northEast.longitude)
+    );
+    state.groundOverlays[p.id] = new Tmapv3.GroundOverlay({
+      url: p.url, bounds: bounds, opacity: p.opacity, map: state.map
+    });
+  };
+
+  window.tmap_clearGroundOverlay = function(viewId, id) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeOverlay(state.groundOverlays, id);
+  };
+
+  window.tmap_clearAllGroundOverlays = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeAllOverlays(state.groundOverlays);
+  };
+
+  window.tmap_polygonContains = function(viewId, id, lat, lng) {
+    var state = window.tmap_instances[viewId];
+    var shape = state && state.polygons[id];
+    return !!(shape && shape.contains(new Tmapv3.LatLng(lat, lng)));
+  };
+
+  window.tmap_polygonAreaJson = function(viewId, id) {
+    var state = window.tmap_instances[viewId];
+    var shape = state && state.polygons[id];
+    return JSON.stringify(shape ? shape.getArea() : null);
+  };
+
+  window.tmap_startDrawing = function(viewId, mode, options) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) return;
+    if (!state.drawingSession) {
+      state.drawingSession = createTmapDrawingSession(state.map, function(payload) {
+        if (!state.disposed && state.callbacks &&
+            typeof state.callbacks.onDrawingComplete === 'function') {
+          state.callbacks.onDrawingComplete(payload);
+        }
+      });
+    }
+    state.drawingSession.start(mode, options);
+  };
+
+  window.tmap_clearDrawings = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state && state.drawingSession) state.drawingSession.clear();
   };
 
   function removeOverlay(collection, id) {
@@ -1085,6 +1142,8 @@
       removeAllOverlays(state.polygons);
       removeAllOverlays(state.circles);
       removeAllOverlays(state.rectangles);
+      removeAllOverlays(state.groundOverlays);
+      if (state.drawingSession) state.drawingSession.clear();
     }
   };
 
@@ -1111,6 +1170,10 @@
         tmapBridge.disposeControls(state.map);
       }
       window.tmap_clearAll(viewId);
+      if (state.drawingSession) {
+        state.drawingSession.dispose();
+        state.drawingSession = null;
+      }
     } finally {
       delete window.tmap_instances[viewId];
       if (state.map && typeof state.map.destroy === 'function') {

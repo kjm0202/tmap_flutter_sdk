@@ -772,3 +772,134 @@ const tmapBridge = {
 if (typeof window !== 'undefined') {
   window.tmapBridge = tmapBridge;
 }
+
+// A single SDK Drawing instance per map. The SDK installs map event listeners
+// in its constructor and has no public listener-disposal API, so reuse it when
+// switching modes/styles instead of accumulating listeners.
+function createTmapDrawingSession(map, onComplete) {
+  var drawing = null;
+  var mode = null;
+  var seenCount = 0;
+  var sequence = 0;
+  var previousInteractive = null;
+  var disposed = false;
+
+  function position(p) {
+    if (!p) return null;
+    var lat = latitudeOf(p), lng = longitudeOf(p);
+    return Number.isFinite(lat) && Number.isFinite(lng)
+      ? {latitude: lat, longitude: lng} : null;
+  }
+
+  function resultFor(shape, completedMode) {
+    var type = completedMode.toLowerCase();
+    var payload = {type: type, id: 'drawing_' + type + '_' + (++sequence)};
+    if (type === 'circle') {
+      var circlePath = shape.getPath();
+      payload.center = position(circlePath.center);
+      payload.radius = circlePath.radius;
+      if (!payload.center || !Number.isFinite(payload.radius)) return null;
+    } else if (type === 'rectangle') {
+      var rectPath = shape.getPath();
+      var sw = position(rectPath._sw), ne = position(rectPath._ne);
+      if (!sw || !ne) return null;
+      payload.bounds = {southWest: sw, northEast: ne};
+    } else {
+      var path = shape.getPath().path;
+      if (!Array.isArray(path) || path.length < 2) return null;
+      payload.points = path.map(position);
+      if (payload.points.some(function(p) { return !p; })) return null;
+    }
+    return payload;
+  }
+
+  function restoreInteraction() {
+    if (previousInteractive && typeof map.setInteractive === 'function') {
+      map.setInteractive(previousInteractive);
+    }
+    previousInteractive = null;
+  }
+
+  function completed() {
+    var completingMode = mode;
+    if (!completingMode || disposed) return;
+    // Native MouseUp/ContextMenu handlers must finish and store their shape
+    // before we inspect the SDK registry.
+    setTimeout(function() {
+      if (disposed || mode !== completingMode || !drawing || !drawing.isFinish()) return;
+      var shapes = drawing.getShapes();
+      if (shapes.length <= seenCount) return;
+      var latest = shapes[shapes.length - 1];
+      seenCount = shapes.length;
+      mode = null;
+      restoreInteraction();
+      if (!latest) return;
+      var payload = resultFor(latest, completingMode);
+      if (payload) onComplete(JSON.stringify(payload));
+    }, 0);
+  }
+
+  return {
+    start: function(nextMode, style) {
+      if (disposed || !/^(Circle|Rectangle|Polyline|Polygon)$/.test(nextMode)) {
+        throw new Error('Unsupported Drawing mode: ' + nextMode);
+      }
+      if (drawing && !drawing.isFinish()) {
+        drawing.cancel();
+        restoreInteraction();
+      }
+      if (!drawing) {
+        drawing = new Tmapv3.extension.Drawing(Object.assign({map: map}, style));
+        // The SDK binds its own handlers above, so these run after them.
+        if (typeof map.on === 'function') {
+          map.on('MouseUp', completed);
+          map.on('ContextMenu', completed);
+        }
+      } else {
+        // The pinned SDK exposes no style setter. Updating the single native
+        // instance avoids leaking constructor-registered map event handlers.
+        Object.assign(drawing._status.drawOptions, style);
+      }
+      previousInteractive = map.vsmMap && map.vsmMap().getInteractive
+        ? Object.assign({}, map.vsmMap().getInteractive()) : null;
+      seenCount = drawing.getShapes().length;
+      mode = nextMode;
+      drawing['draw' + nextMode]();
+    },
+    clear: function() {
+      mode = null;
+      if (!drawing) return;
+      if (!drawing.isFinish()) drawing.cancel();
+      drawing.clear();
+      seenCount = 0;
+      restoreInteraction();
+    },
+    dispose: function() {
+      this.clear();
+      disposed = true;
+      if (drawing && typeof map.off === 'function') {
+        map.off('MouseUp', completed);
+        map.off('ContextMenu', completed);
+      }
+    },
+    nativeDrawing: function() { return drawing; }
+  };
+}
+
+// The pinned SDK Polygon constructor fills path/outerPath but its documented
+// contains() reads pathE7/outerPathE7, which the constructor leaves unset.
+// Populate those projected caches from the very same native path vertices.
+function prepareTmapPolygonContains(polygon) {
+  var data = polygon && polygon._shape_data;
+  if (!data || !Array.isArray(data.path)) return;
+  if (!Array.isArray(data.pathE7)) {
+    data.pathE7 = data.path.map(function(point) {
+      return point.toEPSG3857();
+    });
+  }
+  if (Array.isArray(data.outerPath) && !Array.isArray(data.outerPathE7)) {
+    data.outerPathE7 = data.outerPath.map(function(ring) {
+      return ring.map(function(point) { return point.toEPSG3857(); });
+    });
+  }
+}
