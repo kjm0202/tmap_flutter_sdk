@@ -243,6 +243,8 @@ function tmapMarkerOptions(data, nativeDraggable) {
   };
   if (data.color) options.color = data.color;
   if (data.title) options.title = data.title;
+  if (data.titleOption) options.titleOption = data.titleOption;
+  if (data.contextMenu) options.contextMenu = data.contextMenu;
   if (data.label) {
     options.label = data.label;
     if (data.labelBackgroundColor || data.labelTextColor) {
@@ -271,6 +273,29 @@ function tmapMarkerOptions(data, nativeDraggable) {
   }
 
   return options;
+}
+
+// Cluster callbacks may receive a group marker or a cluster descriptor.
+// Normalize both into an event payload with stable member IDs.
+function tmapClusterEventPayload(cluster, map) {
+  if (!cluster) return null;
+  var center = cluster.center ||
+      (typeof cluster.getCenter === 'function' ? cluster.getCenter() : null) ||
+      (typeof cluster.getPosition === 'function' ? cluster.getPosition() : null) ||
+      cluster.position;
+  if (!center) return null;
+  var members = Array.isArray(cluster.markers) ? cluster.markers :
+      (typeof cluster.getMarkers === 'function' ? cluster.getMarkers() : []);
+  var ids = [];
+  if (Array.isArray(members)) {
+    for (var member of members) {
+      var id = member && (member._customMarkerId || member.markerId || member.id);
+      if (typeof id === 'string' && id && !ids.includes(id)) ids.push(id);
+    }
+  }
+  return {lat: latitudeOf(center), lng: longitudeOf(center),
+    zoom: map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16,
+    markerIds: ids};
 }
 
 const tmapBridge = {

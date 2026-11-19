@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/lat_lng.dart';
 import '../utils/hex_color.dart';
 
+const _keepLabelValue = Object();
+
 /// TMAP 텍스트 라벨 오버레이 클래스입니다.
 class Label {
   /// 라벨 고유 ID
@@ -34,6 +36,29 @@ class Label {
     this.minLevel,
     this.maxLevel,
   });
+
+  /// 새 위치나 줌 표시 범위를 가진 라벨 값을 만듭니다.
+  Label copyWith({
+    LatLng? position,
+    String? content,
+    String? fontSize,
+    Color? fontColor,
+    Object? minLevel = _keepLabelValue,
+    Object? maxLevel = _keepLabelValue,
+  }) =>
+      Label(
+        labelId: labelId,
+        position: position ?? this.position,
+        content: content ?? this.content,
+        fontSize: fontSize ?? this.fontSize,
+        fontColor: fontColor ?? this.fontColor,
+        minLevel: identical(minLevel, _keepLabelValue)
+            ? this.minLevel
+            : minLevel as int?,
+        maxLevel: identical(maxLevel, _keepLabelValue)
+            ? this.maxLevel
+            : maxLevel as int?,
+      );
 
   Map<String, dynamic> toJson() {
     return {

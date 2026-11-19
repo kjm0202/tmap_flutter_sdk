@@ -31,6 +31,7 @@ class TMapWebBridge {
   static void clearAllMarkers(String viewId) {}
   static void addClusterer(String viewId, Clusterer clusterer) {}
   static void clearClusterer(String viewId) {}
+  static void clearClusterMarkers(String viewId) {}
   static void addInfoWindow(String viewId, InfoWindow iw) {}
   static void clearInfoWindow(String viewId, String infoWindowId) {}
   static void clearAllInfoWindows(String viewId) {}

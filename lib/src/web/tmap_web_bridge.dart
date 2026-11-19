@@ -159,6 +159,8 @@ class TMapWebBridge {
       'gridSize': clusterer.gridSize,
       'visible': clusterer.visible,
       'opacity': clusterer.opacity,
+      if (clusterer.icons != null) 'icons': clusterer.icons,
+      if (clusterer.zIndex != null) 'zIndex': clusterer.zIndex,
       'markers': clusterer.markers.map((m) => m.toJson()).toList(),
     };
     _call('addClusterer', [viewId, data]);
@@ -166,6 +168,10 @@ class TMapWebBridge {
 
   static void clearClusterer(String viewId) {
     _call('clearClusterer', [viewId]);
+  }
+
+  static void clearClusterMarkers(String viewId) {
+    _call('clearClusterMarkers', [viewId]);
   }
 
   static void addInfoWindow(String viewId, InfoWindow iw) {
