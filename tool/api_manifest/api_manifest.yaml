@@ -255,6 +255,7 @@ entries:
       - "example/test_driver/bridge/map_display_scenario.dart::zoomToMaxExtent reduced zoom level significantly towards maximum extent"
   - id: "Tmapv3.Map@Click"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: done
     dart: TMap.onMapTap
@@ -263,18 +264,21 @@ entries:
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@ConfigLoad"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: todo
     planned_dart: TMap.onMapCreated
     reason: "Map readiness is represented by TMap.onMapCreated, but the ConfigLoad event payload is not independently verified."
   - id: "Tmapv3.Map@ContextMenu"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: todo
     planned_dart: TMap.onContextMenu
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@DragEnd"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: done
     dart: TMap.onDragChangeCallback
@@ -283,6 +287,7 @@ entries:
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@DragStart"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: done
     dart: TMap.onDragChangeCallback
@@ -291,18 +296,21 @@ entries:
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@TouchEnd"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: todo
     planned_dart: TMap.onTouchEnd
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@TouchStart"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: todo
     planned_dart: TMap.onTouchStart
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@Zoom"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
     decision: adapt
     status: done
     dart: TMap.onZoomChangeCallback
@@ -556,6 +564,7 @@ entries:
       - "example/test_driver/bridge/overlay_interactions_scenario.dart::marker tap callback delivered to Dart"
   - id: "Tmapv3.Marker@drag"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample19.html
     decision: expose
     status: done
     dart: TMap.onMarkerDragChangeCallback
@@ -563,6 +572,7 @@ entries:
       - "example/test_driver/bridge/overlay_interactions_scenario.dart::draggable marker received drag callbacks"
   - id: "Tmapv3.Marker@dragend"
     kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample19.html
     decision: expose
     status: done
     dart: TMap.onMarkerDragChangeCallback
@@ -719,227 +729,297 @@ entries:
   - id: "Tmapv3.Bounds"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.Bounds
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#constructor"
     kind: constructor
     decision: adapt
     status: done
-    dart: LatLngBounds.new
+    dart: Bounds.new
     tests:
-      - "test/bounds_test.dart::LatLngBounds contains and center calculation"
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds.options.bottom"
     kind: option
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.bottom
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.bottom
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds.options.left"
     kind: option
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.left
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.left
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds.options.right"
     kind: option
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.right
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.right
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds.options.top"
     kind: option
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.top
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.top
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#clone"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.clone
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.clone
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#contains"
     kind: method
     decision: adapt
     status: done
-    dart: LatLngBounds.contains
+    dart: Bounds.contains
     tests:
-      - "test/bounds_test.dart::LatLngBounds contains and center calculation"
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "Official Bounds.contains cannot evaluate its documented Bounds argument; Dart implements rectangle containment."
   - id: "Tmapv3.Bounds#getHeight"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getHeight
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.height
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#getLeft"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getLeft
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.left
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#getPosition"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getPosition
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.position
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#getSize"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getSize
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.size
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#getTop"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getTop
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.top
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#getWidth"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getWidth
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.width
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#intersects"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.intersects
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.intersects
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#setHeight"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.setHeight
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.withHeight
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#setLeft"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.setLeft
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.withLeft
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#setTop"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.setTop
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.withTop
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#setWidth"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.setWidth
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.withWidth
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#toString"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.toString
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.toString
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
   - id: "Tmapv3.Bounds#union"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.union
-    reason: "JS Bounds is represented by the Flutter LatLngBounds value type where geographic bounds apply."
+    status: done
+    dart: Bounds.union
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
 
   # LatLngBounds
   - id: "Tmapv3.LatLngBounds"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: LatLngBounds
+    status: done
+    dart: LatLngBounds.LatLngBounds
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
   - id: "Tmapv3.LatLngBounds#constructor"
     kind: constructor
     decision: expose
     status: done
     dart: LatLngBounds.new
     tests:
-      - "test/bounds_test.dart::LatLngBounds contains and center calculation"
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
   - id: "Tmapv3.LatLngBounds#contains"
     kind: method
     decision: expose
     status: done
     dart: LatLngBounds.contains
     tests:
-      - "test/bounds_test.dart::LatLngBounds contains and center calculation"
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
   - id: "Tmapv3.LatLngBounds#equals"
     kind: method
     decision: adapt
     status: done
     dart: LatLngBounds.==
     tests:
-      - "test/bounds_test.dart::LatLngBounds JSON serialization / deserialization"
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
     reason: "JS equals is Dart operator ==."
   - id: "Tmapv3.LatLngBounds#extend"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.extend
+    decision: adapt
+    status: done
+    dart: LatLngBounds.extend
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds operations mutate; Dart returns a new immutable envelope."
   - id: "Tmapv3.LatLngBounds#getCenter"
     kind: method
     decision: adapt
     status: done
     dart: LatLngBounds.center
     tests:
-      - "test/bounds_test.dart::LatLngBounds contains and center calculation"
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
     reason: "JS bounds getter methods are Dart value fields and the center property."
   - id: "Tmapv3.LatLngBounds#getHeight"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.getHeight
+    decision: adapt
+    status: done
+    dart: LatLngBounds.height
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#getNorthEast"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getNorthEast
-    reason: "JS bounds getter methods are Dart value fields and the center property."
+    status: done
+    dart: LatLngBounds.normalizedNorthEast
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#getNorthWest"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.getNorthWest
+    decision: adapt
+    status: done
+    dart: LatLngBounds.northWest
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#getSouthEast"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.getSouthEast
+    decision: adapt
+    status: done
+    dart: LatLngBounds.southEast
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#getSouthWest"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: LatLngBounds.getSouthWest
-    reason: "JS bounds getter methods are Dart value fields and the center property."
+    status: done
+    dart: LatLngBounds.normalizedSouthWest
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#getWidth"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.getWidth
+    decision: adapt
+    status: done
+    dart: LatLngBounds.width
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#intersects"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.intersects
+    decision: adapt
+    status: done
+    dart: LatLngBounds.intersects
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "The SDK returns null for non-overlapping bounds; Dart returns a non-nullable bool."
   - id: "Tmapv3.LatLngBounds#isEmpty"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.isEmpty
+    decision: adapt
+    status: done
+    dart: LatLngBounds.isEmpty
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
   - id: "Tmapv3.LatLngBounds#toString"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLngBounds.toString
+    status: done
+    dart: LatLngBounds.toString
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
   - id: "Tmapv3.LatLngBounds#union"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLngBounds.union
+    decision: adapt
+    status: done
+    dart: LatLngBounds.union
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds operations mutate; Dart returns a new immutable envelope."
 
   # InfoWindow
   - id: "Tmapv3.InfoWindow"
@@ -1050,32 +1130,38 @@ entries:
   - id: "Tmapv3.LatLng"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: LatLng
+    status: done
+    dart: LatLng.LatLng
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#constructor"
     kind: constructor
     decision: expose
     status: done
     dart: LatLng.new
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#clone"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLng.clone
+    status: done
+    dart: LatLng.clone
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#distanceTo"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLng.distanceTo
+    status: done
+    dart: LatLng.distanceTo
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#equals"
     kind: method
     decision: adapt
     status: done
     dart: LatLng.==
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
     reason: "JS equals is Dart operator ==."
   - id: "Tmapv3.LatLng#lat"
     kind: method
@@ -1083,7 +1169,7 @@ entries:
     status: done
     dart: LatLng.latitude
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
     reason: "JS coordinate getter methods are Dart latitude and longitude fields."
   - id: "Tmapv3.LatLng#latitude"
     kind: method
@@ -1091,7 +1177,7 @@ entries:
     status: done
     dart: LatLng.latitude
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
     reason: "JS coordinate getter methods are Dart latitude and longitude fields."
   - id: "Tmapv3.LatLng#lng"
     kind: method
@@ -1099,7 +1185,7 @@ entries:
     status: done
     dart: LatLng.longitude
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
     reason: "JS coordinate getter methods are Dart latitude and longitude fields."
   - id: "Tmapv3.LatLng#longitude"
     kind: method
@@ -1107,76 +1193,96 @@ entries:
     status: done
     dart: LatLng.longitude
     tests:
-      - "test/lat_lng_test.dart::LatLng instantiation and equality"
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
     reason: "JS coordinate getter methods are Dart latitude and longitude fields."
   - id: "Tmapv3.LatLng#setLatitude"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLng.setLatitude
+    decision: adapt
+    status: done
+    dart: LatLng.withLatitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "SDK coordinate setters mutate; Dart returns an updated immutable value."
   - id: "Tmapv3.LatLng#setLongitude"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: LatLng.setLongitude
+    decision: adapt
+    status: done
+    dart: LatLng.withLongitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "SDK coordinate setters mutate; Dart returns an updated immutable value."
   - id: "Tmapv3.LatLng#toBesselTm"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLng.toBesselTm
+    status: done
+    dart: LatLng.toBesselTm
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#toEPSG3857"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLng.toEPSG3857
+    status: done
+    dart: LatLng.toEPSG3857
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
   - id: "Tmapv3.LatLng#toString"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: LatLng.toString
+    status: done
+    dart: LatLng.toString
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
 
   # Point
   - id: "Tmapv3.Point"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: Point
+    status: done
+    dart: Point.Point
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point#constructor"
     kind: constructor
     decision: expose
     status: done
     dart: Point.new
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point.options.x"
     kind: option
     decision: expose
     status: done
     dart: Point.x
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point.options.y"
     kind: option
     decision: expose
     status: done
     dart: Point.y
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point#clone"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Point.clone
+    status: done
+    dart: Point.clone
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point#distanceTo"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Point.distanceTo
+    status: done
+    dart: Point.distanceTo
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
   - id: "Tmapv3.Point#equals"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Point.==
+    status: done
+    dart: Point.==
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
     reason: "JS equals is Dart operator ==."
   - id: "Tmapv3.Point#getX"
     kind: method
@@ -1184,7 +1290,7 @@ entries:
     status: done
     dart: Point.x
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
     reason: "JS numeric getters are immutable Dart fields."
   - id: "Tmapv3.Point#getY"
     kind: method
@@ -1192,33 +1298,47 @@ entries:
     status: done
     dart: Point.y
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
     reason: "JS numeric getters are immutable Dart fields."
   - id: "Tmapv3.Point#offset"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: Point.offset
+    decision: adapt
+    status: done
+    dart: Point.offset
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
   - id: "Tmapv3.Point#setValue"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: Point.setValue
+    decision: adapt
+    status: done
+    dart: Point.withValue
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
   - id: "Tmapv3.Point#setX"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: Point.setX
+    decision: adapt
+    status: done
+    dart: Point.withX
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
   - id: "Tmapv3.Point#setY"
     kind: method
-    decision: expose
-    status: todo
-    planned_dart: Point.setY
+    decision: adapt
+    status: done
+    dart: Point.withY
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
   - id: "Tmapv3.Point#toString"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Point.toString
+    status: done
+    dart: Point.toString
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
 
   # DotMap
   - id: "Tmapv3.extension.DotMap"
@@ -1498,6 +1618,7 @@ entries:
   # TData REST endpoints
   - id: "rest:/tmap/routes"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteDoc.html
     decision: adapt
     status: done
     dart: TDataService.getRoutePlan
@@ -1506,6 +1627,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/routes/pedestrian"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapRoutePedestrianDoc.html
     decision: adapt
     status: done
     dart: TDataService.getRoutePlanPedestrian
@@ -1514,6 +1636,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiSearch.html
     decision: adapt
     status: done
     dart: TDataService.searchPoi
@@ -1522,6 +1645,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois/search/around"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiAroundSearch.html
     decision: adapt
     status: done
     dart: TDataService.searchPoiAround
@@ -1530,6 +1654,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/fullAddrGeo"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/fullTextGeocoding.html
     decision: adapt
     status: done
     dart: TDataService.getGeoFromAddress
@@ -1538,6 +1663,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/reversegeocoding"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/reverseGeocoding.html
     decision: adapt
     status: done
     dart: TDataService.getAddressFromGeo
@@ -1546,6 +1672,7 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/poi/autoComplete"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample88.html
     decision: adapt
     status: done
     dart: TDataService.getAutoCompleteSearch
@@ -1554,18 +1681,21 @@ entries:
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/traffic"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapTrafficDoc.html
     decision: adapt
     status: todo
     planned_dart: TDataService.getRealTimeTraffic
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois/{poiInfo}"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiDetail.html
     decision: adapt
     status: todo
     planned_dart: TDataService.getPoiById
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/geocoding"
     kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/geocoding.html
     decision: adapt
     status: todo
     planned_dart: TDataService.getGeoFromAddressLegacy
@@ -2171,34 +2301,38 @@ entries:
   - id: "Tmapv3.Size"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: Size
+    status: done
+    dart: Size.Size
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
   - id: "Tmapv3.Size#constructor"
     kind: constructor
     decision: expose
     status: done
     dart: Size.new
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
   - id: "Tmapv3.Size.options.height"
     kind: option
     decision: expose
     status: done
     dart: Size.height
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
   - id: "Tmapv3.Size.options.width"
     kind: option
     decision: expose
     status: done
     dart: Size.width
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
   - id: "Tmapv3.Size#equals"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Size.==
+    status: done
+    dart: Size.==
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
     reason: "JS equals is Dart operator ==."
   - id: "Tmapv3.Size#getHeight"
     kind: method
@@ -2206,7 +2340,7 @@ entries:
     status: done
     dart: Size.height
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
     reason: "JS numeric getters are immutable Dart fields."
   - id: "Tmapv3.Size#getWidth"
     kind: method
@@ -2214,7 +2348,7 @@ entries:
     status: done
     dart: Size.width
     tests:
-      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
     reason: "JS numeric getters are immutable Dart fields."
 
   # GroundOverlay

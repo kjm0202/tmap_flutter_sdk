@@ -48,6 +48,7 @@ enum WidgetState { started, stopped }
     dart: Widget.foo
     tests: [test/widget_test.dart::foo works]
     platforms: [web, ios]
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
   - id: Tmapv3.Widget#size
     kind: property
     decision: adapt
@@ -68,6 +69,29 @@ enum WidgetState { started, stopped }
     expect(result.errors, isEmpty);
     expect(result.entries.length, 4);
     expect(result.entries.where((e) => e.done).length, 2);
+    expect(result.entries.first.source,
+        'https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html');
+  });
+
+  test('requires source to be an absolute HTTP(S) documentation URL', () {
+    final result = validateManifest('''$sdkHeader
+  - id: Tmapv3.Widget#foo
+    kind: method
+    decision: expose
+    status: todo
+    source: ../docs/example.html
+  - id: Tmapv3.Widget#size
+    kind: property
+    decision: expose
+    status: todo
+    source: javascript:alert(1)
+  - id: Tmapv3.Widget#other
+    kind: method
+    decision: expose
+    status: todo
+    source: ""
+''', root);
+    expect(result.errors.where((e) => e.contains('source must')).length, 3);
   });
 
   test('rejects malformed schema, duplicates, enum and reason errors', () {
@@ -244,11 +268,15 @@ enum WidgetState { started, stopped }
         ]));
   });
 
-  test('drift comparison detects and sorts both directions', () {
+  test('drift fails for undocumented manifest gaps, not manifest-only rows',
+      () {
     final drift = DriftResult({'a', 'b'}, {'b', 'c'});
     expect(drift.hasDrift, isTrue);
     expect(drift.missingFromManifest, ['a']);
     expect(drift.absentFromDocs, ['c']);
+    final manifestOnly = DriftResult({'a'}, {'a', 'b'});
+    expect(manifestOnly.hasDrift, isFalse);
+    expect(manifestOnly.absentFromDocs, ['b']);
     expect(DriftResult({'a'}, {'a'}).hasDrift, isFalse);
   });
 }

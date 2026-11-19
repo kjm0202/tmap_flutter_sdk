@@ -140,6 +140,6 @@ class DriftResult {
   final List<String> missingFromManifest;
   final List<String> absentFromDocs;
 
-  bool get hasDrift =>
-      missingFromManifest.isNotEmpty || absentFromDocs.isNotEmpty;
+  /// Manifest-only rows may be documented on a separate, per-row source URL.
+  bool get hasDrift => missingFromManifest.isNotEmpty;
 }
