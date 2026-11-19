@@ -1,0 +1,41 @@
+{
+  "coordinateInfo": {
+    "coordType": "WGS84GEO",
+    "addressFlag": "F00",
+    "page": "1",
+    "count": "20",
+    "totalCount": "1",
+    "coordinate": [
+      {
+        "matchFlag": "",
+        "lat": "",
+        "lon": "",
+        "latEntr": "",
+        "lonEntr": "",
+        "city_do": "서울",
+        "gu_gun": "중구",
+        "eup_myun": "",
+        "legalDong": "",
+        "legalDongCode": "",
+        "adminDong": "",
+        "adminDongCode": "",
+        "ri": "",
+        "bunji": "",
+        "buildingName": "서울특별시청",
+        "buildingDong": "본관동",
+        "newMatchFlag": "N51",
+        "newLat": "37.566317",
+        "newLon": "126.977829",
+        "newLatEntr": "37.566878",
+        "newLonEntr": "126.978463",
+        "newRoadName": "세종대로",
+        "newBuildingIndex": "110",
+        "newBuildingName": "서울특별시청",
+        "newBuildingCateName": "",
+        "newBuildingDong": "본관동",
+        "zipcode": "04524",
+        "remainder": ""
+      }
+    ]
+  }
+}
