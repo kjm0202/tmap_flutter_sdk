@@ -35,6 +35,34 @@ function load(...files) {
   return window;
 }
 
+test('polyline width forwards explicit zero and preserves each bridge default', () => {
+  for (const platform of ['mobile', 'web']) {
+    const host = load(platform === 'mobile' ? 'mobile_overlays' : 'web');
+    host.Tmapv3.Polyline = class {
+      constructor(options) { this.options = options; }
+      setMap(map) { this.options.map = map; }
+    };
+    const polylines = {};
+    if (platform === 'mobile') {
+      host.map = {};
+      host.polylines = polylines;
+    } else {
+      host.tmap_instances.first = {map: {}, polylines};
+    }
+    const add = width => platform === 'mobile'
+      ? host.addPolyline('p', [], '#000', 1, width, false)
+      : host.tmap_addPolyline('first', {id: 'p', points: [], ...width});
+    const fallback = platform === 'mobile' ? 5 : 6;
+    if (platform === 'mobile') host.addPolyline('p', [], '#000', 1);
+    else host.tmap_addPolyline('first', {id: 'p', points: []});
+    assert.equal(polylines.p.options.strokeWeight, fallback, `${platform}: omitted`);
+    for (const [input, expected] of [[0, 0], [7, 7], [undefined, fallback], [null, fallback], [false, fallback], ['', fallback]]) {
+      add(platform === 'mobile' ? input : input === undefined ? {} : {strokeWidth: input});
+      assert.equal(polylines.p.options.strokeWeight, expected, `${platform}: ${input}`);
+    }
+  }
+});
+
 test('polygon zIndex is forwarded, including zero, and mobile omission stays omitted', () => {
   class Polygon {
     constructor(options) { this.options = options; }

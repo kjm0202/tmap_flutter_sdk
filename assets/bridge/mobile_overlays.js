@@ -372,7 +372,7 @@ function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeW
     path: path,
     strokeColor: strokeColor || "#0066FF",
     strokeOpacity: strokeOpacity !== undefined ? strokeOpacity : 1.0,
-    strokeWeight: strokeWidth || 5,
+    strokeWeight: strokeWidth === 0 ? 0 : (strokeWidth || 5),
     direction: direction || false,
     map: map
   };

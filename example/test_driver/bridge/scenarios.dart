@@ -15,6 +15,7 @@ import 'widget_lifecycle_scenario.dart';
 import 'overlay_presentation_scenario.dart';
 import 'overlay_regression_scenario.dart';
 import 'polygon_zindex_scenario.dart';
+import 'shape_style_scenario.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,6 +72,7 @@ void main() async {
     'overlay_regression': testOverlayRegression,
     'polygon_zindex': testPolygonZIndex,
     'shape_zindex': testShapeZIndex,
+    'shape_style': testShapeStyle,
     'cluster_members': testClusterMembers,
   };
 

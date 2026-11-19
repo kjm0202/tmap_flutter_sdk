@@ -926,7 +926,7 @@
       path: path,
       strokeColor: p.strokeColor || "#0066FF",
       strokeOpacity: p.strokeOpacity !== undefined ? p.strokeOpacity : 1.0,
-      strokeWeight: p.strokeWidth || 6,
+      strokeWeight: p.strokeWidth === 0 ? 0 : (p.strokeWidth || 6),
       direction: p.direction || false,
       map: state.map,
       zIndex: p.zIndex || 0
