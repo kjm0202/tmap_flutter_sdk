@@ -41,7 +41,8 @@ class TDataService {
 
       final json = await _post(uri, body, appKey);
       if (json != null) {
-        return RouteInfo.fromJson(json);
+        return RouteInfo.fromJson(json,
+            responseCoordType: _effectiveResCoordType(body));
       }
     } catch (e, st) {
       developer.log('getRoutePlan error: $e',
@@ -77,7 +78,8 @@ class TDataService {
 
       final json = await _post(uri, body, appKey);
       if (json != null) {
-        return RouteInfo.fromJson(json);
+        return RouteInfo.fromJson(json,
+            responseCoordType: _effectiveResCoordType(body));
       }
     } catch (e, st) {
       developer.log('getRoutePlanPedestrian error: $e',
@@ -280,6 +282,12 @@ class TDataService {
           name: 'TDataService', error: e, stackTrace: st);
     }
     return [];
+  }
+
+  /// The `resCoordType` actually sent, after caller options were applied.
+  static String? _effectiveResCoordType(Map<String, dynamic> body) {
+    final value = body['resCoordType'];
+    return value is String ? value : null;
   }
 
   /// Parses one WGS84 coordinate pair without mixing values from two sources.

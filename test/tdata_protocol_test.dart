@@ -87,5 +87,122 @@ void main() {
       expect(route?.path.length, 2);
       expect(route?.guidePoints.length, 1);
     });
+
+    group('RouteInfo.fromJson responseCoordType', () {
+      const x = 14134496.373156464;
+      const y = 4517248.111148808;
+      const lng = 126.97234125338395;
+      const lat = 37.55853605747212;
+      const eps = 1e-9;
+
+      Map<String, dynamic> routeJson(List<num> point, List<List<num>> line) => {
+            'type': 'FeatureCollection',
+            'features': [
+              {
+                'type': 'Feature',
+                'geometry': {'type': 'Point', 'coordinates': point},
+                'properties': {
+                  'totalDistance': 15000,
+                  'totalTime': 1200,
+                  'totalFare': 2000,
+                  'taxiFare': 16000,
+                  'name': '',
+                  'description': '출발',
+                },
+              },
+              {
+                'type': 'Feature',
+                'geometry': {'type': 'LineString', 'coordinates': line},
+                'properties': {'description': '직진'},
+              },
+              {
+                'type': 'Feature',
+                'geometry': {'type': 'LineString', 'coordinates': line},
+                'properties': {'description': '계속 직진'},
+              },
+            ],
+          };
+
+      void expectMetadata(RouteInfo route) {
+        expect(route.totalDistance, 15000);
+        expect(route.totalTime, 1200);
+        expect(route.totalFare, 2000);
+        expect(route.taxiFare, 16000);
+        expect(route.guidePoints.single.name, '');
+        expect(route.guidePoints.single.description, '출발');
+      }
+
+      test('decodes the official EPSG3857 pair on guides and every segment',
+          () {
+        final route = RouteInfo.fromJson(
+          routeJson([
+            x,
+            y
+          ], [
+            [x, y],
+            [x, y],
+            [0, 0],
+          ]),
+          responseCoordType: 'EPSG3857',
+        );
+
+        expectMetadata(route);
+        final guide = route.guidePoints.single.point;
+        expect(guide.longitude, closeTo(lng, eps));
+        expect(guide.latitude, closeTo(lat, eps));
+        expect(route.path.length, 6);
+        for (final i in [0, 1, 3, 4]) {
+          expect(route.path[i].longitude, closeTo(lng, eps));
+          expect(route.path[i].latitude, closeTo(lat, eps));
+        }
+        for (final i in [2, 5]) {
+          expect(route.path[i].longitude, 0);
+          expect(route.path[i].latitude, 0);
+        }
+      });
+
+      test('decodes the negative projected counterpart', () {
+        final route = RouteInfo.fromJson(
+          routeJson([
+            -x,
+            -y
+          ], [
+            [-x, -y],
+          ]),
+          responseCoordType: 'EPSG3857',
+        );
+
+        expect(route.guidePoints.single.point.longitude, closeTo(-lng, eps));
+        expect(route.guidePoints.single.point.latitude, closeTo(-lat, eps));
+        expect(route.path.first.longitude, closeTo(-lng, eps));
+        expect(route.path.first.latitude, closeTo(-lat, eps));
+      });
+
+      test('keeps ordinary WGS84 parsing by default and for other values', () {
+        final json = routeJson([
+          lng,
+          lat
+        ], [
+          [lng, lat],
+          [126.99, 37.57],
+        ]);
+        for (final route in [
+          RouteInfo.fromJson(json),
+          RouteInfo.fromJson(json, responseCoordType: 'WGS84GEO'),
+          RouteInfo.fromJson(json, responseCoordType: null),
+          RouteInfo.fromJson(json, responseCoordType: 'KATECH'),
+        ]) {
+          expectMetadata(route);
+          expect(route.guidePoints.single.point.longitude, lng);
+          expect(route.guidePoints.single.point.latitude, lat);
+          expect(route.path.map((p) => [p.longitude, p.latitude]), [
+            [lng, lat],
+            [126.99, 37.57],
+            [lng, lat],
+            [126.99, 37.57],
+          ]);
+        }
+      });
+    });
   });
 }

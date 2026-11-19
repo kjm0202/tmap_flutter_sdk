@@ -179,6 +179,53 @@ void main() {
       expect(result!.path.length, greaterThan(1));
     });
 
+    test('route callers decode EPSG3857 when options request it', () async {
+      const epsg3857Fixture = {
+        'type': 'FeatureCollection',
+        'features': [
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'LineString',
+              'coordinates': [
+                [14134496.373156464, 4517248.111148808],
+              ],
+            },
+            'properties': {'totalTime': 1800, 'totalDistance': 15000},
+          },
+        ],
+      };
+      final options = {'resCoordType': 'EPSG3857'};
+
+      for (final call in [
+        () => TDataService.getRoutePlan(
+              start: const LatLng(37.5547, 126.9706),
+              end: const LatLng(37.4979, 127.0276),
+              options: options,
+            ),
+        () => TDataService.getRoutePlanPedestrian(
+              start: const LatLng(37.5547, 126.9706),
+              end: const LatLng(37.4979, 127.0276),
+              options: options,
+            ),
+      ]) {
+        _setCanned(epsg3857Fixture);
+
+        final result = await _run(call);
+
+        final body = jsonDecode(_lastRequest.body) as Map<String, dynamic>;
+        expect(body['reqCoordType'], 'WGS84GEO');
+        expect(body['resCoordType'], 'EPSG3857');
+        expect(options, {'resCoordType': 'EPSG3857'});
+
+        expect(result, isNotNull);
+        expect(result!.totalDistance, 15000);
+        expect(result.totalTime, 1800);
+        expect(result.path.single.longitude, closeTo(126.97234125338395, 1e-9));
+        expect(result.path.single.latitude, closeTo(37.55853605747212, 1e-9));
+      }
+    });
+
     test('getGeoFromAddress returns LatLng from legacy flat fixture', () async {
       _setCanned({
         'coordinateInfo': {'lat': '37.5', 'lon': '127.0'},

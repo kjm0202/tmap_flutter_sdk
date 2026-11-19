@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'lat_lng.dart';
 
 /// TMAP 경로 탐색 결과 모델입니다.
@@ -29,7 +31,15 @@ class RouteInfo {
     required this.guidePoints,
   });
 
-  factory RouteInfo.fromJson(Map<String, dynamic> json) {
+  /// [responseCoordType] is the `resCoordType` the route was requested with,
+  /// because the response payload does not state its coordinate system.
+  /// Only `EPSG3857` coordinates are converted; any other value keeps the
+  /// coordinates as returned (`WGS84GEO` by default).
+  factory RouteInfo.fromJson(
+    Map<String, dynamic> json, {
+    String? responseCoordType = 'WGS84GEO',
+  }) {
+    final isEpsg3857 = responseCoordType == 'EPSG3857';
     final features = (json['features'] as List<dynamic>?) ?? <dynamic>[];
     final pathPoints = <LatLng>[];
     final guides = <RouteGuidePoint>[];
@@ -58,9 +68,7 @@ class RouteInfo {
         final coordinates = geometry['coordinates'];
 
         if (type == 'Point' && coordinates is List && coordinates.length >= 2) {
-          final lng = (coordinates[0] as num).toDouble();
-          final lat = (coordinates[1] as num).toDouble();
-          final point = LatLng(lat, lng);
+          final point = _toLatLng(coordinates, isEpsg3857);
           final description = properties?['description'] as String? ?? '';
           final name = properties?['name'] as String? ?? '';
           guides.add(RouteGuidePoint(
@@ -71,9 +79,7 @@ class RouteInfo {
         } else if (type == 'LineString' && coordinates is List) {
           for (final coord in coordinates) {
             if (coord is List && coord.length >= 2) {
-              final lng = (coord[0] as num).toDouble();
-              final lat = (coord[1] as num).toDouble();
-              pathPoints.add(LatLng(lat, lng));
+              pathPoints.add(_toLatLng(coord, isEpsg3857));
             }
           }
         }
@@ -88,6 +94,22 @@ class RouteInfo {
       path: pathPoints,
       guidePoints: guides,
     );
+  }
+
+  /// Spherical Mercator radius (metres) used by EPSG:3857.
+  static const double _epsg3857Radius = 6378137;
+
+  /// Reads one `[x, y]` pair, decoding `[xEastMetres, yNorthMetres]` when
+  /// [isEpsg3857] and otherwise keeping `[longitude, latitude]` as is.
+  static LatLng _toLatLng(List<dynamic> coord, bool isEpsg3857) {
+    final x = (coord[0] as num).toDouble();
+    final y = (coord[1] as num).toDouble();
+    if (!isEpsg3857) return LatLng(y, x);
+    final lng = x / _epsg3857Radius * 180 / math.pi;
+    final lat = (2 * math.atan(math.exp(y / _epsg3857Radius)) - math.pi / 2) *
+        180 /
+        math.pi;
+    return LatLng(lat, lng);
   }
 }
 

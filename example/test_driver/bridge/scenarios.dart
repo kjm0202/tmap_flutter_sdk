@@ -5,6 +5,7 @@ import 'shape_scenarios.dart';
 import 'cluster_scenarios.dart';
 import 'cluster_members_scenario.dart';
 import 'tdata_scenarios.dart';
+import 'tdata_coordinate_scenario.dart';
 import 'camera_scenarios.dart';
 import 'info_window_scenarios.dart';
 import 'map_display_scenario.dart';
@@ -59,6 +60,7 @@ void main() async {
     'shapes': () => testShapeScenarios(controller),
     'cluster': () => testClusterScenarios(controller),
     'tdata': () => testTDataScenarios(controller),
+    'tdata_coordinates': () => testTdataCoordinateScenario(controller),
     'place_search': () => testPlaceSearchScenario(controller),
     'walking': () => testWalkingScenario(controller),
     'camera': () => testCameraScenarios(controller),
