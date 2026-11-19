@@ -535,6 +535,19 @@ function clearAllGroundOverlays() {
   Object.keys(groundOverlays).forEach(clearGroundOverlay);
 }
 
+function addVisualization(type, payload) {
+  if (!map) return;
+  addTmapVisualization(visualizations, type, map, payload);
+}
+
+function removeVisualization(type, id) {
+  removeTmapVisualization(visualizations, type, id);
+}
+
+function clearAllVisualizations() {
+  clearTmapVisualizations(visualizations);
+}
+
 function polygonContains(id, lat, lng) {
   return !!(polygons[id] && polygons[id].contains(new Tmapv3.LatLng(lat, lng)));
 }
@@ -750,6 +763,7 @@ function clearAll() {
   clearAllCircles();
   clearAllRectangles();
   clearAllGroundOverlays();
+  clearAllVisualizations();
   clearDrawings();
   clearAllCustomOverlays();
 }

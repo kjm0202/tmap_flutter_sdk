@@ -13,6 +13,74 @@ function longitudeOf(pos) {
   return pos._lng ?? pos.lng;
 }
 
+// Data visualization extensions own SDK layers and expose destroy(), not
+// setMap(null). Keep their registries separate from ordinary map overlays.
+function tmapVisualizationOptions(type, map, payload) {
+  var options = { map: map, data: payload.data };
+  if (type === 'dot') {
+    options.radius = payload.radius;
+    options.range = payload.range;
+    options.strokeColor = payload.strokeColor;
+    options.strokeOpacity = payload.strokeOpacity;
+    options.fillColor = payload.fillColor;
+    options.fillOpacity = payload.fillOpacity;
+  } else if (type === 'square') {
+    options.origin = new Tmapv3.LatLng(payload.origin.latitude, payload.origin.longitude);
+    options.size = payload.size;
+    options.values = payload.values;
+    options.colors = payload.colors;
+    options.strokeOpacity = payload.strokeOpacity;
+    options.fillOpacity = payload.fillOpacity;
+  } else if (type === 'heat') {
+    options.radius = payload.radius;
+  } else {
+    throw new Error('Unknown TMAP visualization type: ' + type);
+  }
+  return options;
+}
+
+function tmapVisualizationGroup(registry, type) {
+  if (!['dot', 'square', 'heat'].includes(type)) {
+    throw new Error('Unknown TMAP visualization type: ' + type);
+  }
+  return registry[type] || (registry[type] = Object.create(null));
+}
+
+function addTmapVisualization(registry, type, map, payload) {
+  var group = tmapVisualizationGroup(registry, type);
+  var constructors = { dot: 'DotMap', square: 'SquareMap', heat: 'HeatMap' };
+  var Constructor = Tmapv3.extension && Tmapv3.extension[constructors[type]];
+  if (typeof Constructor !== 'function') {
+    throw new Error('TMAP visualization extension unavailable: ' + type);
+  }
+  var replacement = new Constructor(tmapVisualizationOptions(type, map, payload));
+  var original = group[payload.id];
+  if (original && typeof original.destroy === 'function') {
+    try {
+      original.destroy();
+    } catch (error) {
+      if (replacement && typeof replacement.destroy === 'function') replacement.destroy();
+      throw error;
+    }
+  }
+  group[payload.id] = replacement;
+}
+
+function removeTmapVisualization(registry, type, id) {
+  var group = tmapVisualizationGroup(registry, type);
+  if (!Object.prototype.hasOwnProperty.call(group, id)) return;
+  var instance = group[id];
+  if (instance && typeof instance.destroy === 'function') instance.destroy();
+  delete group[id];
+}
+
+function clearTmapVisualizations(registry) {
+  for (var type of ['dot', 'square', 'heat']) {
+    var group = tmapVisualizationGroup(registry, type);
+    for (var id of Object.keys(group)) removeTmapVisualization(registry, type, id);
+  }
+}
+
 function extractEventLatLng(evt) {
   if (!evt) return null;
   var raw = (evt.data && evt.data.lngLat) ? evt.data.lngLat : (evt.latLng || evt.lngLat || (evt.data && (evt.data.lat !== undefined || evt.data.latitude !== undefined) ? evt.data : null));

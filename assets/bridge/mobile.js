@@ -7,6 +7,7 @@ var polygons = {};
 var circles = {};
 var rectangles = {};
 var groundOverlays = {};
+var visualizations = {};
 var drawingSession = null;
 var customOverlays = {};
 var markerCluster = null;
@@ -15,6 +16,7 @@ var defaultCenter;
 var mapListeners = [];
 
 window.tmap_dispose_mobile = function() {
+  if (typeof clearAllVisualizations === 'function') clearAllVisualizations();
   if (drawingSession) {
     drawingSession.dispose();
     drawingSession = null;
