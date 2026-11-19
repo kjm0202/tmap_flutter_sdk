@@ -24,6 +24,12 @@ Future<void> testValueTypes() async {
       const bInside = new T.Bounds(2, 3, 3, 4);
       const bDisjoint = new T.Bounds(5, 2, 7, 8);
       const bOutside = new T.Bounds(5.01, 2, 7, 8);
+      const cDoc = new T.Bounds(1, 1, 1, 1);
+      const cScr = new T.Bounds(1, 3, 1, 1);
+      const dGap = new T.Bounds(1, 10, 1, 1);
+      const bGapUnion = b.clone();
+      const gapUnionResult = capture(() => bGapUnion.union(dGap));
+      const gapIntersects = capture(() => b.intersects(dGap));
       const bUnion = b.clone();
       const unionResult = capture(() => bUnion.union(bDisjoint));
       const bSized = b.clone();
@@ -59,7 +65,11 @@ Future<void> testValueTypes() async {
           intersectsTouch:b.intersects(bTouch),intersectsStrict:b.intersects(bTouch,false),
           intersectsDisjoint:b.intersects(bOutside),
           unionResult:unionResult == null ? null : String(unionResult),union:bUnion.toString(),
-          sized:bSized.toString(),set:bSet.toString()},
+          sized:bSized.toString(),set:bSet.toString(),
+          containsDoc:b.contains(cDoc),containsDocStrict:b.contains(cDoc,false),
+          containsScr:b.contains(cScr),gapUnion:bGapUnion.toString(),
+          gapUnionResult:gapUnionResult == null ? null : String(gapUnionResult),
+          gapIntersects:gapIntersects},
         latLngBounds: {center:latLng(normal.getCenter()),ne:latLng(normal.getNorthEast()),
           nw:latLng(normal.getNorthWest()),sw:latLng(normal.getSouthWest()),
           se:latLng(normal.getSouthEast()),width:normal.getWidth(),height:normal.getHeight(),
@@ -185,6 +195,21 @@ Future<void> testValueTypes() async {
         group: 'bounds',
         field: 'union',
         expected: bounds.union(const Bounds(5, 2, 7, 8)).toString(),
+        tolerance: 0
+      ),
+      // These two placed the second rectangle above the first, so only the
+      // SDK's top + height convention can produce the observed result.
+      (
+        group: 'bounds',
+        field: 'gapUnion',
+        expected: bounds.union(const Bounds(1, 10, 1, 1)).toString(),
+        tolerance: 0
+      ),
+      (group: 'bounds', field: 'gapUnionResult', expected: null, tolerance: 0),
+      (
+        group: 'bounds',
+        field: 'gapIntersects',
+        expected: bounds.intersects(const Bounds(1, 10, 1, 1)),
         tolerance: 0
       ),
       (
@@ -485,11 +510,17 @@ Future<void> testValueTypes() async {
       }
     }
 
-    // SDK Bounds.contains is broken for its documented Bounds argument.
-    // Keep this known discrepancy explicit while Dart supplies useful geometry.
-    if ((result['bounds'] as Map<String, dynamic>)['inside'] != false ||
-        !const Bounds.fromEdges(left: 1, bottom: 2, right: 5, top: 10)
-            .contains(const Bounds(2, 9, 1, 2))) {
+    // The JS implementation reads point.x/point.y and an undefined
+    // this._ne._lng, so it returns false even for a rectangle that is fully
+    // inside by its own documented left/right/top/bottom geometry.
+    // Dart supplies the documented containment instead.
+    final sdkBounds = result['bounds'] as Map<String, dynamic>;
+    const inner = Bounds(1, 1, 1, 1);
+    if (sdkBounds['inside'] != false ||
+        sdkBounds['containsDoc'] != false ||
+        sdkBounds['containsScr'] != false ||
+        !bounds.contains(inner) ||
+        bounds.contains(inner, includeBoundary: false)) {
       throw StateError('Bounds.contains documented SDK discrepancy changed');
     }
     // The JS bounds predicate returns null for non-overlap. Dart supplies

@@ -733,7 +733,7 @@ entries:
     dart: Bounds.Bounds
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS stores left/top/width/height (docs say left/bottom/right/top); Dart mirrors that with an immutable value whose mutators return copies."
   - id: "Tmapv3.Bounds#constructor"
     kind: constructor
     decision: adapt
@@ -741,7 +741,7 @@ entries:
     dart: Bounds.new
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS stores left/top/width/height (docs say left/bottom/right/top); Dart mirrors that with an immutable value whose mutators return copies."
   - id: "Tmapv3.Bounds.options.bottom"
     kind: option
     decision: adapt
@@ -749,7 +749,7 @@ entries:
     dart: Bounds.bottom
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS keeps bottom as top - height; Dart exposes it as a computed edge."
   - id: "Tmapv3.Bounds.options.left"
     kind: option
     decision: adapt
@@ -765,7 +765,7 @@ entries:
     dart: Bounds.right
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS keeps right as left + width; Dart exposes it as a computed edge."
   - id: "Tmapv3.Bounds.options.top"
     kind: option
     decision: adapt
@@ -789,7 +789,7 @@ entries:
     dart: Bounds.contains
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "Official Bounds.contains cannot evaluate its documented Bounds argument; Dart implements rectangle containment."
+    reason: "JS contains reads point x/y and an undefined _ne._lng, so it returns false for every Bounds; Dart implements the documented rectangle containment."
   - id: "Tmapv3.Bounds#getHeight"
     kind: method
     decision: adapt
@@ -845,7 +845,7 @@ entries:
     dart: Bounds.intersects
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS tests overlap on left + width and top + height and ignores its boundary flag; Dart keeps that overlap test and returns a non-nullable bool."
   - id: "Tmapv3.Bounds#setHeight"
     kind: method
     decision: adapt
@@ -893,7 +893,7 @@ entries:
     dart: Bounds.union
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+    reason: "JS union mutates in place using top + height; Dart returns a new envelope with the same extents."
 
   # LatLngBounds
   - id: "Tmapv3.LatLngBounds"
