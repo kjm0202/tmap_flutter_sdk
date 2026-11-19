@@ -1,0 +1,26 @@
+{
+  "coordinateInfo": {
+    "coordType": "WGS84GEO",
+    "addressFlag": "F01",
+    "matchFlag": "M11",
+    "lat": "37.566598",
+    "lon": "126.978209",
+    "city_do": "서울",
+    "gu_gun": "중구",
+    "eup_myun": "",
+    "legalDong": "태평로1가",
+    "legalDongCode": "1114010300",
+    "adminDong": "명동",
+    "adminDongCode": "1114055000",
+    "ri": "",
+    "bunji": "31",
+    "newMatchFlag": "",
+    "newLat": "",
+    "newLon": "",
+    "newRoadName": "",
+    "newBuildingIndex": "",
+    "newBuildingName": "",
+    "newBuildingCateName": "",
+    "remainder": ""
+  }
+}

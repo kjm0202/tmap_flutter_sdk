@@ -1487,22 +1487,19 @@ entries:
     reason: "Callback-based JS TData is offered as static asynchronous TDataService methods."
   - id: "Tmapv3.TData#constructor"
     kind: constructor
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.new
-    reason: "Callback-based JS TData is offered as static asynchronous TDataService methods."
+    decision: exclude
+    status: done
+    reason: "The Flutter REST service uses static Future methods and needs no JavaScript TData instance."
   - id: "Tmapv3.TData#EVENT_TYPE"
     kind: property
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.EVENT_TYPE
-    reason: "JS TData event state would be represented by typed asynchronous service progress and results."
+    decision: exclude
+    status: done
+    reason: "JavaScript callback names are replaced by Dart Future completion and failure semantics."
   - id: "Tmapv3.TData#events"
     kind: property
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.events
-    reason: "JS TData event state would be represented by typed asynchronous service progress and results."
+    decision: exclude
+    status: done
+    reason: "Request-specific results are returned as typed Futures, without a JavaScript event registry."
   - id: "Tmapv3.TData#autoTraffic"
     kind: method
     decision: adapt
@@ -1517,7 +1514,7 @@ entries:
     status: done
     dart: TDataService.getAddressFromGeo
     tests:
-      - "test/tdata_scenarios_test.dart::getAddressFromGeo returns AddressInfo with fullAddress"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/reversegeocoding decodes AddressInfo"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getAutoCompleteSearchJson"
     kind: method
@@ -1525,27 +1522,29 @@ entries:
     status: done
     dart: TDataService.getAutoCompleteSearch
     tests:
-      - "test/tdata_scenarios_test.dart::getAutoCompleteSearch returns response.suggestions"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getAutoCompleteSearchv3Json"
     kind: method
     decision: adapt
     status: todo
-    planned_dart: TDataService.getAutoCompleteSearchv3Json
-    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+    planned_dart: TDataService.getAutoCompleteSearchV3
+    reason: "Documented v3 method is absent from the pinned SDK core; no verified REST endpoint implements its location-aware result."
   - id: "Tmapv3.TData#getGeoFromAddressJson"
     kind: method
     decision: adapt
     status: done
     dart: TDataService.getGeoFromAddress
     tests:
-      - "test/tdata_scenarios_test.dart::getGeoFromAddress returns LatLng from legacy flat fixture"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/fullAddrGeo decodes WGS84"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getPOIDataFromIdson"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: TDataService.getPOIDataFromIdson
+    status: done
+    dart: TDataService.getPoiById
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/{poiInfo} yields typed POI details"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getPOIDataFromLonLatson"
     kind: method
@@ -1553,7 +1552,7 @@ entries:
     status: done
     dart: TDataService.searchPoiAround
     tests:
-      - "test/tdata_scenarios_test.dart::searchPoiAround returns nearby POIs by category"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/search/around returns nearby POIs"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getPOIDataFromSearchJson"
     kind: method
@@ -1561,13 +1560,15 @@ entries:
     status: done
     dart: TDataService.searchPoi
     tests:
-      - "test/tdata_scenarios_test.dart::searchPoi returns parsed PoiItem list"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois returns typed search POIs"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getRealTimeTrafficJson"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: TDataService.getRealTimeTrafficJson
+    status: done
+    dart: TDataService.getRealTimeTraffic
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/traffic yields typed congestion segments"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getRoutePlanForPeopleJson"
     kind: method
@@ -1575,7 +1576,7 @@ entries:
     status: done
     dart: TDataService.getRoutePlanPedestrian
     tests:
-      - "test/tdata_scenarios_test.dart::getRoutePlanPedestrian POSTs to pedestrian endpoint"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes/pedestrian returns pedestrian route"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getRoutePlanJson"
     kind: method
@@ -1583,32 +1584,31 @@ entries:
     status: done
     dart: TDataService.getRoutePlan
     tests:
-      - "test/tdata_scenarios_test.dart::getRoutePlan POSTs and returns RouteInfo with path"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#transformJson"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: TDataService.transformJson
+    status: done
+    dart: TDataService.transformJson
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/coordconvert preserves projected units"
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData@onComplete"
     kind: event
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.onComplete
-    reason: "JS TData event state would be represented by typed asynchronous service progress and results."
+    decision: exclude
+    status: done
+    reason: "A Dart Future completes with the typed result; a separate JavaScript completion event is redundant."
   - id: "Tmapv3.TData@onError"
     kind: event
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.onError
-    reason: "JS TData event state would be represented by typed asynchronous service progress and results."
+    decision: exclude
+    status: done
+    reason: "REST failures return null or empty results through Future APIs instead of JavaScript callbacks."
   - id: "Tmapv3.TData@onProgress"
     kind: event
-    decision: adapt
-    status: todo
-    planned_dart: TDataService.onProgress
-    reason: "JS TData event state would be represented by typed asynchronous service progress and results."
+    decision: exclude
+    status: done
+    reason: "The Dart REST calls return completed parsed values, with no JavaScript request-progress callback."
   # TData REST endpoints
   - id: "rest:/tmap/routes"
     kind: rest
@@ -1616,7 +1616,7 @@ entries:
     status: done
     dart: TDataService.getRoutePlan
     tests:
-      - "test/tdata_scenarios_test.dart::getRoutePlan POSTs and returns RouteInfo with path"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/routes/pedestrian"
     kind: rest
@@ -1624,7 +1624,7 @@ entries:
     status: done
     dart: TDataService.getRoutePlanPedestrian
     tests:
-      - "test/tdata_scenarios_test.dart::getRoutePlanPedestrian POSTs to pedestrian endpoint"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes/pedestrian returns pedestrian route"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois"
     kind: rest
@@ -1632,7 +1632,7 @@ entries:
     status: done
     dart: TDataService.searchPoi
     tests:
-      - "test/tdata_scenarios_test.dart::searchPoi returns parsed PoiItem list"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois returns typed search POIs"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois/search/around"
     kind: rest
@@ -1640,7 +1640,7 @@ entries:
     status: done
     dart: TDataService.searchPoiAround
     tests:
-      - "test/tdata_scenarios_test.dart::searchPoiAround returns nearby POIs by category"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/search/around returns nearby POIs"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/fullAddrGeo"
     kind: rest
@@ -1648,7 +1648,7 @@ entries:
     status: done
     dart: TDataService.getGeoFromAddress
     tests:
-      - "test/tdata_scenarios_test.dart::getGeoFromAddress returns LatLng from legacy flat fixture"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/fullAddrGeo decodes WGS84"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/reversegeocoding"
     kind: rest
@@ -1656,7 +1656,7 @@ entries:
     status: done
     dart: TDataService.getAddressFromGeo
     tests:
-      - "test/tdata_scenarios_test.dart::getAddressFromGeo returns AddressInfo with fullAddress"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/reversegeocoding decodes AddressInfo"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/poi/autoComplete"
     kind: rest
@@ -1664,25 +1664,39 @@ entries:
     status: done
     dart: TDataService.getAutoCompleteSearch
     tests:
-      - "test/tdata_scenarios_test.dart::getAutoCompleteSearch returns response.suggestions"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/traffic"
     kind: rest
     decision: adapt
-    status: todo
-    planned_dart: TDataService.getRealTimeTraffic
+    status: done
+    dart: TDataService.getRealTimeTraffic
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/traffic yields typed congestion segments"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/pois/{poiInfo}"
     kind: rest
     decision: adapt
-    status: todo
-    planned_dart: TDataService.getPoiById
+    status: done
+    dart: TDataService.getPoiById
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/{poiInfo} yields typed POI details"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/geo/geocoding"
     kind: rest
     decision: adapt
-    status: todo
-    planned_dart: TDataService.getGeoFromAddressLegacy
+    status: done
+    dart: TDataService.getGeoFromAddressLegacy
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/geocoding parses legacy coordinates"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/geo/coordconvert"
+    kind: rest
+    decision: adapt
+    status: done
+    dart: TDataService.transformJson
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/coordconvert preserves projected units"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
 
   # Drawing
