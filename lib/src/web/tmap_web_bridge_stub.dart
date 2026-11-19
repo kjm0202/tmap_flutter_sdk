@@ -15,6 +15,13 @@ import '../overlays/rectangle.dart';
 class TMapWebBridge {
   static void setCenter(String viewId, LatLng center) {}
   static void setZoom(String viewId, int zoom) {}
+  static String? readMapData(
+          String viewId, String method, Map<String, dynamic> args) =>
+      null;
+  static String? convertProjection(
+          String viewId, String method, Map<String, dynamic> args) =>
+      null;
+  static void setZoomLimit(String viewId, int minZoom, int maxZoom) {}
   static void zoomIn(String viewId) {}
   static void zoomOut(String viewId) {}
   static void zoomToMaxExtent(String viewId) {}
