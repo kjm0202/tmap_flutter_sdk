@@ -11,6 +11,7 @@ import 'models/address_info.dart';
 import 'models/auto_complete_item.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
+import 'models/overlay_interaction.dart';
 import 'models/poi_item.dart';
 import 'models/route_info.dart';
 import 'overlays/circle.dart';
@@ -31,6 +32,12 @@ import 'web/tmap_web_bridge_stub.dart'
 class TMapController {
   final WebViewController? _webViewController;
   final String? _webViewId;
+
+  final Map<String,
+          Map<MarkerInteractionType, Set<void Function(MarkerInteraction)>>>
+      _markerListeners = {};
+  final Map<ClusterInteractionType, Set<void Function(ClusterInteraction)>>
+      _clusterListeners = {};
 
   /// 모바일 WebViewController 반환
   WebViewController get webViewController {
@@ -258,7 +265,8 @@ class TMapController {
             })();
           ''';
           final result = await controller.runJavaScriptReturningResult(js);
-          final docId = result.toString().replaceAll('"', '').replaceAll("'", '');
+          final docId =
+              result.toString().replaceAll('"', '').replaceAll("'", '');
           if (docId == _currentDocId) {
             await controller.loadHtmlString(_lastLoadedHtml!,
                 baseUrl: _lastLoadedBaseUrl);
@@ -275,6 +283,33 @@ class TMapController {
   // ========================================
   // 마커 제어
   // ========================================
+
+  /// 한 마커의 SDK 이벤트를 구독합니다. 등록 후에도 마커 교체가 가능합니다.
+  void onMarkerEvent(String markerId, MarkerInteractionType type,
+      void Function(MarkerInteraction) listener) {
+    _markerListeners
+        .putIfAbsent(markerId, () => {})
+        .putIfAbsent(type, () => {})
+        .add(listener);
+  }
+
+  /// 이전에 등록한 마커 이벤트 핸들러를 해제합니다.
+  void offMarkerEvent(String markerId, MarkerInteractionType type,
+      void Function(MarkerInteraction) listener) {
+    final byType = _markerListeners[markerId];
+    byType?[type]?.remove(listener);
+    if (byType?[type]?.isEmpty ?? false) byType!.remove(type);
+    if (byType?.isEmpty ?? false) _markerListeners.remove(markerId);
+  }
+
+  /// 브리지에서 전달된 마커 이벤트를 Dart 구독자에게 전달합니다.
+  void dispatchMarkerInteraction(MarkerInteraction event) {
+    final listeners = _markerListeners[event.markerId]?[event.type];
+    if (listeners == null) return;
+    for (final listener in listeners.toList()) {
+      listener(event);
+    }
+  }
 
   /// 지도에 마커를 추가합니다.
   Future<void> addMarker(Marker marker) async {
@@ -317,6 +352,29 @@ class TMapController {
   // 마커 클러스터러 제어
   // ========================================
 
+  /// 클러스터 그룹의 포인터 이벤트를 구독합니다.
+  void onClusterEvent(
+      ClusterInteractionType type, void Function(ClusterInteraction) listener) {
+    _clusterListeners.putIfAbsent(type, () => {}).add(listener);
+  }
+
+  /// 클러스터 그룹의 포인터 이벤트 구독을 해제합니다.
+  void offClusterEvent(
+      ClusterInteractionType type, void Function(ClusterInteraction) listener) {
+    _clusterListeners[type]?.remove(listener);
+    if (_clusterListeners[type]?.isEmpty ?? false) {
+      _clusterListeners.remove(type);
+    }
+  }
+
+  /// 브리지에서 전달된 클러스터 이벤트를 Dart 구독자에게 전달합니다.
+  void dispatchClusterInteraction(ClusterInteraction event) {
+    for (final listener in _clusterListeners[event.type]?.toList() ??
+        <void Function(ClusterInteraction)>[]) {
+      listener(event);
+    }
+  }
+
   /// 마커 클러스터러를 추가/활성화합니다.
   Future<void> addMarkerClusterer(Clusterer clusterer) async {
     final viewId = _webViewId;
@@ -326,9 +384,21 @@ class TMapController {
     }
     final jsonStr =
         jsonEncode(clusterer.markers.map((e) => e.toJson()).toList());
+    final icons = jsonEncode(clusterer.icons);
+    final zIndex = clusterer.zIndex;
     await _runJs(
-      "addMarkerClusterer($jsonStr, ${clusterer.maxClusterZoom}, ${clusterer.minClusterCount}, ${clusterer.gridSize}, ${clusterer.opacity}, ${clusterer.visible});",
+      "addMarkerClusterer($jsonStr, ${clusterer.maxClusterZoom}, ${clusterer.minClusterCount}, ${clusterer.gridSize}, ${clusterer.opacity}, ${clusterer.visible}, $icons, $zIndex);",
     );
+  }
+
+  /// 클러스터러를 유지하면서 현재 멤버를 모두 제거합니다.
+  Future<void> clearClusterMarkers() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearClusterMarkers(viewId);
+      return;
+    }
+    await _runJs('clearClusterMarkers();');
   }
 
   /// 마커 클러스터러를 제거합니다.

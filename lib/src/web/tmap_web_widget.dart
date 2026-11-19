@@ -12,6 +12,7 @@ import '../constants/map_type.dart';
 import '../constants/zoom_type.dart';
 import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
+import '../models/overlay_interaction.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
@@ -274,6 +275,12 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       final onMarkerTapFn =
           (JSString markerId, JSNumber lat, JSNumber lng, JSNumber zoom) {
         if (!mounted) return;
+        _controller.dispatchMarkerInteraction(MarkerInteraction(
+          markerId: markerId.toDart,
+          type: MarkerInteractionType.click,
+          position: LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom: zoom.toDartInt,
+        ));
         widget.onMarkerTap?.call(
           markerId.toDart,
           LatLng(lat.toDartDouble, lng.toDartDouble),
@@ -286,6 +293,16 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
           (JSString id, JSNumber lat, JSNumber lng, JSString? phase) {
         if (!mounted) return;
         final phaseStr = phase?.toDart;
+        if (phaseStr == 'move' || phaseStr == 'end') {
+          _controller.dispatchMarkerInteraction(MarkerInteraction(
+            markerId: id.toDart,
+            type: phaseStr == 'move'
+                ? MarkerInteractionType.drag
+                : MarkerInteractionType.dragend,
+            position: LatLng(lat.toDartDouble, lng.toDartDouble),
+            zoom: widget.zoom,
+          ));
+        }
         final dragType = phaseStr == 'start'
             ? DragType.start
             : (phaseStr == 'move' ? DragType.move : DragType.end);
@@ -296,6 +313,18 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         );
       }.toJS;
       callbacks.setProperty('onMarkerDrag'.toJS, onMarkerDragFn);
+
+      final onMarkerInteractionFn = (JSString id, JSNumber lat, JSNumber lng,
+          JSNumber zoom, JSString type) {
+        if (!mounted) return;
+        _controller.dispatchMarkerInteraction(MarkerInteraction(
+          markerId: id.toDart,
+          type: MarkerInteractionType.values.byName(type.toDart),
+          position: LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom: zoom.toDartInt,
+        ));
+      }.toJS;
+      callbacks.setProperty('onMarkerInteraction'.toJS, onMarkerInteractionFn);
 
       final onMarkerClustererTapFn =
           (JSNumber lat, JSNumber lng, JSNumber zoom, JSAny? arrayOfStringIds) {
@@ -322,10 +351,33 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
           markerIds,
         );
       }.toJS;
-      callbacks.setProperty('onMarkerClustererTap'.toJS, onMarkerClustererTapFn);
+      callbacks.setProperty(
+          'onMarkerClustererTap'.toJS, onMarkerClustererTapFn);
 
-      final onInfoWindowTapFn =
-          (JSString id, JSNumber lat, JSNumber lng) {
+      final onClusterInteractionFn = (JSNumber lat, JSNumber lng, JSNumber zoom,
+          JSAny? arrayOfIds, JSString type) {
+        if (!mounted) return;
+        final ids = <String>[];
+        if (arrayOfIds != null && arrayOfIds.isA<JSArray<JSAny?>>()) {
+          final array = arrayOfIds as JSArray<JSAny?>;
+          for (var i = 0; i < array.length; i++) {
+            final id = array[i];
+            if (id != null && id.isA<JSString>()) {
+              ids.add((id as JSString).toDart);
+            }
+          }
+        }
+        _controller.dispatchClusterInteraction(ClusterInteraction(
+          type: ClusterInteractionType.values.byName(type.toDart),
+          center: LatLng(lat.toDartDouble, lng.toDartDouble),
+          zoom: zoom.toDartInt,
+          markerIds: ids,
+        ));
+      }.toJS;
+      callbacks.setProperty(
+          'onClusterInteraction'.toJS, onClusterInteractionFn);
+
+      final onInfoWindowTapFn = (JSString id, JSNumber lat, JSNumber lng) {
         if (!mounted) return;
         widget.onInfoWindowTap?.call(
           id.toDart,
@@ -334,8 +386,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onInfoWindowTap'.toJS, onInfoWindowTapFn);
 
-      final onCustomOverlayTapFn =
-          (JSString id, JSNumber lat, JSNumber lng) {
+      final onCustomOverlayTapFn = (JSString id, JSNumber lat, JSNumber lng) {
         if (!mounted) return;
         widget.onCustomOverlayTap?.call(
           id.toDart,

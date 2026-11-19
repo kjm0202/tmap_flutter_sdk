@@ -1,6 +1,8 @@
 import '../models/lat_lng.dart';
 import '../models/point.dart';
 
+const _keepInfoValue = Object();
+
 /// TMAP 지도 위에 표시되는 HTML 정보창(InfoWindow) 클래스입니다.
 class InfoWindow {
   /// 정보창 고유 ID
@@ -37,6 +39,29 @@ class InfoWindow {
     this.anchor = 'bottom',
     this.visible = true,
   });
+
+  /// 기존 정보창의 ID를 유지한 채 새 속성 값을 만듭니다.
+  InfoWindow copyWith({
+    LatLng? position,
+    String? content,
+    int? type,
+    Object? border = _keepInfoValue,
+    Object? offset = _keepInfoValue,
+    String? anchor,
+    bool? visible,
+  }) =>
+      InfoWindow(
+        infoWindowId: infoWindowId,
+        position: position ?? this.position,
+        content: content ?? this.content,
+        type: type ?? this.type,
+        border:
+            identical(border, _keepInfoValue) ? this.border : border as String?,
+        offset:
+            identical(offset, _keepInfoValue) ? this.offset : offset as Point?,
+        anchor: anchor ?? this.anchor,
+        visible: visible ?? this.visible,
+      );
 
   Map<String, dynamic> toJson() {
     return {
