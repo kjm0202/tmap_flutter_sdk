@@ -17,6 +17,8 @@ import 'overlay_presentation_scenario.dart';
 import 'overlay_regression_scenario.dart';
 import 'polygon_zindex_scenario.dart';
 import 'shape_style_scenario.dart';
+import 'shape_contract_scenario.dart';
+import 'drawing_pointer_scenario.dart';
 import 'scroll_screen_scenario.dart';
 import 'place_area_popup_scenario.dart';
 import 'place_response_capture.dart';
@@ -88,6 +90,8 @@ Future<void> _runScenarios() async {
     'polygon_zindex': testPolygonZIndex,
     'shape_zindex': testShapeZIndex,
     'shape_style': testShapeStyle,
+    'shape_contracts': testShapeContracts,
+    'shape_drawing': testDrawingPointerScenario,
     'cluster_members': testClusterMembers,
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
@@ -123,10 +127,12 @@ Future<void> _runScenarios() async {
           debugPrint('SCENARIO $name FAIL: unknown scenario');
         }
       }
-      suitesToRun = scenarios.keys.where((name) =>
-          filterSet.contains(name) &&
-          !(name == 'scroll_screen_dynamic' &&
-              filterSet.contains('scroll_screen'))).toList();
+      suitesToRun = scenarios.keys
+          .where((name) =>
+              filterSet.contains(name) &&
+              !(name == 'scroll_screen_dynamic' &&
+                  filterSet.contains('scroll_screen')))
+          .toList();
     }
   }
 

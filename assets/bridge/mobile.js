@@ -6,6 +6,8 @@ var polylines = {};
 var polygons = {};
 var circles = {};
 var rectangles = {};
+var groundOverlays = {};
+var drawingSession = null;
 var customOverlays = {};
 var markerCluster = null;
 var tdata = null;
@@ -13,6 +15,10 @@ var defaultCenter;
 var mapListeners = [];
 
 window.tmap_dispose_mobile = function() {
+  if (drawingSession) {
+    drawingSession.dispose();
+    drawingSession = null;
+  }
   if (window.__tmapIosScrollGuardDispose) window.__tmapIosScrollGuardDispose();
   if (map && typeof tmapBridge !== 'undefined' && tmapBridge.disposeControls) {
     tmapBridge.disposeControls(map);

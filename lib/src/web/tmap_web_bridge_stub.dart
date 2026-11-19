@@ -4,6 +4,7 @@ import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
+import '../overlays/ground_overlay.dart';
 import '../overlays/info_window.dart';
 import '../overlays/label.dart';
 import '../overlays/marker.dart';
@@ -52,6 +53,14 @@ class TMapWebBridge {
   static void addCircle(String viewId, Circle circle) {}
   static void addPolygon(String viewId, Polygon polygon) {}
   static void addRectangle(String viewId, Rectangle rect) {}
+  static void addGroundOverlay(String viewId, GroundOverlay overlay) {}
+  static void clearGroundOverlay(String viewId, String id) {}
+  static void clearAllGroundOverlays(String viewId) {}
+  static bool polygonContains(String viewId, String id, LatLng point) => false;
+  static String? polygonAreaJson(String viewId, String id) => null;
+  static void startDrawing(
+      String viewId, String mode, Map<String, dynamic> options) {}
+  static void clearDrawings(String viewId) {}
   static void clearAll(String viewId) {}
   static void toggleTraffic(String viewId, bool isVisible) {}
 }

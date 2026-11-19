@@ -322,10 +322,10 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
           markerIds,
         );
       }.toJS;
-      callbacks.setProperty('onMarkerClustererTap'.toJS, onMarkerClustererTapFn);
+      callbacks.setProperty(
+          'onMarkerClustererTap'.toJS, onMarkerClustererTapFn);
 
-      final onInfoWindowTapFn =
-          (JSString id, JSNumber lat, JSNumber lng) {
+      final onInfoWindowTapFn = (JSString id, JSNumber lat, JSNumber lng) {
         if (!mounted) return;
         widget.onInfoWindowTap?.call(
           id.toDart,
@@ -334,8 +334,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onInfoWindowTap'.toJS, onInfoWindowTapFn);
 
-      final onCustomOverlayTapFn =
-          (JSString id, JSNumber lat, JSNumber lng) {
+      final onCustomOverlayTapFn = (JSString id, JSNumber lat, JSNumber lng) {
         if (!mounted) return;
         widget.onCustomOverlayTap?.call(
           id.toDart,
@@ -343,6 +342,12 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         );
       }.toJS;
       callbacks.setProperty('onCustomOverlayTap'.toJS, onCustomOverlayTapFn);
+
+      final onDrawingCompleteFn = (JSString payload) {
+        if (!mounted) return;
+        _controller.handleDrawingComplete(payload.toDart);
+      }.toJS;
+      callbacks.setProperty('onDrawingComplete'.toJS, onDrawingCompleteFn);
 
       TMapWebBridge.initMap(
         viewId: _viewId,
