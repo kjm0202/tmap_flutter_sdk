@@ -75,7 +75,13 @@ class TDataResponse {
   List<AutoCompleteItem> toAutoCompleteList() {
     final list = <AutoCompleteItem>[];
     if (data is Map<String, dynamic>) {
-      final ac = (data as Map<String, dynamic>)['autoComplete'];
+      final mapData = data as Map<String, dynamic>;
+      dynamic ac = mapData['autoComplete'];
+      // /tmap/poi/autoComplete wraps successful suggestions in `response`.
+      final response = mapData['response'];
+      if (ac == null && response is Map<String, dynamic>) {
+        ac = response['suggestions'];
+      }
       if (ac is List) {
         for (final item in ac) {
           list.add(AutoCompleteItem.fromJson(item));

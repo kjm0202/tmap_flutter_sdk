@@ -97,7 +97,7 @@ class TDataService {
     try {
       final appKey = AuthRepository.instance.appKey;
       debugPrint(
-          '[TDataService] searchPoi start: keyword=$searchKeyword, appKey=$appKey, center=$center, radius=$radius');
+          '[TDataService] searchPoi start: keyword=$searchKeyword, center=$center, radius=$radius');
       final params = <String, String>{
         'version': '1',
         'format': 'json',
@@ -191,22 +191,33 @@ class TDataService {
         'version': '1',
         'format': 'json',
         'fullAddr': address,
+        'addressFlag': 'F00',
         'coordType': 'WGS84GEO',
       };
       final uri =
           Uri.https('apis.openapi.sk.com', '/tmap/geo/fullAddrGeo', params);
       final json = await _get(uri, appKey);
       if (json != null) {
-        final coordInfo = json['coordinateInfo'] as Map<String, dynamic>?;
-        final lat =
-            coordInfo?['lat'] as String? ?? coordInfo?['newLat'] as String?;
-        final lon =
-            coordInfo?['lon'] as String? ?? coordInfo?['newLon'] as String?;
-        if (lat != null && lon != null) {
-          final pLat = double.tryParse(lat);
-          final pLon = double.tryParse(lon);
-          if (pLat != null && pLon != null) {
-            return LatLng(pLat, pLon);
+        final coordInfo = json['coordinateInfo'];
+        if (coordInfo is Map) {
+          final coordinates = coordInfo['coordinate'];
+          final List<dynamic> coordList;
+          if (coordinates is List) {
+            coordList = coordinates;
+          } else if (coordinates is Map) {
+            coordList = [coordinates];
+          } else {
+            // Keep the prior flat coordinateInfo representation.
+            coordList = [coordInfo];
+          }
+
+          for (final item in coordList) {
+            if (item is! Map) continue;
+            // 지번과 도로명은 서로 다른 위치이므로 좌표 쌍 단위로 선택한다.
+            final point =
+                _parseWgs84Coordinate(item['lat'], item['lon']) ??
+                    _parseWgs84Coordinate(item['newLat'], item['newLon']);
+            if (point != null) return point;
           }
         }
       }
@@ -255,10 +266,10 @@ class TDataService {
       final params = <String, String>{
         'version': '1',
         'format': 'json',
-        'keyword': keyword,
+        'searchKeyword': keyword.trim(),
       };
-      final uri = Uri.https(
-          'apis.openapi.sk.com', '/tmap/pois/search/autocomplete', params);
+      final uri =
+          Uri.https('apis.openapi.sk.com', '/tmap/poi/autoComplete', params);
       final json = await _get(uri, appKey);
       if (json != null) {
         return TDataResponse(requestId: '', success: true, data: json)
@@ -269,6 +280,27 @@ class TDataService {
           name: 'TDataService', error: e, stackTrace: st);
     }
     return [];
+  }
+
+  /// Parses one WGS84 coordinate pair without mixing values from two sources.
+  static LatLng? _parseWgs84Coordinate(dynamic latitude, dynamic longitude) {
+    double? parse(dynamic value) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value.trim());
+      return null;
+    }
+
+    final lat = parse(latitude);
+    final lon = parse(longitude);
+    if (lat == null ||
+        lon == null ||
+        !lat.isFinite ||
+        !lon.isFinite ||
+        lat.abs() > 90 ||
+        lon.abs() > 180) {
+      return null;
+    }
+    return LatLng(lat, lon);
   }
 
   // ========================================
