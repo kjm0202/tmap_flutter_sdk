@@ -37,6 +37,15 @@ void main() {
     expect(bounds.intersects(const Bounds(5, 2, 7, 8)), isTrue);
     expect(bounds.intersects(const Bounds(5.01, 2, 1, 8)), isFalse);
     expect(bounds.union(const Bounds(5, 2, 7, 8)), const Bounds(1, 2, 11, 8));
+    // SDK intersects/union treat top + height as the lower edge; contains
+    // follows the documented bottom (top - height) geometry instead.
+    expect(bounds.intersects(const Bounds(1, 10, 1, 1)), isTrue);
+    expect(bounds.union(const Bounds(1, 10, 1, 1)),
+        const Bounds(1, 2, 4, 9));
+    expect(bounds.contains(const Bounds(1, 1, 1, 1)), isTrue);
+    expect(bounds.contains(const Bounds(1, 1, 1, 1), includeBoundary: false),
+        isFalse);
+    expect(bounds.contains(const Bounds(1, 3, 1, 1)), isFalse);
     expect(bounds, const Bounds(1, 2, 4, 8));
   });
 
