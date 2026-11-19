@@ -63,12 +63,23 @@ function initTmap() {
     maxZoom: config.maxZoom,
     bearing: config.bearing,
     pitch: config.pitch,
+    minPitch: config.minPitch,
+    maxPitch: config.maxPitch,
     mapType: config.mapType,
     naviControl: false,
     scaleBar: false,
     width: "100%",
     height: "100%"
   };
+  function createLatLngBounds(data) {
+    var sw = data.southWest;
+    var ne = data.northEast;
+    return new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(sw.latitude, sw.longitude),
+      new Tmapv3.LatLng(ne.latitude, ne.longitude));
+  }
+  if (config.bounds) options.bounds = createLatLngBounds(config.bounds);
+  if (config.maxBounds) options.maxBounds = createLatLngBounds(config.maxBounds);
 
   if (config.iosScrollableGuard) installIosScrollableGuard(document.getElementById("map_div"));
   map = new Tmapv3.Map("map_div", options);
@@ -114,6 +125,9 @@ function initTmap() {
   bindMapEvent("ConfigLoad", function() {
     if (configLoaded) return;
     configLoaded = true;
+    if (config.bounds && typeof map.fitBounds === 'function') {
+      map.fitBounds(createLatLngBounds(config.bounds));
+    }
     if (window.onMapCreated) {
       onMapCreated.postMessage("ready");
     }
@@ -197,6 +211,27 @@ function initTmap() {
     };
     bindMapEvent("ContextMenu", handleLongTap);
     bindMapEvent("LongTap", handleLongTap);
+  }
+
+  if (config.hasOnTouchStart) {
+    bindMapEvent('TouchStart', function(event) {
+      var coordinate = extractEventLatLng(event);
+      if (coordinate && window.onTouchStart) {
+        onTouchStart.postMessage(JSON.stringify({
+          latitude: coordinate.lat, longitude: coordinate.lng
+        }));
+      }
+    });
+  }
+  if (config.hasOnTouchEnd) {
+    bindMapEvent('TouchEnd', function(event) {
+      var coordinate = extractEventLatLng(event);
+      if (coordinate && window.onTouchEnd) {
+        onTouchEnd.postMessage(JSON.stringify({
+          latitude: coordinate.lat, longitude: coordinate.lng
+        }));
+      }
+    });
   }
 
   var hasDrag = (typeof config !== 'undefined' && config.hasOnDragChangeCallback) || typeof dragStart !== 'undefined' || typeof dragMove !== 'undefined' || typeof dragEnd !== 'undefined';
@@ -393,6 +428,19 @@ function setCenter(lat, lng) {
 
 function setZoom(level) {
   if (map) tmapBridge.setZoom(map, level);
+}
+
+function readMapData(name, args) {
+  return tmapBridge.readMapData(map, name, args);
+}
+
+function setZoomLimit(minZoom, maxZoom) {
+  tmapBridge.setZoomLimit(map, minZoom, maxZoom);
+}
+
+function convertProjection(method, args) {
+  if (!map) throw new Error('Map is not initialized');
+  return tmapBridge.convertProjection(method, args);
 }
 
 function zoomIn() {

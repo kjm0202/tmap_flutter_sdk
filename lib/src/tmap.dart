@@ -54,6 +54,12 @@ class TMap extends StatefulWidget {
   /// 지도 롱 탭 (ContextMenu) 콜백
   final OnMapLongTap? onMapLongTap;
 
+  /// SDK 지도 터치 시작 이벤트
+  final OnMapTouch? onTouchStart;
+
+  /// SDK 지도 터치 종료 이벤트
+  final OnMapTouch? onTouchEnd;
+
   /// 마커 탭 콜백
   final OnMarkerTap? onMarkerTap;
 
@@ -93,6 +99,12 @@ class TMap extends StatefulWidget {
   /// 초기 지도 중심 좌표
   final LatLng? center;
 
+  /// 초기 지도에 표시할 영역
+  final LatLngBounds? bounds;
+
+  /// 지도가 벗어나지 못하게 제한할 영역
+  final LatLngBounds? maxBounds;
+
   /// 초기 줌 레벨 (0 ~ 19)
   final int zoom;
 
@@ -107,6 +119,10 @@ class TMap extends StatefulWidget {
 
   /// 초기 기울기 각도 (0 ~ 60도)
   final double pitch;
+
+  /// SDK에서 허용하는 최소/최대 기울기
+  final double? minPitch;
+  final double? maxPitch;
 
   /// 지도 타입
   final TMapType mapType;
@@ -153,6 +169,8 @@ class TMap extends StatefulWidget {
     this.onMapTap,
     this.onMapDoubleTap,
     this.onMapLongTap,
+    this.onTouchStart,
+    this.onTouchEnd,
     this.onMarkerTap,
     this.onMarkerClustererTap,
     this.onInfoWindowTap,
@@ -166,11 +184,15 @@ class TMap extends StatefulWidget {
     this.onPitchChangeCallback,
     this.onBoundsChangeCallback,
     this.center,
+    this.bounds,
+    this.maxBounds,
     this.zoom = 16,
     this.minZoom = 0,
     this.maxZoom = 19,
     this.bearing = 0.0,
     this.pitch = 0.0,
+    this.minPitch,
+    this.maxPitch,
     this.mapType = TMapType.road,
     this.naviControl = false,
     this.scaleBar = false,
@@ -300,11 +322,15 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     if (kIsWeb) {
       return TMapWebWidget(
         center: widget.center,
+        bounds: widget.bounds,
+        maxBounds: widget.maxBounds,
         zoom: widget.zoom,
         minZoom: widget.minZoom,
         maxZoom: widget.maxZoom,
         bearing: widget.bearing,
         pitch: widget.pitch,
+        minPitch: widget.minPitch,
+        maxPitch: widget.maxPitch,
         mapType: widget.mapType,
         naviControl: widget.naviControl,
         scaleBar: widget.scaleBar,
@@ -321,6 +347,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         onMapTap: widget.onMapTap,
         onMapDoubleTap: widget.onMapDoubleTap,
         onMapLongTap: widget.onMapLongTap,
+        onTouchStart: widget.onTouchStart,
+        onTouchEnd: widget.onTouchEnd,
         onDragChangeCallback: widget.onDragChangeCallback,
         onZoomChangeCallback: widget.onZoomChangeCallback,
         onCenterChangeCallback: widget.onCenterChangeCallback,
@@ -558,17 +586,23 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'iosScrollableGuard': defaultTargetPlatform == TargetPlatform.iOS,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
+      if (widget.bounds != null) 'bounds': widget.bounds!.toJson(),
+      if (widget.maxBounds != null) 'maxBounds': widget.maxBounds!.toJson(),
       'mapType': widget.mapType.value,
       'zoom': widget.zoom,
       'minZoom': widget.minZoom,
       'maxZoom': widget.maxZoom,
       'bearing': widget.bearing,
       'pitch': widget.pitch,
+      if (widget.minPitch != null) 'minPitch': widget.minPitch,
+      if (widget.maxPitch != null) 'maxPitch': widget.maxPitch,
       'scaleBar': widget.scaleBar,
       'naviControl': widget.naviControl,
       'hasOnMapTap': widget.onMapTap != null,
       'hasOnMapDoubleTap': widget.onMapDoubleTap != null,
       'hasOnMapLongTap': widget.onMapLongTap != null,
+      'hasOnTouchStart': widget.onTouchStart != null,
+      'hasOnTouchEnd': widget.onTouchEnd != null,
       'hasOnDragChangeCallback': widget.onDragChangeCallback != null,
       'hasOnZoomChangeCallback': widget.onZoomChangeCallback != null,
       'hasOnCameraIdle': widget.onCameraIdle != null,
@@ -755,6 +789,28 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           if (onMapLongTap != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
             onMapLongTap(LatLng.fromJson(json));
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onTouchStart',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final listener = widget.onTouchStart;
+          if (listener != null) {
+            listener(LatLng.fromJson(
+                jsonDecode(result.message) as Map<String, dynamic>));
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onTouchEnd',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final listener = widget.onTouchEnd;
+          if (listener != null) {
+            listener(LatLng.fromJson(
+                jsonDecode(result.message) as Map<String, dynamic>));
           }
         },
       )
