@@ -20,6 +20,10 @@ import 'shape_style_scenario.dart';
 import 'scroll_screen_scenario.dart';
 import 'place_area_popup_scenario.dart';
 import 'place_response_capture.dart';
+import 'projection_scenario.dart';
+import 'map_contract_scenario.dart';
+import 'map_options_scenario.dart';
+import 'map_touch_scenario.dart';
 
 void main() async {
   const filter = String.fromEnvironment('SCENARIO_FILTER');
@@ -92,6 +96,12 @@ Future<void> _runScenarios() async {
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
     'place_area_popup': testPlaceAreaPopupScenario,
+    'projection': testProjectionScenario,
+    'map_contract': testMapContract,
+    'map_controls': testMapControls,
+    'map_advanced_options': testMapAdvancedOptions,
+    'map_touch': testMapTouchEvents,
+    'map_context_menu': testMapContextMenu,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');

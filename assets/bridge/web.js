@@ -63,6 +63,17 @@
         if (options.maxZoom != null) mapOptions.maxZoom = options.maxZoom;
         if (options.bearing !== undefined) mapOptions.bearing = options.bearing;
         if (options.pitch !== undefined) mapOptions.pitch = options.pitch;
+        if (options.minPitch !== undefined) mapOptions.minPitch = options.minPitch;
+        if (options.maxPitch !== undefined) mapOptions.maxPitch = options.maxPitch;
+        function createLatLngBounds(data) {
+          var sw = data.southWest;
+          var ne = data.northEast;
+          return new Tmapv3.LatLngBounds(
+            new Tmapv3.LatLng(sw.latitude, sw.longitude),
+            new Tmapv3.LatLng(ne.latitude, ne.longitude));
+        }
+        if (options.bounds) mapOptions.bounds = createLatLngBounds(options.bounds);
+        if (options.maxBounds) mapOptions.maxBounds = createLatLngBounds(options.maxBounds);
 
         var typeStr = (options.mapType || 'ROAD').toUpperCase();
         mapOptions.mapType = typeStr;
@@ -125,6 +136,11 @@
             var cb = getCb("onMapCreated");
             if (cb) {
               ready = true;
+              // Some SDK builds only partially apply the initial bounds during
+              // construction. Fit after readiness to include both corners.
+              if (options.bounds && typeof map.fitBounds === 'function') {
+                map.fitBounds(createLatLngBounds(options.bounds));
+              }
               cb(viewId);
             }
           });
@@ -201,6 +217,17 @@
           };
           addListener("ContextMenu", handleLongTap);
           addListener("LongTap", handleLongTap);
+
+          // TouchStart / TouchEnd: forward actual SDK event coordinates.
+          ["TouchStart", "TouchEnd"].forEach(function(name) {
+            addListener(name, function(event) {
+              if (state.disposed) return;
+              var callback = getCb(name === 'TouchStart' ? 'onTouchStart' : 'onTouchEnd');
+              if (!callback) return;
+              var coordinate = extractEventLatLng(event);
+              if (coordinate) callback(coordinate.lat, coordinate.lng);
+            });
+          });
 
           // Drag: onDragChange(lat, lng, zoom, phase)
           function notifyDrag(phase) {
@@ -351,6 +378,22 @@
     if (state && state.map) {
       tmapBridge.setZoom(state.map, zoom);
     }
+  };
+
+  window.tmap_readMapData = function(viewId, name, args) {
+    var state = window.tmap_instances[viewId];
+    return tmapBridge.readMapData(state && state.map, name, args);
+  };
+
+  window.tmap_setZoomLimit = function(viewId, minZoom, maxZoom) {
+    var state = window.tmap_instances[viewId];
+    tmapBridge.setZoomLimit(state && state.map, minZoom, maxZoom);
+  };
+
+  window.tmap_convertProjection = function(viewId, method, args) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) throw new Error('Map is not initialized');
+    return tmapBridge.convertProjection(method, args);
   };
 
   window.tmap_zoomIn = function(viewId) {

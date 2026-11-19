@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../callbacks/callbacks.dart';
 import '../constants/map_type.dart';
 import '../models/lat_lng.dart';
+import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
@@ -16,11 +17,15 @@ import '../overlays/rectangle.dart';
 /// 모바일 플랫폼용 Web 위젯 스텁
 class TMapWebWidget extends StatelessWidget {
   final LatLng? center;
+  final LatLngBounds? bounds;
+  final LatLngBounds? maxBounds;
   final int zoom;
   final int minZoom;
   final int maxZoom;
   final double bearing;
   final double pitch;
+  final double? minPitch;
+  final double? maxPitch;
   final TMapType mapType;
   final bool naviControl;
   final bool scaleBar;
@@ -37,6 +42,8 @@ class TMapWebWidget extends StatelessWidget {
   final OnMapTap? onMapTap;
   final OnMapDoubleTap? onMapDoubleTap;
   final OnMapLongTap? onMapLongTap;
+  final OnMapTouch? onTouchStart;
+  final OnMapTouch? onTouchEnd;
   final OnDragChangeCallback? onDragChangeCallback;
   final OnZoomChangeCallback? onZoomChangeCallback;
   final OnCenterChangeCallback? onCenterChangeCallback;
@@ -53,11 +60,15 @@ class TMapWebWidget extends StatelessWidget {
   const TMapWebWidget({
     super.key,
     this.center,
+    this.bounds,
+    this.maxBounds,
     this.zoom = 16,
     this.minZoom = 0,
     this.maxZoom = 19,
     this.bearing = 0,
     this.pitch = 0,
+    this.minPitch,
+    this.maxPitch,
     this.mapType = TMapType.road,
     this.naviControl = false,
     this.scaleBar = false,
@@ -74,6 +85,8 @@ class TMapWebWidget extends StatelessWidget {
     this.onMapTap,
     this.onMapDoubleTap,
     this.onMapLongTap,
+    this.onTouchStart,
+    this.onTouchEnd,
     this.onDragChangeCallback,
     this.onZoomChangeCallback,
     this.onCenterChangeCallback,

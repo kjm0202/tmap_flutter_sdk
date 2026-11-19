@@ -29,11 +29,15 @@ import 'tmap_web_loader.dart';
 /// Flutter Web 전용 네이티브 TMAP DOM 렌더링 위젯
 class TMapWebWidget extends StatefulWidget {
   final LatLng? center;
+  final LatLngBounds? bounds;
+  final LatLngBounds? maxBounds;
   final int zoom;
   final int minZoom;
   final int maxZoom;
   final double bearing;
   final double pitch;
+  final double? minPitch;
+  final double? maxPitch;
   final TMapType mapType;
   final bool naviControl;
   final bool scaleBar;
@@ -50,6 +54,8 @@ class TMapWebWidget extends StatefulWidget {
   final OnMapTap? onMapTap;
   final OnMapDoubleTap? onMapDoubleTap;
   final OnMapLongTap? onMapLongTap;
+  final OnMapTouch? onTouchStart;
+  final OnMapTouch? onTouchEnd;
   final OnDragChangeCallback? onDragChangeCallback;
   final OnZoomChangeCallback? onZoomChangeCallback;
   final OnCenterChangeCallback? onCenterChangeCallback;
@@ -66,11 +72,15 @@ class TMapWebWidget extends StatefulWidget {
   const TMapWebWidget({
     super.key,
     this.center,
+    this.bounds,
+    this.maxBounds,
     this.zoom = 16,
     this.minZoom = 0,
     this.maxZoom = 19,
     this.bearing = 0,
     this.pitch = 0,
+    this.minPitch,
+    this.maxPitch,
     this.mapType = TMapType.road,
     this.naviControl = false,
     this.scaleBar = false,
@@ -87,6 +97,8 @@ class TMapWebWidget extends StatefulWidget {
     this.onMapTap,
     this.onMapDoubleTap,
     this.onMapLongTap,
+    this.onTouchStart,
+    this.onTouchEnd,
     this.onDragChangeCallback,
     this.onZoomChangeCallback,
     this.onCenterChangeCallback,
@@ -199,6 +211,19 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         widget.onMapLongTap?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
       }.toJS;
       callbacks.setProperty('onMapLongTap'.toJS, onMapLongTapFn);
+
+      callbacks.setProperty('onTouchStart'.toJS,
+          ((JSNumber lat, JSNumber lng) {
+        if (mounted) {
+          widget.onTouchStart?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+        }
+      }).toJS);
+      callbacks.setProperty('onTouchEnd'.toJS,
+          ((JSNumber lat, JSNumber lng) {
+        if (mounted) {
+          widget.onTouchEnd?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+        }
+      }).toJS);
 
       final onDragChangeFn =
           (JSNumber lat, JSNumber lng, JSNumber zoom, JSString? phase) {
@@ -348,11 +373,15 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         viewId: _viewId,
         containerId: _containerId,
         center: widget.center,
+        bounds: widget.bounds,
+        maxBounds: widget.maxBounds,
         zoom: widget.zoom,
         minZoom: widget.minZoom,
         maxZoom: widget.maxZoom,
         bearing: widget.bearing,
         pitch: widget.pitch,
+        minPitch: widget.minPitch,
+        maxPitch: widget.maxPitch,
         mapType: widget.mapType,
         naviControl: widget.naviControl,
         scaleBar: widget.scaleBar,

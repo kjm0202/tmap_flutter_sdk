@@ -11,8 +11,10 @@ entries:
   - id: "Tmapv3.Map"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: TMap
+    status: done
+    dart: TMap
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::ConfigLoad creates typed Flutter TMapController once"
     reason: "The JS DOM-bound map is created by the Flutter TMap widget and controlled through TMapController."
   - id: "Tmapv3.Map#constructor"
     kind: constructor
@@ -32,8 +34,10 @@ entries:
   - id: "Tmapv3.Map.options.bounds"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.bounds
+    status: done
+    dart: TMap.bounds
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.bounds fits both initial geographic corners"
   - id: "Tmapv3.Map.options.center"
     kind: option
     decision: expose
@@ -57,33 +61,45 @@ entries:
   - id: "Tmapv3.Map.options.maxBounds"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.maxBounds
+    status: done
+    dart: TMap.maxBounds
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.maxBounds rejects center outside allowed area"
   - id: "Tmapv3.Map.options.maxPitch"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.maxPitch
+    status: done
+    dart: TMap.maxPitch
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.maxPitch clamps SDK pitch to 50"
   - id: "Tmapv3.Map.options.maxZoom"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.maxZoom
+    status: done
+    dart: TMap.maxZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map initial getMinZoom and getMaxZoom reflect widget options"
   - id: "Tmapv3.Map.options.minPitch"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.minPitch
+    status: done
+    dart: TMap.minPitch
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.minPitch clamps SDK pitch to 5"
   - id: "Tmapv3.Map.options.minZoom"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.minZoom
+    status: done
+    dart: TMap.minZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map initial getMinZoom and getMaxZoom reflect widget options"
   - id: "Tmapv3.Map.options.naviControl"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.naviControl
+    status: done
+    dart: TMap.naviControl
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map constructor naviControl and scaleBar attach real VSM controls"
   - id: "Tmapv3.Map.options.pitch"
     kind: option
     decision: expose
@@ -94,8 +110,10 @@ entries:
   - id: "Tmapv3.Map.options.scaleBar"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: TMapController.scaleBar
+    status: done
+    dart: TMap.scaleBar
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map constructor naviControl and scaleBar attach real VSM controls"
   - id: "Tmapv3.Map.options.width"
     kind: option
     decision: exclude
@@ -118,18 +136,24 @@ entries:
   - id: "Tmapv3.Map#getBearing"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getBearing
+    status: done
+    dart: TMapController.getBearing
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
   - id: "Tmapv3.Map#getBounds"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getBounds
+    status: done
+    dart: TMapController.getBounds
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map getBounds matches SDK rectangle corners"
   - id: "Tmapv3.Map#getCenter"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getCenter
+    status: done
+    dart: TMapController.getCenter
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
   - id: "Tmapv3.Map#getDiv"
     kind: method
     decision: exclude
@@ -138,23 +162,31 @@ entries:
   - id: "Tmapv3.Map#getMaxZoom"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getMaxZoom
+    status: done
+    dart: TMapController.getMaxZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
   - id: "Tmapv3.Map#getMinZoom"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getMinZoom
+    status: done
+    dart: TMapController.getMinZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
   - id: "Tmapv3.Map#getPitch"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getPitch
+    status: done
+    dart: TMapController.getPitch
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
   - id: "Tmapv3.Map#getZoom"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.getZoom
+    status: done
+    dart: TMapController.getZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
   - id: "Tmapv3.Map#panBy"
     kind: method
     decision: expose
@@ -172,8 +204,10 @@ entries:
   - id: "Tmapv3.Map#realToScreen"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.realToScreen
+    status: done
+    dart: TMapController.realToScreen
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map realToScreen and screenToReal match SDK and round-trip"
   - id: "Tmapv3.Map#resize"
     kind: method
     decision: adapt
@@ -185,13 +219,17 @@ entries:
   - id: "Tmapv3.Map#screenSize"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.screenSize
+    status: done
+    dart: TMapController.screenSize
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map screenSize matches SDK rendered pixel dimensions"
   - id: "Tmapv3.Map#screenToReal"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.screenToReal
+    status: done
+    dart: TMapController.screenToReal
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map realToScreen and screenToReal match SDK and round-trip"
   - id: "Tmapv3.Map#setBearing"
     kind: method
     decision: expose
@@ -230,8 +268,10 @@ entries:
   - id: "Tmapv3.Map#setZoomLimit"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: TMapController.setZoomLimit
+    status: done
+    dart: TMapController.setZoomLimit
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
   - id: "Tmapv3.Map#zoomIn"
     kind: method
     decision: expose
@@ -264,14 +304,18 @@ entries:
   - id: "Tmapv3.Map@ConfigLoad"
     kind: event
     decision: adapt
-    status: todo
-    planned_dart: TMap.onMapCreated
-    reason: "Map readiness is represented by TMap.onMapCreated, but the ConfigLoad event payload is not independently verified."
+    status: done
+    dart: TMap.onMapCreated
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::ConfigLoad creates typed Flutter TMapController once"
+    reason: "The SDK ConfigLoad readiness signal is delivered through TMap.onMapCreated with a typed controller."
   - id: "Tmapv3.Map@ContextMenu"
     kind: event
     decision: adapt
-    status: todo
-    planned_dart: TMap.onContextMenu
+    status: done
+    dart: TMap.onMapLongTap
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map ContextMenu callback delivers typed LatLng from SDK event"
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@DragEnd"
     kind: event
@@ -292,14 +336,18 @@ entries:
   - id: "Tmapv3.Map@TouchEnd"
     kind: event
     decision: adapt
-    status: todo
-    planned_dart: TMap.onTouchEnd
+    status: done
+    dart: TMap.onTouchEnd
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map TouchEnd callback delivers typed LatLng at touch location"
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@TouchStart"
     kind: event
     decision: adapt
-    status: todo
-    planned_dart: TMap.onTouchStart
+    status: done
+    dart: TMap.onTouchStart
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map TouchStart callback delivers typed LatLng at touch location"
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
   - id: "Tmapv3.Map@Zoom"
     kind: event
@@ -2124,48 +2172,66 @@ entries:
   - id: "Tmapv3.Projection"
     kind: class
     decision: expose
-    status: todo
-    planned_dart: Projection
+    status: done
+    dart: Projection
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#constructor"
     kind: constructor
     decision: expose
-    status: todo
-    planned_dart: Projection.new
+    status: done
+    dart: Projection.new
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertBesselGEOToWGS84GEO"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertBesselGEOToWGS84GEO
+    status: done
+    dart: Projection.convertBesselGEOToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertBesselTMToWGS84GEO"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertBesselTMToWGS84GEO
+    status: done
+    dart: Projection.convertBesselTMToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertEPSG3857ToWGS84GEO"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertEPSG3857ToWGS84GEO
+    status: done
+    dart: Projection.convertEPSG3857ToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertWGS84GEOToBesselGEO"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertWGS84GEOToBesselGEO
+    status: done
+    dart: Projection.convertWGS84GEOToBesselGEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertWGS84GEOToBesselTM"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertWGS84GEOToBesselTM
+    status: done
+    dart: Projection.convertWGS84GEOToBesselTM
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertWGS84GEOToEPSG3857"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertWGS84GEOToEPSG3857
+    status: done
+    dart: Projection.convertWGS84GEOToEPSG3857
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
   - id: "Tmapv3.Projection#convertWGS84GEOToKatec"
     kind: method
     decision: expose
-    status: todo
-    planned_dart: Projection.convertWGS84GEOToKatec
+    status: done
+    dart: Projection.convertWGS84GEOToKatec
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
 
   # Size
   - id: "Tmapv3.Size"
