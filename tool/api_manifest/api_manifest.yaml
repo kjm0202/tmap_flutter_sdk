@@ -314,8 +314,10 @@ entries:
   - id: "Tmapv3.Marker"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: Marker
+    status: done
+    dart: Marker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
     reason: "Mutable JS Marker controls are represented by Dart Marker values managed by TMapController."
   - id: "Tmapv3.Marker#constructor"
     kind: constructor
@@ -342,8 +344,10 @@ entries:
   - id: "Tmapv3.Marker.options.contextMenu"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Marker.contextMenu
+    status: done
+    dart: Marker.contextMenu
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
   - id: "Tmapv3.Marker.options.draggable"
     kind: option
     decision: expose
@@ -430,8 +434,10 @@ entries:
   - id: "Tmapv3.Marker.options.titleOption"
     kind: option
     decision: adapt
-    status: todo
-    planned_dart: Marker.titleStyle
+    status: done
+    dart: Marker.titleStyle
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
     reason: "JS title styling would be expressed as typed Flutter marker presentation options."
   - id: "Tmapv3.Marker.options.visible"
     kind: option
@@ -450,8 +456,10 @@ entries:
   - id: "Tmapv3.Marker#getContextMenu"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.contextMenu
+    status: done
+    dart: Marker.contextMenu
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker#getIcon"
     kind: method
@@ -496,20 +504,26 @@ entries:
   - id: "Tmapv3.Marker#off"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.off
+    status: done
+    dart: TMapController.offMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker off stops hover and click callbacks"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker#on"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.on
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker#setContextMenu"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.setContextMenu
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker#setMap"
     kind: method
@@ -530,8 +544,10 @@ entries:
   - id: "Tmapv3.Marker#setPosition"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.setPosition
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker#setVisible"
     kind: method
@@ -544,8 +560,10 @@ entries:
   - id: "Tmapv3.Marker#setZIndex"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Marker.setZIndex
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
     reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
   - id: "Tmapv3.Marker@click"
     kind: event
@@ -571,20 +589,26 @@ entries:
   - id: "Tmapv3.Marker@mouseenter"
     kind: event
     decision: expose
-    status: todo
-    planned_dart: TMap.onMarkermouseenter
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
   - id: "Tmapv3.Marker@mouseleave"
     kind: event
     decision: expose
-    status: todo
-    planned_dart: TMap.onMarkermouseleave
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
 
   # MarkerCluster
   - id: "Tmapv3.extension.MarkerCluster"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: Clusterer
+    status: done
+    dart: Clusterer
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster constructor options and two member grouping"
     reason: "JS MarkerCluster is represented by Clusterer configuration and a TMapController-owned instance."
   - id: "Tmapv3.extension.MarkerCluster#constructor"
     kind: constructor
@@ -597,13 +621,17 @@ entries:
   - id: "Tmapv3.extension.MarkerCluster.options.gridSize"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.gridSize
+    status: done
+    dart: Clusterer.gridSize
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.icons"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.icons
+    status: done
+    dart: Clusterer.icons
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.map"
     kind: option
     decision: adapt
@@ -622,13 +650,17 @@ entries:
   - id: "Tmapv3.extension.MarkerCluster.options.maxClusterZoom"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.maxClusterZoom
+    status: done
+    dart: Clusterer.maxClusterZoom
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.minClusterCount"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.minClusterCount
+    status: done
+    dart: Clusterer.minClusterCount
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.onClusterClick"
     kind: option
     decision: adapt
@@ -639,40 +671,56 @@ entries:
     reason: "JS cluster click handler is delivered as the typed TMap.onMarkerClustererTap callback."
   - id: "Tmapv3.extension.MarkerCluster.options.onClusterMouseEnter"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: Clusterer.onClusterMouseEnter
+    decision: adapt
+    status: done
+    dart: TMapController.onClusterEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster hover callbacks contain typed member ids"
+    reason: "SDK cluster hover handlers are exposed as typed controller event subscriptions."
   - id: "Tmapv3.extension.MarkerCluster.options.onClusterMouseLeave"
     kind: option
-    decision: expose
-    status: todo
-    planned_dart: Clusterer.onClusterMouseLeave
+    decision: adapt
+    status: done
+    dart: TMapController.onClusterEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster hover callbacks contain typed member ids"
+    reason: "SDK cluster hover handlers are exposed as typed controller event subscriptions."
   - id: "Tmapv3.extension.MarkerCluster.options.opacity"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.opacity
+    status: done
+    dart: Clusterer.opacity
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.visible"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.visible
+    status: done
+    dart: Clusterer.visible
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster.options.zIndex"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Clusterer.zIndex
+    status: done
+    dart: Clusterer.zIndex
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
   - id: "Tmapv3.extension.MarkerCluster#addMarker"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Clusterer.addMarker
+    status: done
+    dart: Clusterer.addMarker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster addMarker updates three SDK members"
     reason: "Cluster membership and lifecycle are controlled by TMapController."
   - id: "Tmapv3.extension.MarkerCluster#clearMarkers"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: TMapController.clearClusterMarkers
+    status: done
+    dart: TMapController.clearClusterMarkers
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::clearClusterMarkers keeps SDK clusterer and clears members"
     reason: "Clearing cluster members while retaining the clusterer needs a dedicated controller operation."
   - id: "Tmapv3.extension.MarkerCluster#destroy"
     kind: method
@@ -685,14 +733,18 @@ entries:
   - id: "Tmapv3.extension.MarkerCluster#removeMarker"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Clusterer.removeMarker
+    status: done
+    dart: Clusterer.removeMarker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster removeMarker updates SDK members"
     reason: "Cluster membership and lifecycle are controlled by TMapController."
   - id: "Tmapv3.extension.MarkerCluster#setOpacity"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Clusterer.setOpacity
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
     reason: "Cluster membership and lifecycle are controlled by TMapController."
   - id: "Tmapv3.extension.MarkerCluster#setOptions"
     kind: method
@@ -705,14 +757,18 @@ entries:
   - id: "Tmapv3.extension.MarkerCluster#setVisible"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Clusterer.setVisible
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
     reason: "Cluster membership and lifecycle are controlled by TMapController."
   - id: "Tmapv3.extension.MarkerCluster#setZIndex"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Clusterer.setZIndex
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
     reason: "Cluster membership and lifecycle are controlled by TMapController."
 
   # Bounds
@@ -945,8 +1001,10 @@ entries:
   - id: "Tmapv3.InfoWindow"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: InfoWindow
+    status: done
+    dart: InfoWindow
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
     reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
   - id: "Tmapv3.InfoWindow#constructor"
     kind: constructor
@@ -959,8 +1017,10 @@ entries:
   - id: "Tmapv3.InfoWindow.options.anchor"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: InfoWindow.anchor
+    status: done
+    dart: InfoWindow.anchor
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
   - id: "Tmapv3.InfoWindow.options.border"
     kind: option
     decision: expose
@@ -993,8 +1053,10 @@ entries:
   - id: "Tmapv3.InfoWindow.options.position"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: InfoWindow.position
+    status: done
+    dart: InfoWindow.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
   - id: "Tmapv3.InfoWindow.options.type"
     kind: option
     decision: expose
@@ -1028,8 +1090,10 @@ entries:
   - id: "Tmapv3.InfoWindow#getPosition"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: InfoWindow.position
+    status: done
+    dart: InfoWindow.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
     reason: "JS getter values are exposed as immutable Dart overlay fields."
   - id: "Tmapv3.InfoWindow#setMap"
     kind: method
@@ -1042,8 +1106,10 @@ entries:
   - id: "Tmapv3.InfoWindow#setPosition"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: InfoWindow.setPosition
+    status: done
+    dart: InfoWindow.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow setPosition via immutable replacement"
     reason: "Overlay attachment and replacement are managed by TMapController."
 
   # LatLng
@@ -1923,8 +1989,10 @@ entries:
   - id: "Tmapv3.Label"
     kind: class
     decision: adapt
-    status: todo
-    planned_dart: Label
+    status: done
+    dart: Label
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
     reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
   - id: "Tmapv3.Label#constructor"
     kind: constructor
@@ -1966,23 +2034,31 @@ entries:
   - id: "Tmapv3.Label.options.maxLevel"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Label.maxLevel
+    status: done
+    dart: Label.maxLevel
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
   - id: "Tmapv3.Label.options.minLevel"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Label.minLevel
+    status: done
+    dart: Label.minLevel
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
   - id: "Tmapv3.Label.options.position"
     kind: option
     decision: expose
-    status: todo
-    planned_dart: Label.position
+    status: done
+    dart: Label.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
   - id: "Tmapv3.Label#getPosition"
     kind: method
     decision: adapt
-    status: todo
-    planned_dart: Label.getPosition
+    status: done
+    dart: Label.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
     reason: "JS getter values are exposed as immutable Dart overlay fields."
   - id: "Tmapv3.Label#setMap"
     kind: method

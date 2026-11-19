@@ -186,7 +186,7 @@ function clearAllLabels() {
   labels = {};
 }
 
-function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSize, opacity, visible, icons) {
+function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSize, opacity, visible, icons, zIndex) {
   if (!map) return;
 
   clusterGeneration++;
@@ -223,6 +223,20 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
               zoom: zoom
             }));
           }
+        });
+        ['mouseenter', 'mouseleave'].forEach(function(event) {
+          currentMarker.on(event, function() {
+            if (currentGeneration !== clusterGeneration || !markerCluster) return;
+            if (currentInstance && markerCluster !== currentInstance) return;
+            if (window.onMarkerInteraction) {
+              var p = currentMarker.getPosition ? currentMarker.getPosition() : currentPos;
+              onMarkerInteraction.postMessage(JSON.stringify({
+                markerId: currentId, latitude: latitudeOf(p), longitude: longitudeOf(p),
+                zoom: map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16,
+                event: event
+              }));
+            }
+          });
         });
       }
 
@@ -263,6 +277,21 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
   };
 
   if (icons !== null && icons !== undefined) clusterOptions.icons = icons;
+  if (zIndex !== null && zIndex !== undefined) clusterOptions.zIndex = zIndex;
+
+  function onClusterPointer(event, cluster) {
+    if (currentGeneration !== clusterGeneration || !markerCluster) return;
+    if (currentInstance && markerCluster !== currentInstance) return;
+    var payload = tmapClusterEventPayload(cluster, map);
+    if (payload && window.onClusterInteraction) {
+      onClusterInteraction.postMessage(JSON.stringify({
+        event: event, latitude: payload.lat, longitude: payload.lng,
+        zoom: payload.zoom, markers: payload.markerIds
+      }));
+    }
+  }
+  clusterOptions.onClusterMouseEnter = function(cluster) { onClusterPointer('mouseenter', cluster); };
+  clusterOptions.onClusterMouseLeave = function(cluster) { onClusterPointer('mouseleave', cluster); };
 
   clusterOptions.onClusterClick = function(cluster) {
     if (currentGeneration !== clusterGeneration || !markerCluster) return;
@@ -352,6 +381,22 @@ function clearMarkerClusterer() {
     }
     clusterMarkersList = [];
   }
+}
+
+function clearClusterMarkers() {
+  if (!markerCluster) return;
+  clusterGeneration++;
+  if (typeof markerCluster.clearMarkers === 'function') markerCluster.clearMarkers();
+  for (var id in clusterMarkerDragListeners) {
+    if (Object.prototype.hasOwnProperty.call(clusterMarkerDragListeners, id)) {
+      try { clusterMarkerDragListeners[id].dispose(); } catch (_) {}
+    }
+  }
+  clusterMarkerDragListeners = {};
+  for (var i = 0; i < clusterMarkersList.length; i++) {
+    try { clusterMarkersList[i].setMap(null); } catch (_) {}
+  }
+  clusterMarkersList = [];
 }
 
 function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeWidth, direction, zIndex) {

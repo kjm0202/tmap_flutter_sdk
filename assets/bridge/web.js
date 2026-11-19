@@ -445,6 +445,12 @@
     state.markerDragListeners = state.markerDragListeners || {};
     tmapBridge.addMarker(state.map, state.markers, m, {
       click: state.callbacks.onMarkerTap,
+      mouseenter: function(id, lat, lng, zoom) {
+        if (state.callbacks.onMarkerInteraction) state.callbacks.onMarkerInteraction(id, lat, lng, zoom, 'mouseenter');
+      },
+      mouseleave: function(id, lat, lng, zoom) {
+        if (state.callbacks.onMarkerInteraction) state.callbacks.onMarkerInteraction(id, lat, lng, zoom, 'mouseleave');
+      },
       drag: state.callbacks.onMarkerDrag || state.callbacks.onMarkerDragChangeCallback
     }, state.markerDragListeners);
   };
@@ -502,6 +508,17 @@
             state.callbacks.onMarkerTap(id, lat, lng, zoom);
           }
         });
+        ['mouseenter', 'mouseleave'].forEach(function(type) {
+          marker.on(type, function() {
+            if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
+            if (currentClusterer && state.clusterer !== currentClusterer) return;
+            if (state.callbacks && state.callbacks.onMarkerInteraction) {
+              var p = marker.getPosition ? marker.getPosition() : pos;
+              var zoom = (state.map && typeof state.map.getZoom === 'function') ? Math.round(state.map.getZoom()) : 16;
+              state.callbacks.onMarkerInteraction(id, latitudeOf(p), longitudeOf(p), zoom, type);
+            }
+          });
+        });
       }
 
       if (m.draggable && typeof bindTmapMarkerDrag === 'function') {
@@ -531,6 +548,18 @@
     };
 
     if (clusterData.icons) clusterOptions.icons = clusterData.icons;
+    if (clusterData.zIndex !== undefined && clusterData.zIndex !== null) clusterOptions.zIndex = clusterData.zIndex;
+
+    function onClusterPointer(type, cluster) {
+      if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
+      if (currentClusterer && state.clusterer !== currentClusterer) return;
+      var payload = tmapClusterEventPayload(cluster, state.map);
+      if (payload && state.callbacks && state.callbacks.onClusterInteraction) {
+        state.callbacks.onClusterInteraction(payload.lat, payload.lng, payload.zoom, payload.markerIds, type);
+      }
+    }
+    clusterOptions.onClusterMouseEnter = function(cluster) { onClusterPointer('mouseenter', cluster); };
+    clusterOptions.onClusterMouseLeave = function(cluster) { onClusterPointer('mouseleave', cluster); };
 
     clusterOptions.onClusterClick = function(cluster) {
       if (state.disposed || !cluster || !state.callbacks || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
@@ -609,6 +638,18 @@
         state.clusterMarkersList = [];
       }
     }
+  };
+
+  window.tmap_clearClusterMarkers = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.clusterer) return;
+    state.clusterGeneration = (state.clusterGeneration || 0) + 1;
+    if (typeof state.clusterer.clearMarkers === 'function') state.clusterer.clearMarkers();
+    _clearWebClusterDragListeners(state);
+    for (var marker of state.clusterMarkersList || []) {
+      if (marker && typeof marker.setMap === 'function') marker.setMap(null);
+    }
+    state.clusterMarkersList = [];
   };
 
   function _removeWebInfoWindowClick(state, id) {
