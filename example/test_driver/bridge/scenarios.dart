@@ -116,7 +116,7 @@ Future<void> _runScenarios() async {
     'map_touch': testMapTouchEvents,
     'map_context_menu': testMapContextMenu,
     'value_types': testValueTypes,
-    'visualization': () => testVisualizationScenario(controller),
+    'visualization': testVisualizationScenario,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');

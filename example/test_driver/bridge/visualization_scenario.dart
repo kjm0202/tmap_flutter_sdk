@@ -46,7 +46,21 @@ String _updatedLayer(String type, String id, String optionCheck) =>
     !engine.hasLayer(oldId) && engine.hasLayer(obj.layerId) && ($optionCheck));
 })()''';
 
-Future<void> testVisualizationScenario(TMapController controller) async {
+Future<void> testVisualizationScenario() async {
+  final controller = await mountLiveMap(
+    (created) => TMap(
+      center: const LatLng(37.5665, 126.978),
+      onMapCreated: created,
+    ),
+  );
+  try {
+    await _runVisualizationChecks(controller);
+  } finally {
+    await unmountLiveMap();
+  }
+}
+
+Future<void> _runVisualizationChecks(TMapController controller) async {
   final dot = DotMap(
     dotMapId: 'viz-dot',
     data: _samples,
