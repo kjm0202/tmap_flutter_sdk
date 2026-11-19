@@ -1678,6 +1678,7 @@ entries:
     dart: TDataService
     tests:
       - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
       - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
     reason: "Callback-based JS TData is offered as static asynchronous TDataService methods."
   - id: "Tmapv3.TData#constructor"
@@ -1721,9 +1722,12 @@ entries:
     reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
   - id: "Tmapv3.TData#getAutoCompleteSearchv3Json"
     kind: method
-    decision: exclude
+    decision: adapt
     status: done
-    reason: "Documented but not implemented in SDK core (sha 5290e0fd) nor reachable as a REST endpoint; existing autocomplete is TDataService.getAutoCompleteSearch."
+    dart: TDataService.getAutoCompleteSearchV2
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
+    reason: "Documented as v3; the SDK core and REST implement it as getAutoCompleteSearchV2Json -> /tmap/poi/V2autoComplete, exposed as a typed Future."
   - id: "Tmapv3.TData#getGeoFromAddressJson"
     kind: method
     decision: adapt
@@ -1866,6 +1870,14 @@ entries:
     dart: TDataService.getAutoCompleteSearch
     tests:
       - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/poi/V2autoComplete"
+    kind: rest
+    decision: adapt
+    status: done
+    dart: TDataService.getAutoCompleteSearchV2
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
     reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
   - id: "rest:/tmap/traffic"
     kind: rest

@@ -114,6 +114,36 @@ void main() {
     expect(suggestions.first.keyword, '서울역');
   });
 
+  test('recorded /tmap/poi/V2autoComplete parses location-aware suggestions',
+      () async {
+    _fixture('autocomplete_v2');
+    final suggestions = await _run(() => TDataService.getAutoCompleteSearchV2(
+          keyword: '서울역',
+          center: const LatLng(37.5547, 126.9706),
+          radius: 5,
+          numResults: 3,
+        ));
+    expect(_request.method, 'GET');
+    expect(_request.url.path, '/tmap/poi/V2autoComplete');
+    expect(_request.url.queryParameters['searchKeyword'], '서울역');
+    expect(_request.url.queryParameters['centerLat'], '37.5547');
+    expect(_request.url.queryParameters['centerLon'], '126.9706');
+    expect(_request.url.queryParameters['radius'], '5');
+    expect(_request.url.queryParameters['numResults'], '3');
+    expect(suggestions, isNotEmpty);
+    expect(suggestions.first.keyword, contains('서울역'));
+    expect(suggestions.first.distance, closeTo(0.00949, 0.001));
+    expect(suggestions.first.point, isNotNull);
+    expect(suggestions.first.point!.latitude, closeTo(37.5547, 0.001));
+    expect(suggestions.first.point!.longitude, closeTo(126.9707, 0.001));
+    expect(suggestions.first.fullAddress, contains('서울'));
+    expect(suggestions.first.jibunAddress, contains('동자동'));
+    expect(suggestions.first.categoryNickName, isNotEmpty);
+    expect(suggestions.first.hasSubPoi, isTrue);
+    final distances = suggestions.map((item) => item.distance!).toList();
+    expect(distances, orderedEquals([...distances]..sort()));
+  });
+
   test('recorded /tmap/traffic yields typed congestion segments', () async {
     _fixture('traffic');
     final result = await _run(() => TDataService.getRealTimeTraffic(
