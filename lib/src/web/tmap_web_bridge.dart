@@ -10,6 +10,7 @@ import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
+import '../overlays/ground_overlay.dart';
 import '../overlays/info_window.dart';
 import '../overlays/label.dart';
 import '../overlays/marker.dart';
@@ -363,6 +364,43 @@ class TMapWebBridge {
       'zIndex': rect.zIndex,
     };
     _call('addRectangle', [viewId, data]);
+  }
+
+  static void addGroundOverlay(String viewId, GroundOverlay overlay) {
+    _call('addGroundOverlay', [viewId, overlay.toJson()]);
+  }
+
+  static void clearGroundOverlay(String viewId, String id) {
+    _call('clearGroundOverlay', [viewId, id]);
+  }
+
+  static void clearAllGroundOverlays(String viewId) {
+    _call('clearAllGroundOverlays', [viewId]);
+  }
+
+  static bool polygonContains(String viewId, String id, LatLng point) {
+    final result = (web.window as JSObject).callMethodVarArgs<JSBoolean?>(
+      'tmap_polygonContains'.toJS,
+      [viewId.toJS, id.toJS, point.latitude.toJS, point.longitude.toJS],
+    );
+    return result?.toDart ?? false;
+  }
+
+  static String? polygonAreaJson(String viewId, String id) {
+    final result = (web.window as JSObject).callMethodVarArgs<JSString?>(
+      'tmap_polygonAreaJson'.toJS,
+      [viewId.toJS, id.toJS],
+    );
+    return result?.toDart;
+  }
+
+  static void startDrawing(
+      String viewId, String mode, Map<String, dynamic> options) {
+    _call('startDrawing', [viewId, mode, options]);
+  }
+
+  static void clearDrawings(String viewId) {
+    _call('clearDrawings', [viewId]);
   }
 
   static void clearAll(String viewId) {

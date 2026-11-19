@@ -420,6 +420,12 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onCustomOverlayTap'.toJS, onCustomOverlayTapFn);
 
+      final onDrawingCompleteFn = (JSString payload) {
+        if (!mounted) return;
+        _controller.handleDrawingComplete(payload.toDart);
+      }.toJS;
+      callbacks.setProperty('onDrawingComplete'.toJS, onDrawingCompleteFn);
+
       TMapWebBridge.initMap(
         viewId: _viewId,
         containerId: _containerId,

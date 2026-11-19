@@ -14,11 +14,14 @@ import 'models/lat_lng_bounds.dart';
 import 'models/overlay_interaction.dart';
 import 'models/poi_item.dart';
 import 'models/point.dart';
+import 'models/polygon_area.dart';
 import 'models/route_info.dart';
 import 'models/size.dart' as tmap_size;
 import 'overlays/circle.dart';
 import 'overlays/clusterer.dart';
 import 'overlays/custom_overlay.dart';
+import 'overlays/drawing_options.dart';
+import 'overlays/ground_overlay.dart';
 import 'overlays/info_window.dart';
 import 'overlays/label.dart';
 import 'overlays/marker.dart';
@@ -34,6 +37,7 @@ import 'web/tmap_web_bridge_stub.dart'
 class TMapController {
   final WebViewController? _webViewController;
   final String? _webViewId;
+  void Function(Map<String, dynamic>)? _drawingHandler;
 
   final Map<String,
           Map<MarkerInteractionType, Set<void Function(MarkerInteraction)>>>
@@ -708,6 +712,189 @@ class TMapController {
       return;
     }
     await _runJs("clearRectangle('$rectangleId');");
+  }
+
+  /// Adds an image overlay bounded by two geographic corners.
+  Future<void> addGroundOverlay(GroundOverlay overlay) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addGroundOverlay(viewId, overlay);
+      return;
+    }
+    await _runJs('addGroundOverlay(${jsonEncode(overlay.groundOverlayId)}, '
+        '${jsonEncode(overlay.url)}, '
+        '${overlay.bounds.southWest.latitude}, '
+        '${overlay.bounds.southWest.longitude}, '
+        '${overlay.bounds.northEast.latitude}, '
+        '${overlay.bounds.northEast.longitude}, ${overlay.opacity});');
+  }
+
+  /// Detaches an image overlay from this map.
+  Future<void> clearGroundOverlay(String groundOverlayId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearGroundOverlay(viewId, groundOverlayId);
+      return;
+    }
+    await _runJs('clearGroundOverlay(${jsonEncode(groundOverlayId)});');
+  }
+
+  /// Removes every image overlay registered with this controller.
+  Future<void> clearAllGroundOverlays() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllGroundOverlays(viewId);
+      return;
+    }
+    await _runJs('clearAllGroundOverlays();');
+  }
+
+  /// Queries the SDK's polygon hit-test (including any interior rings).
+  Future<bool> polygonContains(String polygonId, LatLng point) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      return TMapWebBridge.polygonContains(viewId, polygonId, point);
+    }
+    final value = await webViewController.runJavaScriptReturningResult(
+      'polygonContains(${jsonEncode(polygonId)}, '
+      '${point.latitude}, ${point.longitude});',
+    );
+    return value == true || value == 1 || value == 'true';
+  }
+
+  /// Reads the SDK-computed exterior and interior polygon areas.
+  Future<PolygonArea?> getPolygonArea(String polygonId) async {
+    final viewId = _webViewId;
+    final String? raw;
+    if (viewId != null) {
+      raw = TMapWebBridge.polygonAreaJson(viewId, polygonId);
+    } else {
+      final result = await webViewController.runJavaScriptReturningResult(
+        'polygonAreaJson(${jsonEncode(polygonId)});',
+      );
+      raw = result.toString();
+    }
+    if (raw == null || raw == 'null' || raw.isEmpty) return null;
+    // WebView implementations can return either the JS string directly or
+    // its JSON-encoded representation.
+    dynamic decoded = jsonDecode(raw);
+    if (decoded is String) decoded = jsonDecode(decoded);
+    if (decoded == null) return null;
+    return PolygonArea.fromJson(Map<String, dynamic>.from(decoded as Map));
+  }
+
+  /// Starts a pointer-driven circle using Tmapv3.extension.Drawing.
+  Future<void> startDrawingCircle({
+    required void Function(Circle) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'circle') return;
+      onComplete(Circle(
+        circleId: data['id'] as String,
+        center:
+            LatLng.fromJson(Map<String, dynamic>.from(data['center'] as Map)),
+        radius: (data['radius'] as num).toDouble(),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Circle', options);
+  }
+
+  /// Starts a pointer-driven rectangle.
+  Future<void> startDrawingRectangle({
+    required void Function(Rectangle) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'rectangle') return;
+      onComplete(Rectangle(
+        rectangleId: data['id'] as String,
+        bounds: LatLngBounds.fromJson(
+            Map<String, dynamic>.from(data['bounds'] as Map)),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Rectangle', options);
+  }
+
+  /// Starts a pointer-driven polyline; finish with a secondary click.
+  Future<void> startDrawingPolyline({
+    required void Function(Polyline) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'polyline') return;
+      onComplete(Polyline(
+        polylineId: data['id'] as String,
+        points: (data['points'] as List<dynamic>)
+            .map((p) => LatLng.fromJson(Map<String, dynamic>.from(p as Map)))
+            .toList(growable: false),
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Polyline', options);
+  }
+
+  /// Starts a pointer-driven polygon; finish with a secondary click.
+  Future<void> startDrawingPolygon({
+    required void Function(Polygon) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'polygon') return;
+      onComplete(Polygon(
+        polygonId: data['id'] as String,
+        points: (data['points'] as List<dynamic>)
+            .map((p) => LatLng.fromJson(Map<String, dynamic>.from(p as Map)))
+            .toList(growable: false),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Polygon', options);
+  }
+
+  Future<void> _startDrawing(String mode, DrawingOptions options) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.startDrawing(viewId, mode, options.toJson());
+      return;
+    }
+    await _runJs('startDrawing(${jsonEncode(mode)}, '
+        '${jsonEncode(options.toJson())});');
+  }
+
+  /// Clears completed drawings and cancels any in-progress gesture.
+  Future<void> clearDrawings() async {
+    _drawingHandler = null;
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearDrawings(viewId);
+      return;
+    }
+    await _runJs('clearDrawings();');
+  }
+
+  /// Receives a completion payload from the platform bridge.
+  void handleDrawingComplete(String payload) {
+    final handler = _drawingHandler;
+    if (handler == null) return;
+    final parsed = jsonDecode(payload);
+    if (parsed is Map) handler(Map<String, dynamic>.from(parsed));
   }
 
   /// 커스텀 HTML 오버레이를 추가합니다.
