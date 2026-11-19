@@ -1,5 +1,9 @@
 # Audit source revision
 
+This audit is frozen and runs only by manual workflow dispatch. The lightweight
+checker in tool/api_manifest supersedes it; see tool/api_manifest/SCHEMA.md for
+the manifest contract and coverage rules.
+
 New `run.json` receipts record `sourceRevision` at the start of collection:
 
 - `{ "available": true, "commit": "<full Git HEAD>", "trackedClean": true }` (or `false` when tracked files are dirty).

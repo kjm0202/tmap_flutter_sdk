@@ -1,17 +1,6 @@
 name: SDK parity audit
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "assets/bridge/**"
-      - "lib/**"
-      - "test/**"
-      - "example/**"
-      - "tool/sdk_audit/**"
-      - "docs/sdk-audit/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/sdk-audit.yml"
 permissions:
   contents: read
 jobs:
