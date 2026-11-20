@@ -2,6 +2,7 @@
 *.class
 *.log
 *.pyc
+__pycache__/
 *.swp
 .DS_Store
 .atom/
@@ -50,3 +51,13 @@ migrate_working_dir/
 
 # FVM Version Cache
 .fvm/
+
+# Local audit caches and raw vendor assets
+test/support/.sdk-cache/
+/api_audit/
+
+# Private content, credentials, and raw/keyed artifacts
+*key.json
+*.keystore
+*.jks
+*.o

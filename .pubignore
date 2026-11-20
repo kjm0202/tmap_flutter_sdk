@@ -6,3 +6,28 @@ build/
 *.log
 .system_generated/
 .u111-worktrees/
+
+# FVM & pub caches
+.fvm/
+.pub-cache/
+.pub/
+
+# Test drivers and CI workflows excluded from published SDK
+/example/test_driver/bridge/
+.github/
+
+# Python & compilation objects
+__pycache__/
+*.pyc
+*.o
+
+# Non-shipping audit tooling, reports, and development fixtures
+/tool/
+/docs/
+/api_audit/
+test/support/.sdk-cache/
+
+# Private content, credentials, and raw/keyed artifacts
+*key.json
+*.keystore
+*.jks
