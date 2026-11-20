@@ -12,9 +12,7 @@ build/
 .pub-cache/
 .pub/
 
-# Audit tooling, full reports/evidence, test drivers, and CI workflows excluded from published SDK
-/tool/sdk_audit/
-/docs/sdk-audit/
+# Test drivers and CI workflows excluded from published SDK
 /example/test_driver/bridge/
 .github/
 

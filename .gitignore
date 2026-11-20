@@ -52,10 +52,7 @@ migrate_working_dir/
 # FVM Version Cache
 .fvm/
 
-# SDK audit tooling caches, dependencies, and raw vendor assets (local only)
-/tool/sdk_audit/node_modules/
-/tool/sdk_audit/.cache/
-/tool/sdk_audit/dart/.dart_tool/
+# Local audit caches and raw vendor assets
 test/support/.sdk-cache/
 /api_audit/
 
