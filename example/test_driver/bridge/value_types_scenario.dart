@@ -8,10 +8,10 @@ import 'web_view.dart' if (dart.library.js_interop) 'browser.dart';
 
 /// Compares pure Dart value operations with the installed official Tmapv3 SDK.
 Future<void> testValueTypes() async {
-  final controller = await mountLiveMap(
-    (created) => TMap(onMapCreated: created),
-  );
   try {
+    final controller = await mountLiveMap(
+      (created) => TMap(onMapCreated: created),
+    );
     final sdk = await runJs(controller, r'''(function() { try {
       const T = window.Tmapv3;
       const capture = fn => { try { return fn(); } catch (e) { return 'ERROR:' + e.message; } };
@@ -20,7 +20,7 @@ Future<void> testValueTypes() async {
             latitude:p.latitude,longitude:p.longitude,x:p.x,y:p.y};
       const point = p => p == null ? null : [p.getX(), p.getY()];
       const b = new T.Bounds(1, 2, 4, 8);
-      const bTouch = new T.Bounds(4, 2, 7, 8);
+      const bTouch = new T.Bounds(5, 2, 7, 8);
       const bInside = new T.Bounds(2, 3, 3, 4);
       const bDisjoint = new T.Bounds(5, 2, 7, 8);
       const bOutside = new T.Bounds(5.01, 2, 7, 8);
@@ -76,7 +76,7 @@ Future<void> testValueTypes() async {
           empty:normal.isEmpty(),text:normal.toString(),
           inside:normal.contains(new T.LatLng(15,30)),boundary:normal.contains(new T.LatLng(10,20)),
           outside:normal.contains(new T.LatLng(15,50)),overlap:overlap,
-          disjoint:noOverlap,
+          disjoint:noOverlap == null ? null : noOverlap,
           singleEmpty:singleEmpty,single:single.toString(),
           unionReturn:unitedResult == null ? null : String(unitedResult),
           union:united.toString(),equals:normal.equals(new T.LatLngBounds(new T.LatLng(10,20),new T.LatLng(20,40))),
@@ -102,7 +102,12 @@ Future<void> testValueTypes() async {
       };
     } catch (e) { return {fatal: String(e), stack: String(e.stack).slice(0, 700)}; }
     })()''');
-    final result = Map<String, dynamic>.from(sdk as Map);
+    final decoded = sdk is String ? jsonDecode(sdk) : sdk;
+    if (decoded is! Map) {
+      throw StateError(
+          'SDK value probe returned ${decoded.runtimeType}, expected Map');
+    }
+    final result = Map<String, dynamic>.from(decoded);
     if (result.containsKey('fatal')) {
       throw StateError('SDK value probe failed: ${result['fatal']}');
     }
@@ -175,13 +180,7 @@ Future<void> testValueTypes() async {
       (
         group: 'bounds',
         field: 'intersectsTouch',
-        expected: bounds.intersects(const Bounds(4, 2, 7, 8)),
-        tolerance: 0
-      ),
-      (
-        group: 'bounds',
-        field: 'intersectsStrict',
-        expected: bounds.intersects(const Bounds(4, 2, 7, 8)),
+        expected: bounds.intersects(const Bounds(5, 2, 7, 8)),
         tolerance: 0
       ),
       (
@@ -197,21 +196,7 @@ Future<void> testValueTypes() async {
         expected: bounds.union(const Bounds(5, 2, 7, 8)).toString(),
         tolerance: 0
       ),
-      // These two placed the second rectangle above the first, so only the
-      // SDK's top + height convention can produce the observed result.
-      (
-        group: 'bounds',
-        field: 'gapUnion',
-        expected: bounds.union(const Bounds(1, 10, 1, 1)).toString(),
-        tolerance: 0
-      ),
       (group: 'bounds', field: 'gapUnionResult', expected: null, tolerance: 0),
-      (
-        group: 'bounds',
-        field: 'gapIntersects',
-        expected: bounds.intersects(const Bounds(1, 10, 1, 1)),
-        tolerance: 0
-      ),
       (
         group: 'bounds',
         field: 'sized',
@@ -523,9 +508,26 @@ Future<void> testValueTypes() async {
         bounds.contains(inner, includeBoundary: false)) {
       throw StateError('Bounds.contains documented SDK discrepancy changed');
     }
+    // The SDK ignores the strict-boundary argument and uses top + height for
+    // intersections and unions. Dart consistently uses top - height.
+    const edgeTouch = Bounds(5, 2, 7, 8);
+    const aboveGap = Bounds(1, 10, 1, 1);
+    if (sdkBounds['intersectsTouch'] != true ||
+        sdkBounds['intersectsStrict'] != true ||
+        !bounds.intersects(edgeTouch) ||
+        bounds.intersects(edgeTouch, includeBoundary: false) ||
+        sdkBounds['gapIntersects'] != true ||
+        bounds.intersects(aboveGap) ||
+        sdkBounds['gapUnion'] == bounds.union(aboveGap).toString() ||
+        !bounds.union(aboveGap).contains(bounds) ||
+        !bounds.union(aboveGap).contains(aboveGap)) {
+      throw StateError('Bounds.intersects/union SDK discrepancy changed');
+    }
     // The JS bounds predicate returns null for non-overlap. Dart supplies
     // the conventional false result through its non-nullable bool API.
-    if ((result['latLngBounds'] as Map<String, dynamic>)['disjoint'] != null ||
+    final sdkLatLngBounds = result['latLngBounds'] as Map<String, dynamic>;
+    if (!sdkLatLngBounds.containsKey('disjoint') ||
+        sdkLatLngBounds['disjoint'] != null ||
         normal.intersects(const LatLngBounds(
           southWest: LatLng(21, 41),
           northEast: LatLng(25, 50),

@@ -949,7 +949,7 @@ entries:
     dart: Bounds.intersects
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "JS tests overlap on left + width and top + height and ignores its boundary flag; Dart keeps that overlap test and returns a non-nullable bool."
+    reason: "SDK intersects uses an inverted bottom edge (top + height) and ignores its boundary flag; Dart follows the documented geometry (bottom = top - height) and honors includeBoundary."
   - id: "Tmapv3.Bounds#setHeight"
     kind: method
     decision: adapt
@@ -997,7 +997,7 @@ entries:
     dart: Bounds.union
     tests:
       - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
-    reason: "JS union mutates in place using top + height; Dart returns a new envelope with the same extents."
+    reason: "SDK union mutates using an inverted bottom edge (top + height), which can exclude operands; Dart returns an immutable envelope containing both rectangles using documented bottom = top - height geometry."
 
   # LatLngBounds
   - id: "Tmapv3.LatLngBounds"

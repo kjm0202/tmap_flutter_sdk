@@ -35,13 +35,27 @@ void main() {
         isFalse);
     expect(edges.containsPoint(const Point(8, 4)), isFalse);
     expect(bounds.intersects(const Bounds(5, 2, 7, 8)), isTrue);
+    expect(bounds.intersects(const Bounds(5, 2, 7, 8), includeBoundary: false),
+        isFalse);
+    expect(bounds.intersects(const Bounds(4, 2, 1, 8), includeBoundary: false),
+        isTrue);
     expect(bounds.intersects(const Bounds(5.01, 2, 1, 8)), isFalse);
-    expect(bounds.union(const Bounds(5, 2, 7, 8)), const Bounds(1, 2, 11, 8));
-    // SDK intersects/union treat top + height as the lower edge; contains
-    // follows the documented bottom (top - height) geometry instead.
-    expect(bounds.intersects(const Bounds(1, 10, 1, 1)), isTrue);
-    expect(bounds.union(const Bounds(1, 10, 1, 1)),
-        const Bounds(1, 2, 4, 9));
+    const sameEdge = Bounds(5, 2, 7, 8);
+    final horizontalUnion = bounds.union(sameEdge);
+    expect(horizontalUnion, const Bounds(1, 2, 11, 8));
+    expect(horizontalUnion.contains(bounds), isTrue);
+    expect(horizontalUnion.contains(sameEdge), isTrue);
+    const verticalEdge = Bounds(1, 10, 1, 8);
+    expect(bounds.intersects(verticalEdge), isTrue);
+    expect(bounds.intersects(verticalEdge, includeBoundary: false), isFalse);
+    const aboveGap = Bounds(1, 10, 1, 1);
+    expect(bounds.intersects(aboveGap), isFalse);
+    expect(bounds.intersects(aboveGap, includeBoundary: false), isFalse);
+    final verticalUnion = bounds.union(aboveGap);
+    expect(verticalUnion, const Bounds(1, 10, 4, 16));
+    expect(verticalUnion.contains(bounds), isTrue);
+    expect(verticalUnion.contains(aboveGap), isTrue);
+    expect(bounds.union(bounds), bounds);
     expect(bounds.contains(const Bounds(1, 1, 1, 1)), isTrue);
     expect(bounds.contains(const Bounds(1, 1, 1, 1), includeBoundary: false),
         isFalse);
