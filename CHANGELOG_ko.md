@@ -33,9 +33,11 @@ TMAP Vector JS SDK(Tmapv3) 공식 문서에 나오는 공개 API를 Flutter에�
 * 경로 좌표와 안내 지점을 위경도 좌표로 변환합니다.
 * TData가 실패 응답, 자동완성·지오코딩 응답 형식, POI 주소의 건물 번호, 불완전한 좌표 쌍을 올바르게 처리합니다.
 * 지도가 준비되기 전에 지정한 영역을 `onMapCreated` 호출 전에 적용합니다. 지도 이벤트 리스너 하나에서 예외가 나도 다른 리스너는 계속 실행됩니다.
+* `onZoomChangeCallback`이 `ZoomType.start`와 `ZoomType.end`를 일관되게 전달합니다. Android와 iOS에서는 `ZoomType.start`가 오지 않았고, 웹에서는 제스처 도중 `ZoomType.end`가 여러 번 왔습니다.
 
 ### 문서
 
+* 모든 공개 API 멤버에 영어 Dartdoc을 작성했고, `lib/`에서는 `public_member_api_docs` 린트로 이를 강제합니다. 소스에 남아 있던 한글 주석도 영어로 옮겼습니다.
 * `README.md`는 이제 영어로만 작성합니다. 한국어 안내는 `README_ko.md`로 옮겼고, 두 문서가 서로 링크합니다.
 * 한국어 변경 내역은 `CHANGELOG_ko.md`에 있습니다.
 

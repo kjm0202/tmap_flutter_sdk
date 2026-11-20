@@ -33,9 +33,11 @@ Covers the officially documented public API of the TMAP Vector JS SDK (Tmapv3). 
 * Route paths and guidance points are converted to geographic coordinates.
 * TData handles failed responses, autocomplete and geocoding response shapes, building numbers in POI addresses and incomplete coordinate pairs.
 * Bounds set before the map is ready are applied before `onMapCreated` runs, and an exception in one map listener no longer stops the others.
+* `onZoomChangeCallback` reports `ZoomType.start` and `ZoomType.end` consistently. Android and iOS never delivered `ZoomType.start`, and web reported `ZoomType.end` repeatedly during a gesture.
 
 ### Documentation
 
+* Every public API member has English Dartdoc, and the `public_member_api_docs` lint enforces it for `lib/`. Remaining Korean comments in the source were translated to English.
 * `README.md` is now English only. The Korean guide moved to `README_ko.md`, and the two link to each other.
 * Korean release notes are in `CHANGELOG_ko.md`.
 
