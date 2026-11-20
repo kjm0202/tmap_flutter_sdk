@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Flutter Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web-green.svg)](https://flutter.dev)
 
-🌐 [English Docs](#english-documentation)
+🌐 [English Docs](#english-documentation) · 📝 [변경 내역](CHANGELOG_ko.md)
 
 Flutter 환경에서 **TMAP Vector Map v3**와 **TMAP OpenAPI**를 손쉽게 사용할 수 있는 Flutter 지도 플러그인입니다.
 
@@ -49,12 +49,19 @@ Circle, Rectangle, Polyline의 `zIndex` 전달과 같은 ID 교체를 확인하�
   - `InfoWindow`: 마커 핀 상단에 말풍선 꼬리 형태로 밀착되는 팝업 오버레이
   - `Clusterer`: 대량의 마커를 화면 줌 레벨에 맞춰 자동으로 묶어주는 고성능 클러스터링
   - `Polyline`, `Polygon`, `Circle`, `Rectangle`: 경로선, 구역 다각형, 반경 원형, 사각형 오버레이
+  - `GroundOverlay`: 지도 위에 이미지를 겹쳐 표시하는 오버레이
+  - 손으로 그리는 도형: `startDrawingCircle`, `startDrawingPolygon` 등으로 사용자가 지도에 직접 도형을 그림
+  - `DotMap`, `SquareMap`, `HeatMap`: 가중치 데이터를 점·격자·히트맵으로 시각화
+- **지도 상태 & 좌표 변환**:
+  - `getCenter`, `getBounds`, `getZoom` 등으로 현재 지도 상태 조회
+  - `realToScreen`, `screenToReal`, `Projection`으로 화면·좌표계 변환
 - **TData & OpenAPI 연동**:
   - 🚘 **자동차 경로 탐색 (`getRoutePlan`)**: 경로 좌표 목록, 총 거리, 소요 시간, 통행료/택시비 계산
   - 🚶 **보행자 경로 탐색 (`getRoutePlanPedestrian`)**: 도보 최적 이동 경로 탐색
   - 🔍 **POI 장소 검색 (`searchPoi`, `searchPoiAround`)**: 키워드 검색 및 특정 좌표 반경 내 주변 장소/맛집 검색
   - 📍 **지오코딩 & 역지오코딩 (`getGeoFromAddress`, `getAddressFromGeo`)**: 주소 ↔ 위경도 상호 변환.
-  - 💡 **키워드 자동완성 (`getAutoCompleteSearch`)**: 검색어 실시간 추천
+  - 💡 **키워드 자동완성 (`getAutoCompleteSearch`, `getAutoCompleteSearchV2`)**: 검색어 실시간 추천, 위치 기반 추천
+  - 🏢 **POI 상세·좌표 변환 (`getPoiById`, `transformJson`)**: 장소 상세 정보 조회와 좌표계 변환
   - 🚦 **실시간 교통정보 (`toggleTrafficInfo`)**: 지도 위 실시간 교통 흐름 레이어 On/Off
 
 ## 🚀 시작하기
@@ -296,6 +303,12 @@ Future<void> searchNearbyPlaces(TMapController controller) async {
 | `getRoutePlanPedestrian` | 보행자 전용 도보 이동 경로 계산 |
 | `searchPoi` / `searchPoiAround` | 키워드 및 반경 기준 장소 검색 |
 | `getGeoFromAddress` / `getAddressFromGeo` | 주소 ↔ 좌표 지오코딩 및 역지오코딩 |
+| `GroundOverlay` | 지도 영역 위에 이미지를 겹쳐 표시하는 오버레이 |
+| `DotMap` / `SquareMap` / `HeatMap` | 가중치 데이터 시각화 레이어 |
+| `startDrawingCircle` 등 | 사용자가 지도에 직접 도형을 그리는 그리기 모드 |
+| `getCenter` / `getBounds` / `getZoom` | 현재 지도 상태 조회 |
+| `realToScreen` / `screenToReal` / `Projection` | 화면 좌표와 지도 좌표, 좌표계 변환 |
+| `getRealTimeTraffic` / `getPoiById` / `getAutoCompleteSearchV2` | 실시간 교통정보, POI 상세, 위치 기반 자동완성 |
 
 ---
 
@@ -331,12 +344,19 @@ Note that **Web platform implementation is currently experimental and may be uns
   - `InfoWindow`: Speech bubble popup overlay that docks on top of marker pins
   - `Clusterer`: High-performance clustering that automatically groups dense markers based on zoom level
   - `Polyline`, `Polygon`, `Circle`, `Rectangle`: Polylines, polygon areas, circular radius, and rectangular overlays
+  - `GroundOverlay`: Image overlays placed over a map area
+  - Interactive drawing: let users draw shapes with `startDrawingCircle`, `startDrawingPolygon` and more
+  - `DotMap`, `SquareMap`, `HeatMap`: Visualize weighted data as dots, grid squares or a heat map
+- **Map State & Coordinate Conversion**:
+  - Read the current map state with `getCenter`, `getBounds`, `getZoom` and more
+  - Convert between screen and map coordinates with `realToScreen`, `screenToReal` and `Projection`
 - **TData & OpenAPI Integration**:
   - 🚘 **Driving Route Navigation (`getRoutePlan`)**: Route coordinates, total distance, travel time, toll/taxi fare estimates
   - 🚶 **Pedestrian Route Navigation (`getRoutePlanPedestrian`)**: Optimal walking route calculation
   - 🔍 **POI Place Search (`searchPoi`, `searchPoiAround`)**: Keyword search and nearby places/restaurants within a given radius
   - 📍 **Geocoding & Reverse Geocoding (`getGeoFromAddress`, `getAddressFromGeo`)**: Address ↔ Latitude/Longitude conversion
-  - 💡 **Search Auto-complete (`getAutoCompleteSearch`)**: Real-time keyword recommendations
+  - 💡 **Search Auto-complete (`getAutoCompleteSearch`, `getAutoCompleteSearchV2`)**: Real-time and location-aware keyword recommendations
+  - 🏢 **POI Detail & Coordinate Conversion (`getPoiById`, `transformJson`)**: Place details and coordinate system conversion
   - 🚦 **Real-time Traffic Info (`toggleTrafficInfo`)**: Toggle real-time traffic flow overlay on/off
 
 ## 🚀 Getting Started
@@ -578,6 +598,12 @@ Future<void> searchNearbyPlaces(TMapController controller) async {
 | `getRoutePlanPedestrian` | Pedestrian-only walking route calculation |
 | `searchPoi` / `searchPoiAround` | Place search by keyword and radius |
 | `getGeoFromAddress` / `getAddressFromGeo` | Address ↔ Coordinates geocoding & reverse geocoding |
+| `GroundOverlay` | Image overlay placed over a map area |
+| `DotMap` / `SquareMap` / `HeatMap` | Weighted data visualization layers |
+| `startDrawingCircle` and others | Drawing modes that let users draw shapes on the map |
+| `getCenter` / `getBounds` / `getZoom` | Read the current map state |
+| `realToScreen` / `screenToReal` / `Projection` | Convert between screen, map and projected coordinates |
+| `getRealTimeTraffic` / `getPoiById` / `getAutoCompleteSearchV2` | Real-time traffic, POI details, location-aware autocomplete |
 
 ---
 
