@@ -275,15 +275,40 @@ class DartSymbols {
           parents.putIfAbsent(name, () => {}).add(parent);
         }
         var depth = 1;
+        var inExpressionBody = false;
+        var parentheses = 0;
+        var brackets = 0;
         final body = StringBuffer();
         for (var pos = open + 1; pos < code.length && depth > 0; pos++) {
           final char = code[pos];
           if (char == '{') {
+            // Keep the opening brace of a block getter declaration.
+            body.write(depth == 1 && !inExpressionBody ? '{' : ' ');
             depth++;
-            body.write(' ');
           } else if (char == '}') {
             depth--;
             body.write(' ');
+          } else if (depth == 1 &&
+              !inExpressionBody &&
+              code.startsWith('=>', pos)) {
+            body.write('=>');
+            inExpressionBody = true;
+            parentheses = 0;
+            brackets = 0;
+            pos++; // Both arrow characters belong to the declaration.
+          } else if (depth == 1 && inExpressionBody) {
+            // A call on a new line after => is still an expression, not a
+            // declaration. Preserve its final semicolon for the next member.
+            if (char == '(') parentheses++;
+            if (char == ')' && parentheses > 0) parentheses--;
+            if (char == '[') brackets++;
+            if (char == ']' && brackets > 0) brackets--;
+            if (char == ';' && parentheses == 0 && brackets == 0) {
+              inExpressionBody = false;
+              body.write(';');
+            } else {
+              body.write(char == '\n' ? '\n' : ' ');
+            }
           } else if (depth == 1) {
             body.write(char);
           } else {
@@ -317,7 +342,8 @@ class DartSymbols {
     final declaration = RegExp(
       '^[ \\t]*(?:(?:external|static|late|final|const|covariant|abstract)\\s+)*'
       '(?:[A-Za-z_][\\w<>?,. ]*\\s+)?'
-      '(?:(?:get|set|operator)\\s+)?$member\\s*(?:\\(|=>|[=;,])',
+      '(?:get\\s+$member\\s*\\{|'
+      '(?:(?:get|set|operator)\\s+)?$member\\s*(?:\\(|=>|[=;,]))',
       multiLine: true,
     );
     if (classBodies[type]?.any((body) => declaration.hasMatch(body)) == true) {

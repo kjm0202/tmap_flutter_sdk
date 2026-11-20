@@ -144,6 +144,57 @@ enum WidgetState { started, stopped }
         isTrue);
   });
 
+  test('does not count calls continued from expression bodies as declarations',
+      () {
+    File('${root.path}/lib/expressions.dart').writeAsStringSync('''
+class ExpressionMembers {
+  int compute() =>
+      helper();
+  int get result =>
+      missingGetterCall();
+  int transform() => [
+        for (var i = 0; i < 2; i++)
+          i,
+      ].length;
+  void declared() {}
+}
+''');
+    final symbols = DartSymbols.fromDirectory(Directory('${root.path}/lib'));
+    expect(symbols.contains('ExpressionMembers.compute'), isTrue);
+    expect(symbols.contains('ExpressionMembers.result'), isTrue);
+    expect(symbols.contains('ExpressionMembers.transform'), isTrue);
+    expect(symbols.contains('ExpressionMembers.declared'), isTrue);
+    expect(symbols.contains('ExpressionMembers.helper'), isFalse);
+    expect(symbols.contains('ExpressionMembers.missingGetterCall'), isFalse);
+  });
+
+  test('recognizes block getters alongside arrow getters and other members',
+      () {
+    File('${root.path}/lib/getters.dart').writeAsStringSync('''
+class Accessors {
+  int _count = 1;
+  int get blockCount {
+    return _count;
+  }
+  int get arrowCount => _count;
+  set count(int next) { _count = next; }
+  void refresh() {}
+}
+''');
+    final symbols = DartSymbols.fromDirectory(Directory('${root.path}/lib'));
+    for (final member in [
+      'blockCount',
+      'arrowCount',
+      'count',
+      'refresh',
+      '_count',
+    ]) {
+      expect(symbols.contains('Accessors.$member'), isTrue,
+          reason: '$member should be a declared member');
+    }
+    expect(symbols.contains('Accessors.unknown'), isFalse);
+  });
+
   test('recognizes declarations in the actual SDK library', () {
     final rootLib = Directory('../../lib');
     final symbols = DartSymbols.fromDirectory(rootLib);
@@ -249,6 +300,35 @@ enum WidgetState { started, stopped }
           'Tmapv3.TData@onError',
         ]));
     expect(ids, isNot(contains('Tmapv3.Tdata#events')));
+  });
+
+  test('accepts quoted and unquoted h4 heading IDs only in member sections',
+      () {
+    const page = '''
+<h2>Tmapv3.Widget</h2>
+<h3>Methods</h3>
+<h4 id="double">doubleQuoted</h4>
+<h4 id='single'>singleQuoted</h4>
+<h4 class="method" id=bare>unquoted</h4>
+<h4 ID = upper>upperCaseId</h4>
+<h4 data-id="fake">unanchored</h4>
+<h3>Properties</h3>
+<h4 id=property>field</h4>
+<h3>Events</h3>
+<h4 id=event>notMember</h4>
+''';
+    final ids = extractDocumentedIds(page);
+    expect(
+        ids,
+        containsAll([
+          'Tmapv3.Widget#doubleQuoted',
+          'Tmapv3.Widget#singleQuoted',
+          'Tmapv3.Widget#unquoted',
+          'Tmapv3.Widget#upperCaseId',
+          'Tmapv3.Widget#field',
+        ]));
+    expect(ids, isNot(contains('Tmapv3.Widget#unanchored')));
+    expect(ids, isNot(contains('Tmapv3.Widget#notMember')));
   });
 
   test('reads indented constructor fields with malformed nbsp entities', () {
