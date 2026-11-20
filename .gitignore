@@ -61,3 +61,6 @@ test/support/.sdk-cache/
 *.keystore
 *.jks
 *.o
+
+# Test coverage output
+/coverage/
