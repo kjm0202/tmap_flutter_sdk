@@ -34,6 +34,11 @@ TMAP Vector JS SDK(Tmapv3) 공식 문서에 나오는 공개 API를 Flutter에�
 * TData가 실패 응답, 자동완성·지오코딩 응답 형식, POI 주소의 건물 번호, 불완전한 좌표 쌍을 올바르게 처리합니다.
 * 지도가 준비되기 전에 지정한 영역을 `onMapCreated` 호출 전에 적용합니다. 지도 이벤트 리스너 하나에서 예외가 나도 다른 리스너는 계속 실행됩니다.
 
+### 문서
+
+* `README.md`는 이제 영어로만 작성합니다. 한국어 안내는 `README_ko.md`로 옮겼고, 두 문서가 서로 링크합니다.
+* 한국어 변경 내역은 `CHANGELOG_ko.md`에 있습니다.
+
 ## 0.1.1
 
 * `pubspec.yaml`에 `platforms`(`android`, `ios`, `web`)를 명시해 pub.dev의 플랫폼 지원 표시를 바로잡았습니다.

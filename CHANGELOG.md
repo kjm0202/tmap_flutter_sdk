@@ -34,6 +34,11 @@ Covers the officially documented public API of the TMAP Vector JS SDK (Tmapv3). 
 * TData handles failed responses, autocomplete and geocoding response shapes, building numbers in POI addresses and incomplete coordinate pairs.
 * Bounds set before the map is ready are applied before `onMapCreated` runs, and an exception in one map listener no longer stops the others.
 
+### Documentation
+
+* `README.md` is now English only. The Korean guide moved to `README_ko.md`, and the two link to each other.
+* Korean release notes are in `CHANGELOG_ko.md`.
+
 ## 0.1.1
 
 * Fix platform support detection for pub.dev by explicitly declaring `platforms` (`android`, `ios`, `web`) in `pubspec.yaml`.
