@@ -17,14 +17,22 @@ import '../overlays/rectangle.dart';
 /// 모바일 플랫폼용 Web 위젯 스텁
 class TMapWebWidget extends StatelessWidget {
   final LatLng? center;
+
+  /// 초기 영역이며 웹에서 변경 시 새 영역을 표시합니다. 빈 영역은 무시합니다.
   final LatLngBounds? bounds;
+
+  /// SDK 지도 생성 시에만 적용할 이동 제한 영역입니다. 빈 영역은 무시합니다.
   final LatLngBounds? maxBounds;
   final int zoom;
   final int minZoom;
   final int maxZoom;
   final double bearing;
   final double pitch;
+
+  /// 지도 생성 시에만 설정 가능한 최소 기울기(도)입니다.
   final double? minPitch;
+
+  /// 지도 생성 시에만 설정 가능한 최대 기울기(도)입니다.
   final double? maxPitch;
   final TMapType mapType;
   final bool naviControl;
@@ -42,7 +50,11 @@ class TMapWebWidget extends StatelessWidget {
   final OnMapTap? onMapTap;
   final OnMapDoubleTap? onMapDoubleTap;
   final OnMapLongTap? onMapLongTap;
+
+  /// 터치 시작 시 호출되는 SDK 이벤트 콜백입니다.
   final OnMapTouch? onTouchStart;
+
+  /// 터치 종료 시 호출되는 SDK 이벤트 콜백입니다.
   final OnMapTouch? onTouchEnd;
   final OnDragChangeCallback? onDragChangeCallback;
   final OnZoomChangeCallback? onZoomChangeCallback;
