@@ -61,7 +61,9 @@ typedef OnCameraIdle = void Function(
 /// 지도 중심 좌표 변경 콜백
 typedef OnCenterChangeCallback = void Function(LatLng center, int zoom);
 
-/// 줌 레벨 변경 콜백
+/// 줌 변경 콜백입니다. SDK `ZoomStart`는 [ZoomType.start],
+/// `ZoomEnd`와 단독 `Zoom`은 [ZoomType.end]를 전달합니다.
+/// 제스처 도중의 `Zoom` 이벤트는 전달하지 않습니다.
 typedef OnZoomChangeCallback = void Function(int zoom, ZoomType zoomType);
 
 /// 회전각(Bearing) 변경 콜백

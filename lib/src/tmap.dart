@@ -15,7 +15,6 @@ import 'callbacks/callbacks.dart';
 import 'constants/drag_type.dart';
 import 'constants/html_wrapper.dart';
 import 'constants/map_type.dart';
-import 'constants/zoom_type.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
 import 'models/overlay_interaction.dart';
@@ -31,6 +30,7 @@ import 'overlays/rectangle.dart';
 import 'tmap_controller.dart';
 import 'utils/bounds_on_ready.dart';
 import 'utils/overlay_snapshot.dart';
+import 'utils/zoom_phase.dart';
 import 'web/tmap_web_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_widget.dart';
 
@@ -86,7 +86,7 @@ class TMap extends StatefulWidget {
   /// 지도 중심 좌표 변경 콜백
   final OnCenterChangeCallback? onCenterChangeCallback;
 
-  /// 줌 레벨 변경 콜백
+  /// 줌 시작 및 종료 콜백. 제스처 중간의 줌 변경은 전달하지 않습니다.
   final OnZoomChangeCallback? onZoomChangeCallback;
 
   /// 회전각 변경 콜백
@@ -1034,9 +1034,10 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
             final zoom =
                 (json['zoomLevel'] as num? ?? json['zoom'] as num? ?? 16)
                     .toInt();
-            final phaseStr = json['phase'] as String?;
-            final phase = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
-            onZoomChange(zoom, phase);
+            final phase = zoomTypeFromPhase(
+              (json['phase'] ?? json['zoomType']) as String?,
+            );
+            if (phase != null) onZoomChange(zoom, phase);
           }
         },
       )

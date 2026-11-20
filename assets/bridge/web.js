@@ -262,11 +262,11 @@
             }
           });
           addListener("Zoom", function() {
-            if (state.disposed || !map) return;
+            if (state.disposed || !map || inZoom) return;
             var cb = getCb("onZoomChange", "onZoomChangeCallback");
             if (cb) {
               var z = map.getZoom ? Math.round(map.getZoom()) : (options.zoom ?? 16);
-              cb(z, inZoom ? "move" : "end");
+              cb(z, "end");
             }
           });
           addListener("ZoomEnd", function() {

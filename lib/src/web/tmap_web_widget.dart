@@ -9,7 +9,6 @@ import '../auth/auth_repository.dart';
 import '../callbacks/callbacks.dart';
 import '../constants/drag_type.dart';
 import '../constants/map_type.dart';
-import '../constants/zoom_type.dart';
 import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
 import '../models/overlay_interaction.dart';
@@ -25,6 +24,7 @@ import '../overlays/rectangle.dart';
 import '../tmap_controller.dart';
 import '../utils/bounds_on_ready.dart';
 import '../utils/overlay_snapshot.dart';
+import '../utils/zoom_phase.dart';
 import 'tmap_web_bridge.dart';
 import 'tmap_web_loader.dart';
 
@@ -73,6 +73,8 @@ class TMapWebWidget extends StatefulWidget {
   /// SDK 터치 종료 시 최신 콜백을 호출합니다.
   final OnMapTouch? onTouchEnd;
   final OnDragChangeCallback? onDragChangeCallback;
+
+  /// 줌 시작 및 종료 콜백. 제스처 중간의 줌 변경은 전달하지 않습니다.
   final OnZoomChangeCallback? onZoomChangeCallback;
   final OnCenterChangeCallback? onCenterChangeCallback;
   final OnBoundsChangeCallback? onBoundsChangeCallback;
@@ -289,12 +291,10 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
 
       final onZoomChangeFn = (JSNumber zoom, JSString? phase) {
         if (!mounted) return;
-        final phaseStr = phase?.toDart;
-        final zoomType = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
-        widget.onZoomChangeCallback?.call(
-          zoom.toDartInt,
-          zoomType,
-        );
+        final zoomType = zoomTypeFromPhase(phase?.toDart);
+        if (zoomType != null) {
+          widget.onZoomChangeCallback?.call(zoom.toDartInt, zoomType);
+        }
       }.toJS;
       callbacks.setProperty('onZoomChange'.toJS, onZoomChangeFn);
 

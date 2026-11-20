@@ -291,7 +291,7 @@ function initTmap() {
       inZoom = true;
       if (window.zoomChanged && map) {
         var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
-        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'start' }));
+        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, phase: 'start' }));
       }
     });
 
@@ -299,7 +299,7 @@ function initTmap() {
       if (window.zoomChanged && map) {
         var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
         if (!inZoom) {
-          zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'end' }));
+          zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, phase: 'end' }));
         }
       }
     });
@@ -308,7 +308,7 @@ function initTmap() {
       inZoom = false;
       if (window.zoomChanged && map) {
         var z = map.getZoom ? Math.round(map.getZoom()) : (config ? config.zoom : 16);
-        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, zoomType: 'end' }));
+        zoomChanged.postMessage(JSON.stringify({ zoomLevel: z, phase: 'end' }));
       }
       _notifyCenterAndBounds();
     });
