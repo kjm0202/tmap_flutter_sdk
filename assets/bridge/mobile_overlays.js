@@ -110,9 +110,9 @@ function clearAllInfoWindows() {
       if (infoWindows[id] && typeof infoWindows[id].setMap === 'function') {
         infoWindows[id].setMap(null);
       }
+      delete infoWindows[id];
     }
   }
-  infoWindows = {};
 }
 
 function addLabel(labelId, lat, lng, content, fontSize, fontColor, minLevel, maxLevel) {
@@ -181,9 +181,9 @@ function clearAllLabels() {
       if (labels[id] && typeof labels[id].setMap === 'function') {
         labels[id].setMap(null);
       }
+      delete labels[id];
     }
   }
-  labels = {};
 }
 
 function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSize, opacity, visible, icons, zIndex) {
@@ -700,34 +700,33 @@ function clearCustomOverlay(id) {
 
 function clearAllPolylines() {
   for (var id in polylines) {
-    if (polylines.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(polylines, id)) {
       polylines[id].setMap(null);
+      delete polylines[id];
     }
   }
-  polylines = {};
 }
 
 function clearAllPolygons() {
   Object.keys(polygons).forEach(clearPolygon);
-  polygons = Object.create(null);
 }
 
 function clearAllCircles() {
   for (var id in circles) {
-    if (circles.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(circles, id)) {
       circles[id].setMap(null);
+      delete circles[id];
     }
   }
-  circles = {};
 }
 
 function clearAllRectangles() {
   for (var id in rectangles) {
-    if (rectangles.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(rectangles, id)) {
       rectangles[id].setMap(null);
+      delete rectangles[id];
     }
   }
-  rectangles = {};
 }
 
 function clearAllCustomOverlays() {
@@ -747,9 +746,9 @@ function clearAllCustomOverlays() {
       if (customOverlays[id] && typeof customOverlays[id].setMap === 'function') {
         customOverlays[id].setMap(null);
       }
+      delete customOverlays[id];
     }
   }
-  customOverlays = {};
 }
 
 function clearAll() {

@@ -218,6 +218,38 @@ test('web and mobile bridges support fitBounds updates after map creation', () =
   }
 });
 
+test('mobile clear-all preserves shared registry references and detaches owned overlays', () => {
+  const {host} = makeHost('mobile');
+  const registries = [
+    ['infoWindows', 'clearAllInfoWindows'],
+    ['labels', 'clearAllLabels'],
+    ['polylines', 'clearAllPolylines'],
+    ['polygons', 'clearAllPolygons'],
+    ['circles', 'clearAllCircles'],
+    ['rectangles', 'clearAllRectangles'],
+    ['customOverlays', 'clearAllCustomOverlays'],
+  ];
+
+  for (const [name, clear] of registries) {
+    const registry = host[name];
+    let detachCount = 0;
+    registry.constructor = {setMap(value) {
+      assert.equal(value, null);
+      detachCount++;
+    }};
+    registry.toString = {setMap(value) {
+      assert.equal(value, null);
+      detachCount++;
+    }};
+
+    host[clear]();
+
+    assert.strictEqual(host[name], registry, name + ' retains its reference');
+    assert.deepEqual(Object.keys(registry), [], name + ' removes owned keys');
+    assert.equal(detachCount, 2, name + ' detaches every overlay');
+  }
+});
+
 test('Android zoom recovery uses the changed SDK limit over the initial maximum', () => {
   const {host} = makeHost('mobile');
   const sdk = {}, dom = {}, frames = [], easing = [];
