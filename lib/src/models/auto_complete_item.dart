@@ -1,10 +1,14 @@
-/// TMAP 키워드 자동완성 검색 결과 항목 모델입니다.
+/// A keyword suggestion from TMAP autocomplete search.
 class AutoCompleteItem {
-  /// 키워드 이름
+  /// Suggested keyword.
   final String keyword;
 
+  /// Creates a keyword suggestion with [keyword].
   const AutoCompleteItem({required this.keyword});
 
+  /// Parses a TMAP autocomplete suggestion string or keyword/name map.
+  ///
+  /// Returns an item with an empty [keyword] for unsupported input.
   factory AutoCompleteItem.fromJson(dynamic json) {
     if (json is String) {
       return AutoCompleteItem(keyword: json);

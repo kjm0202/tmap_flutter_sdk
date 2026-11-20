@@ -3,23 +3,26 @@ import '../models/lat_lng.dart';
 import '../utils/hex_color.dart';
 import 'base_draw.dart';
 
-/// TMAP 원(Circle) 오버레이 클래스입니다.
+/// A circular TMAP map overlay.
 class Circle extends BaseDraw {
-  /// 원 고유 ID
+  /// Unique circle identifier.
   final String circleId;
 
-  /// 중심 좌표
+  /// Center coordinate in WGS84 latitude and longitude.
   final LatLng center;
 
-  /// 반경 (미터 단위)
+  /// Circle radius in meters.
   final double radius;
 
-  /// 내부 채우기 색상
+  /// Interior fill color.
   final Color? fillColor;
 
-  /// 내부 채우기 투명도 (0.0 ~ 1.0)
+  /// Fill opacity, from 0.0 (transparent) to 1.0 (opaque).
   final double fillOpacity;
 
+  /// Creates a Tmapv3 circle around [center] with [radius] in meters.
+  ///
+  /// Uses a red stroke and fill by default, with a two-pixel stroke.
   const Circle({
     required this.circleId,
     required this.center,
@@ -32,6 +35,10 @@ class Circle extends BaseDraw {
     super.zIndex = 5,
   });
 
+  /// Serializes the circle ID, center, radius in meters and style for overlay
+  /// change detection.
+  ///
+  /// Colors use CSS hex strings; nullable colors are omitted when absent.
   Map<String, dynamic> toJson() {
     return {
       'circleId': circleId,

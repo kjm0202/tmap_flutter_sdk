@@ -4,29 +4,32 @@ import '../utils/hex_color.dart';
 
 const _keepLabelValue = Object();
 
-/// TMAP 텍스트 라벨 오버레이 클래스입니다.
+/// A TMAP text label overlay.
 class Label {
-  /// 라벨 고유 ID
+  /// Unique label identifier.
   final String labelId;
 
-  /// 표출 위경도 좌표
+  /// Display position in WGS84 latitude and longitude.
   final LatLng position;
 
-  /// 라벨 텍스트 내용
+  /// Text displayed in the label.
   final String content;
 
-  /// 폰트 크기 CSS (기본: '14px')
+  /// CSS font size (default: '14px').
   final String fontSize;
 
-  /// 폰트 색상
+  /// Font color.
   final Color fontColor;
 
-  /// 최소 표출 줌 레벨
+  /// Minimum zoom level at which the label is visible.
   final int? minLevel;
 
-  /// 최대 표출 줌 레벨
+  /// Maximum zoom level at which the label is visible.
   final int? maxLevel;
 
+  /// Creates a Tmapv3 text label at WGS84 [position].
+  ///
+  /// Defaults to black, 14-pixel text without a zoom visibility restriction.
   const Label({
     required this.labelId,
     required this.position,
@@ -37,7 +40,9 @@ class Label {
     this.maxLevel,
   });
 
-  /// 새 위치나 줌 표시 범위를 가진 라벨 값을 만듭니다.
+  /// Returns a label with updated properties and the same ID.
+  ///
+  /// Passing null for [minLevel] or [maxLevel] removes that zoom limit.
   Label copyWith({
     LatLng? position,
     String? content,
@@ -60,6 +65,10 @@ class Label {
             : maxLevel as int?,
       );
 
+  /// Serializes the label ID, position, text and font style for overlay
+  /// change detection.
+  ///
+  /// Includes minimum and maximum zoom levels only when specified.
   Map<String, dynamic> toJson() {
     return {
       'labelId': labelId,

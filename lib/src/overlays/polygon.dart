@@ -3,20 +3,23 @@ import '../models/lat_lng.dart';
 import '../utils/hex_color.dart';
 import 'base_draw.dart';
 
-/// TMAP 다각형(Polygon) 오버레이 클래스입니다.
+/// A polygon overlay on a TMAP map.
 class Polygon extends BaseDraw {
-  /// 다각형 고유 ID
+  /// Unique polygon identifier.
   final String polygonId;
 
-  /// 꼭짓점 좌표 목록
+  /// Ordered polygon vertices in WGS84 latitude and longitude.
   final List<LatLng> points;
 
-  /// 내부 채우기 색상
+  /// Interior fill color.
   final Color? fillColor;
 
-  /// 내부 채우기 투명도 (0.0 ~ 1.0)
+  /// Fill opacity, from 0.0 (transparent) to 1.0 (opaque).
   final double fillOpacity;
 
+  /// Creates a Tmapv3 polygon using ordered WGS84 [points].
+  ///
+  /// Defaults to a blue fill and a two-pixel blue outline.
   const Polygon({
     required this.polygonId,
     required this.points,
@@ -28,6 +31,9 @@ class Polygon extends BaseDraw {
     super.zIndex = 5,
   });
 
+  /// Serializes the polygon ID, points and style for overlay change detection.
+  ///
+  /// Encodes points as latitude/longitude objects and colors as CSS hex.
   Map<String, dynamic> toJson() {
     return {
       'polygonId': polygonId,

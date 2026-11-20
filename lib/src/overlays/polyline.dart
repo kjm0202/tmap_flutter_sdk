@@ -3,17 +3,20 @@ import '../models/lat_lng.dart';
 import '../utils/hex_color.dart';
 import 'base_draw.dart';
 
-/// TMAP 폴리라인(선) 오버레이 클래스입니다.
+/// A polyline overlay on a TMAP map.
 class Polyline extends BaseDraw {
-  /// 폴리라인 고유 ID
+  /// Unique polyline identifier.
   final String polylineId;
 
-  /// 선을 구성하는 좌표 목록
+  /// Ordered line coordinates in WGS84 latitude and longitude.
   final List<LatLng> points;
 
-  /// 방향 화살표 표시 여부
+  /// Visibility flag for arrows indicating line direction.
   final bool direction;
 
+  /// Creates a Tmapv3 line through the ordered WGS84 [points].
+  ///
+  /// Defaults to a blue five-pixel line without direction arrows.
   const Polyline({
     required this.polylineId,
     required this.points,
@@ -24,6 +27,10 @@ class Polyline extends BaseDraw {
     this.direction = false,
   });
 
+  /// Serializes the polyline ID, points and stroke style for overlay change
+  /// detection.
+  ///
+  /// The `direction` flag controls direction-arrow display.
   Map<String, dynamic> toJson() {
     return {
       'polylineId': polylineId,

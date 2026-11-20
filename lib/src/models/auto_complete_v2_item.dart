@@ -32,6 +32,7 @@ class AutoCompleteV2Item {
   /// Whether the POI has sub-POIs.
   final bool? hasSubPoi;
 
+  /// Creates a V2 suggestion with optional addresses and location details.
   const AutoCompleteV2Item({
     required this.id,
     required this.keyword,
@@ -45,6 +46,10 @@ class AutoCompleteV2Item {
     this.hasSubPoi,
   });
 
+  /// Parses one `/tmap/poi/V2autoComplete` suggestion object.
+  ///
+  /// Invalid coordinate pairs become null, as do nonnumeric distances.
+  /// Any string other than `Y` makes [hasSubPoi] false; nonstrings become null.
   factory AutoCompleteV2Item.fromJson(Map<String, dynamic> json) {
     double? number(dynamic value) {
       final result = value is num

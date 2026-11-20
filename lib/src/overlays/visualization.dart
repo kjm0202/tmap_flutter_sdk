@@ -6,16 +6,23 @@ import '../utils/hex_color.dart';
 /// A weighted geographic sample used by DotMap, SquareMap, and HeatMap.
 @immutable
 class VisualizationPoint {
+  /// WGS84 latitude in degrees.
   final double lat;
+
+  /// WGS84 longitude in degrees.
   final double lng;
+
+  /// Numeric sample weight passed to the Tmapv3 visualization extension.
   final num value;
 
+  /// Creates a weighted sample at the given WGS84 coordinates.
   const VisualizationPoint({
     required this.lat,
     required this.lng,
     required this.value,
   });
 
+  /// Returns a sample JSON object with `lat`, `lng`, and `value` keys.
   Map<String, num> toJson() => {'lat': lat, 'lng': lng, 'value': value};
 }
 
@@ -25,15 +32,34 @@ class VisualizationPoint {
 /// destroy the native layer with `TMapController.removeDotMap`.
 @immutable
 class DotMap {
+  /// Identifier used to replace or remove this dot visualization.
   final String dotMapId;
+
+  /// Unmodifiable weighted geographic samples.
   final List<VisualizationPoint> data;
+
+  /// Two dot radii supplied to the SDK, defaulting to `[4, 20]`.
   final List<num> radius;
+
+  /// Increasing pair of sample values, defaulting to `[0, 10]`.
   final List<num> range;
+
+  /// Dot outline color, white by default.
   final Color strokeColor;
+
+  /// Outline opacity from 0 to 1, defaulting to 0.8.
   final double strokeOpacity;
+
+  /// Dot interior color, red by default.
   final Color fillColor;
+
+  /// Interior opacity from 0 to 1, defaulting to 0.5.
   final double fillOpacity;
 
+  /// Creates a Tmapv3 dot visualization from weighted [data] samples.
+  ///
+  /// Copies all lists into unmodifiable collections and asserts a nonempty
+  /// ID, increasing [range], valid [radius] pair, and opacities in 0 to 1.
   DotMap({
     required this.dotMapId,
     required List<VisualizationPoint> data,
@@ -55,6 +81,7 @@ class DotMap {
     assert(fillOpacity >= 0 && fillOpacity <= 1);
   }
 
+  /// Returns a new configuration, retaining [dotMapId] and unspecified values.
   DotMap copyWith({
     List<VisualizationPoint>? data,
     List<num>? radius,
@@ -75,6 +102,9 @@ class DotMap {
         fillOpacity: fillOpacity ?? this.fillOpacity,
       );
 
+  /// Returns the Tmapv3 dot-layer bridge payload.
+  ///
+  /// Wraps samples under `data: {data: [...]}` and encodes colors as CSS hex.
   Map<String, dynamic> toJson() => {
         'id': dotMapId,
         'radius': radius,
@@ -90,15 +120,34 @@ class DotMap {
 /// Immutable configuration for `Tmapv3.extension.SquareMap`.
 @immutable
 class SquareMap {
+  /// Identifier used to replace or remove this square visualization.
   final String squareMapId;
+
+  /// Unmodifiable weighted geographic samples.
   final List<VisualizationPoint> data;
+
+  /// WGS84 geographic origin of the square visualization.
   final LatLng origin;
+
+  /// Positive grid size passed to the SDK, defaulting to 200.
   final int size;
+
+  /// Unmodifiable numeric thresholds corresponding to [colors].
   final List<num> values;
+
+  /// Unmodifiable colors corresponding to [values].
   final List<Color> colors;
+
+  /// Square outline opacity from 0 to 1, defaulting to 0.8.
   final double strokeOpacity;
+
+  /// Square interior opacity from 0 to 1, defaulting to 0.6.
   final double fillOpacity;
 
+  /// Creates a Tmapv3 square visualization from weighted [data] samples.
+  ///
+  /// Copies lists into unmodifiable collections and asserts a positive
+  /// [size], nonempty equal-length [values] and [colors], and valid opacities.
   SquareMap({
     required this.squareMapId,
     required List<VisualizationPoint> data,
@@ -118,6 +167,7 @@ class SquareMap {
     assert(fillOpacity >= 0 && fillOpacity <= 1);
   }
 
+  /// Returns a new configuration retaining [squareMapId] and omitted values.
   SquareMap copyWith({
     List<VisualizationPoint>? data,
     LatLng? origin,
@@ -138,6 +188,9 @@ class SquareMap {
         fillOpacity: fillOpacity ?? this.fillOpacity,
       );
 
+  /// Returns the Tmapv3 square-layer bridge payload.
+  ///
+  /// Includes [origin], [size], thresholds, CSS hex colors, and wrapped data.
   Map<String, dynamic> toJson() => {
         'id': squareMapId,
         'origin': origin.toJson(),
@@ -155,11 +208,22 @@ class SquareMap {
 /// [max] is stored inside the SDK's `data` object, alongside the samples.
 @immutable
 class HeatMap {
+  /// Identifier used to replace or remove this heat visualization.
   final String heatMapId;
+
+  /// Unmodifiable weighted geographic samples.
   final List<VisualizationPoint> data;
+
+  /// Positive heat radius passed to the SDK, defaulting to 10.
   final int radius;
+
+  /// Positive finite maximum sample weight used by the SDK.
   final num max;
 
+  /// Creates a Tmapv3 heat visualization with a positive finite [max].
+  ///
+  /// Copies [data] into an unmodifiable list and asserts positive [radius]
+  /// and a nonempty [heatMapId].
   HeatMap({
     required this.heatMapId,
     required List<VisualizationPoint> data,
@@ -171,6 +235,7 @@ class HeatMap {
     assert(radius > 0);
   }
 
+  /// Returns a new configuration with [heatMapId] and unspecified values kept.
   HeatMap copyWith({List<VisualizationPoint>? data, int? radius, num? max}) =>
       HeatMap(
         heatMapId: heatMapId,
@@ -179,6 +244,9 @@ class HeatMap {
         max: max ?? this.max,
       );
 
+  /// Returns the Tmapv3 heat-layer bridge payload.
+  ///
+  /// Stores the maximum weight inside `data: {data: [...], max: ...}`.
   Map<String, dynamic> toJson() => {
         'id': heatMapId,
         'radius': radius,

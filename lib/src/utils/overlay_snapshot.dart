@@ -5,10 +5,16 @@ import 'dart:convert';
 class OverlaySnapshot {
   final Map<String, Map<String, String>> _groups = {};
 
+  /// Clears recorded overlay IDs and serialized values in every group.
   void clear() {
     _groups.clear();
   }
 
+  /// Synchronizes [items] within [group] using their IDs and JSON payloads.
+  ///
+  /// Calls [remove] for missing IDs and [add] for new or changed payloads.
+  /// A null [items] value is treated as an empty collection. If IDs repeat,
+  /// the last item with each ID wins. Equality uses JSON encoding.
   void sync<T>(
     String group,
     Iterable<T>? items, {

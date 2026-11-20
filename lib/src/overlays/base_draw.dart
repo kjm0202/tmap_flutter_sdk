@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
-/// 지도 오버레이(도형) 공통 기본 속성을 정의하는 추상 클래스입니다.
+/// Common styling properties for drawable map overlays.
 abstract class BaseDraw {
-  /// 테두리/선 색상
+  /// Outline or stroke color.
   final Color? strokeColor;
 
-  /// 선 투명도 (0.0 ~ 1.0)
+  /// Stroke opacity, from 0.0 (transparent) to 1.0 (opaque).
   final double strokeOpacity;
 
-  /// 선 두께 (픽셀)
+  /// Stroke width in pixels.
   final int strokeWidth;
 
-  /// z-index 순서
+  /// Drawing order (z-index).
   final int zIndex;
 
+  /// Initializes common shape styling for Tmapv3 drawing overlays.
+  ///
+  /// Defaults to full stroke opacity, a three-pixel line, and z-index zero.
   const BaseDraw({
     this.strokeColor,
     this.strokeOpacity = 1.0,

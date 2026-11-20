@@ -2,26 +2,27 @@ import 'dart:math' as math;
 
 import 'lat_lng.dart';
 
-/// TMAP 경로 탐색 결과 모델입니다.
+/// A route returned by TMAP route planning.
 class RouteInfo {
-  /// 총 거리 (미터)
+  /// Total route distance in metres.
   final int totalDistance;
 
-  /// 총 소요 시간 (초)
+  /// Total travel time in seconds.
   final int totalTime;
 
-  /// 총 요금 (원)
+  /// Total route fare in Korean won (KRW).
   final int totalFare;
 
-  /// 택시 예상 요금 (원)
+  /// Estimated taxi fare in Korean won (KRW).
   final int taxiFare;
 
-  /// 경로 좌표 목록
+  /// Ordered geographic coordinates of the route.
   final List<LatLng> path;
 
-  /// 경로 안내 지점 목록
+  /// Navigation guide points along the route.
   final List<RouteGuidePoint> guidePoints;
 
+  /// Creates a route with totals, geometry, and guide points.
   const RouteInfo({
     required this.totalDistance,
     required this.totalTime,
@@ -31,8 +32,10 @@ class RouteInfo {
     required this.guidePoints,
   });
 
-  /// [responseCoordType] is the `resCoordType` the route was requested with,
-  /// because the response payload does not state its coordinate system.
+  /// Parses a GeoJSON route, converting EPSG:3857 coordinates when requested.
+  ///
+  /// [responseCoordType] is the requested `resCoordType`, because the response
+  /// payload does not state its coordinate system.
   /// Only `EPSG3857` coordinates are converted; any other value keeps the
   /// coordinates as returned (`WGS84GEO` by default).
   factory RouteInfo.fromJson(
@@ -133,12 +136,21 @@ class RouteInfo {
   }
 }
 
-/// 경로 안내 지점 모델입니다.
+/// A navigation guide point along a route.
 class RouteGuidePoint {
+  /// Guide point coordinate decoded from the route response.
+  ///
+  /// `WGS84GEO` coordinates are kept and `EPSG3857` coordinates are converted
+  /// to WGS84; other coordinate types are kept as returned.
   final LatLng point;
+
+  /// Name associated with the guide point.
   final String name;
+
+  /// Navigation instruction text associated with the guide point.
   final String description;
 
+  /// Creates a navigation guide point with its name and instructions.
   const RouteGuidePoint({
     required this.point,
     required this.name,

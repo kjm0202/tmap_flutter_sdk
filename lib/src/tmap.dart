@@ -34,6 +34,7 @@ import 'utils/zoom_phase.dart';
 import 'web/tmap_web_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_widget.dart';
 
+/// Tracks a touch pointer's origin and duration for tap gesture detection.
 class _PointerInfo {
   final Offset downPosition;
   final Duration downTime;
@@ -42,136 +43,141 @@ class _PointerInfo {
   _PointerInfo(this.downPosition, this.downTime);
 }
 
-/// TMAP Vector Map (v3) Flutter 위젯입니다.
+/// A Flutter widget displaying the TMAP Vector Map (v3).
 class TMap extends StatefulWidget {
-  /// 지도 생성이 완료되었을 때 호출되는 콜백
+  /// Callback invoked when the map finishes initializing.
   final MapCreateCallback? onMapCreated;
 
-  /// 지도 탭 콜백
+  /// Callback for single taps on the map.
   final OnMapTap? onMapTap;
 
-  /// 지도 더블 탭 콜백
+  /// Callback for double taps on the map.
   final OnMapDoubleTap? onMapDoubleTap;
 
-  /// 지도 롱 탭 (ContextMenu) 콜백
+  /// Callback for long taps (context-menu events) on the map.
   final OnMapLongTap? onMapLongTap;
 
-  /// SDK 지도 터치 시작 이벤트
+  /// Callback for SDK touch-start events on the map surface.
   final OnMapTouch? onTouchStart;
 
-  /// SDK 지도 터치 종료 이벤트
+  /// Callback for SDK touch-end events on the map surface.
   final OnMapTouch? onTouchEnd;
 
-  /// 마커 탭 콜백
+  /// Callback for taps on a marker.
   final OnMarkerTap? onMarkerTap;
 
-  /// 마커 클러스터 탭 콜백
+  /// Callback for taps on a marker cluster.
   final OnMarkerClustererTap? onMarkerClustererTap;
 
-  /// 인포윈도우 탭 콜백
+  /// Callback for taps on an info window.
   final OnInfoWindowTap? onInfoWindowTap;
 
-  /// 커스텀 오버레이 탭 콜백
+  /// Callback for taps on a custom overlay.
   final OnCustomOverlayTap? onCustomOverlayTap;
 
-  /// 마커 드래그 변경 콜백
+  /// Callback for changes to a marker's drag state.
   final OnMarkerDragChangeCallback? onMarkerDragChangeCallback;
 
-  /// 지도 드래그 상태 변경 콜백
+  /// Callback for changes to the map's drag state.
   final OnDragChangeCallback? onDragChangeCallback;
 
-  /// 카메라 이동 완료 (Idle) 콜백
+  /// Callback invoked when the map camera becomes idle.
   final OnCameraIdle? onCameraIdle;
 
-  /// 지도 중심 좌표 변경 콜백
+  /// Callback for changes to the map center.
   final OnCenterChangeCallback? onCenterChangeCallback;
 
-  /// 줌 시작 및 종료 콜백. 제스처 중간의 줌 변경은 전달하지 않습니다.
+  /// Callback for zoom start and end; intermediate gesture zoom changes are
+  /// not reported.
   final OnZoomChangeCallback? onZoomChangeCallback;
 
-  /// 회전각 변경 콜백
+  /// Callback for changes to the map bearing.
   final OnBearingChangeCallback? onBearingChangeCallback;
 
-  /// 기울기 변경 콜백
+  /// Callback for changes to the map pitch.
   final OnPitchChangeCallback? onPitchChangeCallback;
 
-  /// 지도 표출 영역 변경 콜백
+  /// Callback for changes to the visible map bounds.
   final OnBoundsChangeCallback? onBoundsChangeCallback;
 
-  /// 초기 지도 중심 좌표
+  /// Initial map center in WGS84 latitude and longitude.
   final LatLng? center;
 
-  /// 초기 지도에 표시할 영역입니다.
+  /// Geographic bounds initially displayed on the map.
   ///
-  /// 값이 변경되면 [TMapController.fitBounds]로 새 영역을 표시합니다.
-  /// [LatLngBounds.empty]와 null은 지도 영역 설정에서 제외됩니다.
+  /// Changing this value applies the new bounds via [TMapController.fitBounds].
+  /// Null and [LatLngBounds.empty] are ignored.
   final LatLngBounds? bounds;
 
-  /// 지도 이동을 제한할 영역입니다. SDK에서 생성할 때만 설정할 수 있습니다.
+  /// Geographic bounds restricting map movement at creation time.
   ///
-  /// null과 [LatLngBounds.empty]는 제한을 설정하지 않습니다.
+  /// Null and [LatLngBounds.empty] leave map movement unrestricted.
   final LatLngBounds? maxBounds;
 
-  /// 초기 줌 레벨 (0 ~ 19)
+  /// Initial zoom level (default range: 0–19).
   final int zoom;
 
-  /// 최소 줌 레벨
+  /// Minimum zoom level.
   final int minZoom;
 
-  /// 최대 줌 레벨
+  /// Maximum zoom level.
   final int maxZoom;
 
-  /// 초기 회전 각도 (0 ~ 360도)
+  /// Initial map bearing in degrees (0–360).
   final double bearing;
 
-  /// 초기 기울기 각도 (0 ~ 60도)
+  /// Initial map pitch in degrees (0–60).
   final double pitch;
 
-  /// SDK에서 허용하는 최소 기울기(도)입니다. 생성 시에만 적용됩니다.
+  /// Minimum SDK-allowed pitch in degrees, applied only at map creation.
   final double? minPitch;
 
-  /// SDK에서 허용하는 최대 기울기(도)입니다. 생성 시에만 적용됩니다.
+  /// Maximum SDK-allowed pitch in degrees, applied only at map creation.
   final double? maxPitch;
 
-  /// 지도 타입
+  /// Map style type.
   final TMapType mapType;
 
-  /// 줌 내비게이션 컨트롤 표시 여부
+  /// Visibility setting for the zoom navigation controls.
   final bool naviControl;
 
-  /// 스케일바 표시 여부
+  /// Visibility setting for the map scale bar.
   final bool scaleBar;
 
-  /// 표시할 마커 목록
+  /// Markers to display on the map.
   final List<Marker>? markers;
 
-  /// 표시할 인포윈도우 목록
+  /// Info windows to display on the map.
   final List<InfoWindow>? infoWindows;
 
-  /// 표시할 라벨 목록
+  /// Text labels to display on the map.
   final List<Label>? labels;
 
-  /// 표시할 폴리라인 목록
+  /// Polylines to display on the map.
   final List<Polyline>? polylines;
 
-  /// 표시할 다각형 목록
+  /// Polygons to display on the map.
   final List<Polygon>? polygons;
 
-  /// 표시할 원 목록
+  /// Circles to display on the map.
   final List<Circle>? circles;
 
-  /// 표시할 사각형 목록
+  /// Rectangles to display on the map.
   final List<Rectangle>? rectangles;
 
-  /// 마커 클러스터러 설정
+  /// Marker clustering configuration.
   final Clusterer? clusterer;
 
-  /// 표시할 커스텀 오버레이 목록
+  /// Custom overlays to display on the map.
   final List<CustomOverlay>? customOverlays;
 
-  /// 웹뷰가 소비할 제스처 목록
+  /// Gesture recognizers handled by the embedded WebView.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
+  /// Creates a Flutter widget displaying a Tmapv3 vector map.
+  ///
+  /// Defaults to zoom 16 within levels 0 to 19 and the road map style.
+  /// Uses the DOM map on web and an embedded WebView on Android and iOS.
   const TMap({
     super.key,
     this.onMapCreated,
@@ -217,10 +223,12 @@ class TMap extends StatefulWidget {
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
   });
 
+  /// Creates the state that manages the map and its platform bridge.
   @override
   State<TMap> createState() => _TMapState();
 }
 
+/// Coordinates map initialization, gestures, callbacks, and overlay updates.
 class _TMapState extends State<TMap> with WidgetsBindingObserver {
   late final TMapController _mapController;
   final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
@@ -437,7 +445,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         if (epoch == _iosGuardDocumentEpoch) _iosGuardApplied = axis;
       }
     } catch (error) {
-      // Navigation or disposal may invalidate the WebView while a write is pending.
+      // Navigation or disposal may invalidate the WebView while a write
+      // is pending.
       developer.log(
           'iOS scroll guard synchronization failed: ${error.runtimeType}',
           name: 'TMap');
@@ -593,7 +602,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     try {
       await _mapController.webViewController.runJavaScript(js);
     } catch (_) {
-      // The WebView may have been disposed before this optional probe completes.
+      // The WebView may have been disposed before this optional probe
+      // completes.
     }
   }
 

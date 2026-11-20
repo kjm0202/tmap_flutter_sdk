@@ -1,23 +1,26 @@
 import '../models/lat_lng.dart';
 import '../models/point.dart';
 
-/// TMAP HTML 기반 커스텀 오버레이 클래스입니다.
+/// A TMAP custom overlay rendered from HTML content.
 class CustomOverlay {
-  /// 오버레이 고유 ID
+  /// Unique custom overlay identifier.
   final String customOverlayId;
 
-  /// 표출 위경도 좌표
+  /// Display position in WGS84 latitude and longitude.
   final LatLng position;
 
-  /// HTML 컨텐츠 문자열
+  /// HTML markup rendered by the overlay.
   final String content;
 
-  /// 오프셋 좌표
+  /// Screen-space offset in pixels.
   final Point? offset;
 
-  /// z-index 순서
+  /// Drawing order (z-index).
   final int zIndex;
 
+  /// Creates an HTML overlay at WGS84 [position] with the given [content].
+  ///
+  /// The optional [offset] is measured in map-screen pixels.
   const CustomOverlay({
     required this.customOverlayId,
     required this.position,
@@ -26,6 +29,10 @@ class CustomOverlay {
     this.zIndex = 100,
   });
 
+  /// Serializes the custom overlay ID, position, HTML content and optional
+  /// offset for overlay change detection.
+  ///
+  /// Includes the pixel offset only when [offset] is non-null.
   Map<String, dynamic> toJson() {
     return {
       'customOverlayId': customOverlayId,

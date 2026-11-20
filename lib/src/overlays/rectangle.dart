@@ -3,20 +3,23 @@ import '../models/lat_lng_bounds.dart';
 import '../utils/hex_color.dart';
 import 'base_draw.dart';
 
-/// TMAP 사각형(Rectangle) 오버레이 클래스입니다.
+/// A rectangular overlay on a TMAP map.
 class Rectangle extends BaseDraw {
-  /// 사각형 고유 ID
+  /// Unique rectangle identifier.
   final String rectangleId;
 
-  /// 사각형 경계 영역
+  /// Geographic bounds of the rectangle.
   final LatLngBounds bounds;
 
-  /// 내부 채우기 색상
+  /// Interior fill color.
   final Color? fillColor;
 
-  /// 내부 채우기 투명도 (0.0 ~ 1.0)
+  /// Fill opacity, from 0.0 (transparent) to 1.0 (opaque).
   final double fillOpacity;
 
+  /// Creates a Tmapv3 rectangle covering geographic [bounds].
+  ///
+  /// Defaults to a green fill and a two-pixel green outline.
   const Rectangle({
     required this.rectangleId,
     required this.bounds,
@@ -28,6 +31,10 @@ class Rectangle extends BaseDraw {
     super.zIndex = 5,
   });
 
+  /// Serializes the rectangle ID, WGS84 bounds and style for overlay change
+  /// detection.
+  ///
+  /// Nullable colors are omitted; provided colors use CSS hex strings.
   Map<String, dynamic> toJson() {
     return {
       'rectangleId': rectangleId,

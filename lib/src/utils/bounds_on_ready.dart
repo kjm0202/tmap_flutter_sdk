@@ -1,6 +1,6 @@
 import '../models/lat_lng_bounds.dart';
 
-/// Returns bounds updated while the map was initializing, if they can be applied.
+/// Returns changed, nonempty bounds to apply after map initialization.
 LatLngBounds? boundsToApplyOnReady(
   LatLngBounds? boundsAtCreation,
   LatLngBounds? currentBounds,

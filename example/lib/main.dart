@@ -6,9 +6,9 @@ import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TMAP JavaScript AppKey 초기화
-  // SK OpenAPI 포털(https://openapi.sk.com)에서 발급받은 AppKey를 입력하거나,
-  // 앱 실행 후 상단 열쇠(🔑) 아이콘을 눌러 키를 설정할 수 있습니다.
+  // Initialize the TMAP JavaScript AppKey.
+  // Supply a key from https://openapi.sk.com or tap the key (🔑) icon
+  // in the app bar after launch to enter one.
   AuthRepository.initialize(
     appKey: const String.fromEnvironment('TMAP_APP_KEY'),
   );
@@ -54,14 +54,14 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
   TMapController? _controller;
   int _currentTab = 0;
 
-  // 지도 상태
-  LatLng _center = const LatLng(37.5665, 126.9780); // 서울시청
+  // Map state
+  LatLng _center = const LatLng(37.5665, 126.9780); // Seoul City Hall
   int _zoom = 16;
   double _bearing = 0.0;
   double _pitch = 0.0;
   TMapType _mapType = TMapType.road;
 
-  // 오버레이 상태
+  // Overlay state
   final List<Marker> _markers = [];
   Clusterer? _clusterer;
   final List<Polyline> _polylines = [];
@@ -118,16 +118,16 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
           position: latLng,
           content:
               '<div style="white-space: nowrap; word-break: keep-all; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #1a1a1a; display: inline-block;">📍 $name</div>',
-          type: 1, // 말풍선 꼬리가 달린 TMAP InfoWindow
+          type: 1, // TMAP InfoWindow with a speech-bubble pointer
           anchor: 'bottom',
-          offset: const Point(0, -42), // 마커 핀(높이 약 38~42px) 위로 띄워 마커 본체를 가리지 않음
+          offset: const Point(0, -42), // Lift above the ~38-42px marker pin
         ),
       );
       _statusMessage = '마커 탭: $name';
     });
   }
 
-  // 1. 기본 마커 추가
+  // 1. Add basic markers
   void _addBasicMarkers() {
     final controller = _controller;
     if (controller == null) return;
@@ -157,7 +157,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     });
   }
 
-  // 2. 50개 마커 클러스터러 생성
+  // 2. Toggle a clusterer built from 50 markers
   void _toggleClusterer() {
     final controller = _controller;
     if (controller == null) return;
@@ -196,7 +196,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     });
   }
 
-  // 3. 도형 그리기
+  // 3. Draw sample shapes
   void _drawShapes() {
     final controller = _controller;
     if (controller == null) return;
@@ -239,7 +239,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     });
   }
 
-  // 4. 경로 탐색 요청 (서울시청 -> 강남역)
+  // 4. Request a route from Seoul City Hall to Gangnam Station
   Future<void> _searchRoute() async {
     final controller = _controller;
     if (controller == null) return;
@@ -247,8 +247,8 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     setState(() => _statusMessage = '서울시청 -> 강남역 경로 탐색 중...');
 
     try {
-      const start = LatLng(37.5665, 126.9780); // 서울시청
-      const end = LatLng(37.4979, 127.0276); // 강남역
+      const start = LatLng(37.5665, 126.9780); // Seoul City Hall
+      const end = LatLng(37.4979, 127.0276); // Gangnam Station
 
       final route = await controller.getRoutePlan(start: start, end: end);
       if (route != null && route.path.isNotEmpty) {
@@ -266,7 +266,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
               '탐색 완료: ${(route.totalDistance / 1000).toStringAsFixed(1)}km, 약 ${(route.totalTime / 60).round()}분 (택시비 ${route.taxiFare}원)';
         });
 
-        // 경로에 맞게 줌 조정
+        // Fit the map to the predefined City Hall-to-Gangnam bounds
         await controller.fitBounds(
           const LatLngBounds(
             southWest: LatLng(37.4900, 126.9700),
@@ -283,7 +283,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     }
   }
 
-  // 모든 오버레이 삭제
+  // Clear all overlays
   void _clearAllOverlays() {
     _controller?.clearAll();
     setState(() {
@@ -298,7 +298,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     });
   }
 
-  // AppKey 설정 다이얼로그
+  // AppKey settings dialog
   void _showAppKeyDialog() {
     final textController =
         TextEditingController(text: AuthRepository.instance.appKey);
@@ -374,7 +374,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
       ),
       body: Column(
         children: [
-          // 상단 상태 바
+          // Top status bar
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -391,7 +391,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
             ),
           ),
 
-          // 지도 영역
+          // Map area
           Expanded(
             child: Stack(
               children: [
@@ -423,7 +423,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
                     },
                   ),
 
-                // 우측 빠른 줌 컨트롤
+                // Quick zoom controls on the right
                 Positioned(
                   right: 16,
                   bottom: 16,
@@ -449,7 +449,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
             ),
           ),
 
-          // 하단 컨트롤 패널
+          // Bottom control panel
           _buildControlPanel(),
         ],
       ),

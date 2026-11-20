@@ -1,33 +1,38 @@
 import 'lat_lng.dart';
 
-/// TMAP POI 검색 결과 항목 모델입니다.
+/// A point of interest (POI) returned by TMAP search.
 class PoiItem {
-  /// POI ID
+  /// Identifier of the POI.
   final String id;
 
-  /// 명칭 (이름)
+  /// Display name of the POI.
   final String name;
 
-  /// 전화번호
+  /// Telephone number, if available.
   final String? telNo;
 
-  /// 위경도 좌표
+  /// WGS84 latitude and longitude of the POI.
   final LatLng point;
 
-  /// 지번 주소
+  /// Land-lot address of the POI.
   final String address;
 
-  /// 도로명 주소
+  /// Road-name address of the POI.
   final String roadAddress;
 
-  /// 대분류/중분류/소분류 업종명
+  /// Top-level business category name, if available.
   final String? upperBizName;
+
+  /// Mid-level business category name, if available.
   final String? middleBizName;
+
+  /// Lower-level business category name, if available.
   final String? lowerBizName;
 
-  /// 중심점으로부터의 거리 (반경 검색 시)
+  /// Distance from the search center, read from `radius` (0 if absent).
   final double? distance;
 
+  /// Creates a POI search result with its position and address fields.
   const PoiItem({
     required this.id,
     required this.name,
@@ -41,6 +46,11 @@ class PoiItem {
     this.distance,
   });
 
+  /// Parses a POI object from the TMAP `/tmap/pois` search response.
+  ///
+  /// Uses the first valid WGS84 pair among `noorLat`/`noorLon`,
+  /// `frontLat`/`frontLon`, and `lat`/`lon`; otherwise [point] is (0, 0).
+  /// Road addresses prefer `newAddressList` when a complete value exists.
   factory PoiItem.fromJson(Map<String, dynamic> json) {
     double parseCoord(dynamic val) {
       if (val is num) return val.toDouble();
@@ -55,7 +65,7 @@ class PoiItem {
       return result != null && result.isFinite ? result : null;
     }
 
-    // 위도/경도는 같은 그룹에서 완전하고 유효한 쌍으로만 선택합니다.
+    // Use only a complete, valid latitude/longitude pair from the same group.
     LatLng point = const LatLng(0, 0);
     for (final keys in const [
       ['noorLat', 'noorLon'],

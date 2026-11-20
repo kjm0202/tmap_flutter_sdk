@@ -1,40 +1,41 @@
 import 'lat_lng.dart';
 
-/// TMAP 지오코딩 및 역지오코딩 결과 주소 모델입니다.
+/// An address returned by TMAP geocoding or reverse geocoding.
 class AddressInfo {
-  /// 전체 주소 명칭
+  /// Full address.
   final String fullAddress;
 
-  /// 시/도
+  /// Province or metropolitan city.
   final String cityDo;
 
-  /// 구/군
+  /// District or county.
   final String guGun;
 
-  /// 읍/면/동
+  /// Legal town, township, or neighborhood name.
   final String legalDong;
 
-  /// 행정동
+  /// Administrative neighborhood name, if available.
   final String? adminDong;
 
-  /// 도로명
+  /// Road name, if available.
   final String? roadName;
 
-  /// 건물 번호
+  /// Building number, if available.
   final String? buildingIndex;
 
-  /// 건물명
+  /// Building name, if available.
   final String? buildingName;
 
-  /// 지번 번지
+  /// Land-lot number, if available.
   final String? bunji;
 
-  /// 우편번호
+  /// Postal code, if available.
   final String? zipCode;
 
-  /// 좌표 (지오코딩 응답 시)
+  /// WGS84 coordinates when a valid pair is present in the response.
   final LatLng? point;
 
+  /// Creates an address with optional components and WGS84 [point].
   const AddressInfo({
     required this.fullAddress,
     required this.cityDo,
@@ -49,6 +50,12 @@ class AddressInfo {
     this.point,
   });
 
+  /// Parses a reverse-geocoding `addressInfo` envelope or a map of address
+  /// fields.
+  ///
+  /// A forward-geocoding `coordinateInfo` envelope is not unwrapped.
+  /// Missing required strings become empty; [point] is null if no valid
+  /// coordinate pair exists.
   factory AddressInfo.fromJson(Map<String, dynamic> json) {
     final addrInfo = (json['addressInfo'] as Map<String, dynamic>?) ?? json;
 

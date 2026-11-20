@@ -2,42 +2,44 @@ import 'dart:math' as math;
 
 import 'lat_lng.dart';
 
-/// TMAP 지도 상의 사각 경계 영역을 표현하는 클래스입니다.
+/// A geographic bounding rectangle on a TMAP map.
 class LatLngBounds {
-  /// 남서쪽 좌표
+  /// Southwest corner.
   final LatLng southWest;
 
-  /// 북동쪽 좌표
+  /// Northeast corner.
   final LatLng northEast;
   final bool _explicitlyEmpty;
 
+  /// Creates a nonempty geographic bounds from its two corner coordinates.
   const LatLngBounds({
     required this.southWest,
     required this.northEast,
   }) : _explicitlyEmpty = false;
 
-  /// Represents the official SDK's initially empty LatLngBounds.
+  /// Creates an initially empty geographic bounding rectangle.
   const LatLngBounds.empty()
       : southWest = const LatLng(0, 0),
         northEast = const LatLng(0, 0),
         _explicitlyEmpty = true;
 
-  /// The SDK normalizes both latitude and longitude when both corners exist.
+  /// Southwest corner after normalizing both coordinate axes.
   LatLng get normalizedSouthWest => LatLng(
         math.min(southWest.latitude, northEast.latitude),
         math.min(southWest.longitude, northEast.longitude),
       );
 
+  /// Northeast corner after taking the maximum on each coordinate axis.
   LatLng get normalizedNorthEast => LatLng(
         math.max(southWest.latitude, northEast.latitude),
         math.max(southWest.longitude, northEast.longitude),
       );
 
-  /// 북서쪽 모서리 좌표입니다. 각 축을 정규화한 후 계산합니다.
+  /// Northwest corner after normalizing both coordinate axes.
   LatLng get northWest =>
       LatLng(normalizedNorthEast.latitude, normalizedSouthWest.longitude);
 
-  /// 남동쪽 모서리 좌표입니다. 각 축을 정규화한 후 계산합니다.
+  /// Southeast corner after normalizing both coordinate axes.
   LatLng get southEast =>
       LatLng(normalizedSouthWest.latitude, normalizedNorthEast.longitude);
 
@@ -47,9 +49,9 @@ class LatLngBounds {
   /// Distance along the west edge in metres, not degrees.
   double get height => isEmpty ? 0 : northWest.distanceTo(normalizedSouthWest);
 
-  /// [LatLngBounds.empty]로 생성한 아직 확장하지 않은 경계인지 여부입니다.
+  /// Whether the bounds were created by [LatLngBounds.empty] and remain empty.
   ///
-  /// (0, 0) 한 점으로 만든 일반 경계는 비어 있지 않습니다.
+  /// Ordinary bounds containing just the point (0, 0) are not empty.
   bool get isEmpty => _explicitlyEmpty;
 
   /// Returns a new envelope that includes [coordinate].
@@ -71,7 +73,7 @@ class LatLngBounds {
     );
   }
 
-  /// Immutable equivalent of the SDK's mutating union operation.
+  /// Returns the union of these bounds with [other] without mutation.
   LatLngBounds union(LatLngBounds other) => other.isEmpty
       ? this
       : extend(other.normalizedSouthWest).extend(other.normalizedNorthEast);
@@ -91,6 +93,10 @@ class LatLngBounds {
         b.longitude >= c.longitude;
   }
 
+  /// Parses bounds from `southWest`/`northEast` or `_sw`/`_ne` maps.
+  ///
+  /// An `empty: true` flag produces [LatLngBounds.empty].
+  /// Missing corners fall back to coordinates of zero.
   factory LatLngBounds.fromJson(Map<String, dynamic> json) {
     if (json['empty'] == true) return const LatLngBounds.empty();
     final swJson = json['southWest'] as Map<String, dynamic>? ??
@@ -106,6 +112,9 @@ class LatLngBounds {
     );
   }
 
+  /// Returns an `empty: true` map or a pair of geographic corner maps.
+  ///
+  /// Nonempty bounds preserve the original [southWest] and [northEast].
   Map<String, dynamic> toJson() {
     if (isEmpty) return {'empty': true};
     return {
@@ -114,13 +123,13 @@ class LatLngBounds {
     };
   }
 
-  /// 중심 좌표를 반환합니다.
+  /// Center of the normalized bounds.
   LatLng get center => LatLng(
         (normalizedSouthWest.latitude + normalizedNorthEast.latitude) / 2,
         (normalizedSouthWest.longitude + normalizedNorthEast.longitude) / 2,
       );
 
-  /// 특정 좌표가 경계 내에 포함되는지 확인합니다.
+  /// Checks whether [point] lies within the bounds, including their edges.
   bool contains(LatLng point) {
     if (isEmpty) return false;
     final sw = normalizedSouthWest;
@@ -132,6 +141,7 @@ class LatLngBounds {
     return latContained && lngContained;
   }
 
+  /// Tests equality using normalized corners or both empty states.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -141,10 +151,12 @@ class LatLngBounds {
               (normalizedSouthWest == other.normalizedSouthWest &&
                   normalizedNorthEast == other.normalizedNorthEast));
 
+  /// Hash code of normalized bounds, or zero for explicitly empty bounds.
   @override
   int get hashCode =>
       isEmpty ? 0 : Object.hash(normalizedSouthWest, normalizedNorthEast);
 
+  /// Corner coordinates separated by a colon, or `null:null` when empty.
   @override
   String toString() =>
       isEmpty ? 'null:null' : '$normalizedSouthWest:$normalizedNorthEast';
