@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 
 import 'live_scenario.dart';
@@ -30,7 +31,8 @@ Future<Map<String, dynamic>> _sdkProjection(
       'return {x:typeof value.getX === "function" ? value.getX() : value.x,'
       ' y:typeof value.getY === "function" ? value.getY() : value.y};'
       '})()');
-  return Map<String, dynamic>.from(result as Map);
+  final decoded = result is String ? jsonDecode(result) : result;
+  return Map<String, dynamic>.from(decoded as Map);
 }
 
 void _samePoint(Point actual, Map<String, dynamic> expected, String label) {
@@ -57,10 +59,14 @@ Future<void> testProjectionScenario() async {
   final projection = Projection(controller);
   var step = 'bridge readiness';
   try {
-    final readiness = Map<String, dynamic>.from(await runJs(
+    final readinessResult = await runJs(
         controller,
-        '({entry:typeof window.tmap_convertProjection,'
-        'shared:typeof tmapBridge.convertProjection})'));
+        '({entry:typeof ${kIsWeb ? 'window.tmap_convertProjection' : 'convertProjection'},'
+        'shared:typeof tmapBridge.convertProjection})');
+    final decoded = readinessResult is String
+        ? jsonDecode(readinessResult)
+        : readinessResult;
+    final readiness = Map<String, dynamic>.from(decoded as Map);
     if (readiness['entry'] != 'function' || readiness['shared'] != 'function') {
       throw StateError('Projection bridge missing: $readiness');
     }
