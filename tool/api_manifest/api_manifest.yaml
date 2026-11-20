@@ -1,0 +1,2720 @@
+# Official TMAP Vector JS SDK public API manifest.
+# Source: WebDocs.html, its official samples, and linked TData REST references.
+# A done row requires an existing Dart symbol and an observable test assertion.
+sdk:
+  docs_url: https://tmapapi.tmapmobility.com/webv3VSM/docs/WebDocs.html
+  core_url: https://topopentile1.tmap.co.kr/scriptSDKV3/tmapjs3.min.js?version=20231206
+  core_sha256: 5290e0fd7428e7d7185c75e60666adb8a5f804f84bbc57b7245d60ecbc61b66e
+entries:
+
+  # Map
+  - id: "Tmapv3.Map"
+    kind: class
+    decision: adapt
+    status: done
+    dart: TMap
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::ConfigLoad creates typed Flutter TMapController once"
+    reason: "The JS DOM-bound map is created by the Flutter TMap widget and controlled through TMapController."
+  - id: "Tmapv3.Map#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: TMap.new
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial camera pose settled matching initial params"
+    reason: "The JS DOM-bound map is created by the Flutter TMap widget and controlled through TMapController."
+  - id: "Tmapv3.Map.options.bearing"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.bearing
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial camera pose settled matching initial params"
+  - id: "Tmapv3.Map.options.bounds"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.bounds
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.bounds fits both initial geographic corners"
+  - id: "Tmapv3.Map.options.center"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.center
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial camera pose settled matching initial params"
+  - id: "Tmapv3.Map.options.height"
+    kind: option
+    decision: exclude
+    status: done
+    reason: "Map dimensions are supplied by Flutter widget constraints."
+  - id: "Tmapv3.Map.options.mapType"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMap.mapType
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial ROAD style settled (TMAP/DEFAULT)"
+    reason: "JS map type strings are represented by the TMapType enum."
+  - id: "Tmapv3.Map.options.maxBounds"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.maxBounds
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.maxBounds rejects center outside allowed area"
+  - id: "Tmapv3.Map.options.maxPitch"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.maxPitch
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.maxPitch clamps SDK pitch to 50"
+  - id: "Tmapv3.Map.options.maxZoom"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.maxZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map initial getMinZoom and getMaxZoom reflect widget options"
+  - id: "Tmapv3.Map.options.minPitch"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.minPitch
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map options.minPitch clamps SDK pitch to 5"
+  - id: "Tmapv3.Map.options.minZoom"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.minZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map initial getMinZoom and getMaxZoom reflect widget options"
+  - id: "Tmapv3.Map.options.naviControl"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.naviControl
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map constructor naviControl and scaleBar attach real VSM controls"
+  - id: "Tmapv3.Map.options.pitch"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.pitch
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial camera pose settled matching initial params"
+  - id: "Tmapv3.Map.options.scaleBar"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.scaleBar
+    tests:
+      - "example/test_driver/bridge/map_options_scenario.dart::Map constructor naviControl and scaleBar attach real VSM controls"
+  - id: "Tmapv3.Map.options.width"
+    kind: option
+    decision: exclude
+    status: done
+    reason: "Map dimensions are supplied by Flutter widget constraints."
+  - id: "Tmapv3.Map.options.zoom"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMap.zoom
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::initial camera pose settled matching initial params"
+  - id: "Tmapv3.Map#fitBounds"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.fitBounds
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::both landmarks visible inside map.getBounds() after fitBounds"
+  - id: "Tmapv3.Map#getBearing"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getBearing
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
+  - id: "Tmapv3.Map#getBounds"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getBounds
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map getBounds matches SDK rectangle corners"
+  - id: "Tmapv3.Map#getCenter"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getCenter
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
+  - id: "Tmapv3.Map#getDiv"
+    kind: method
+    decision: exclude
+    status: done
+    reason: "Raw browser DOM elements are owned by HtmlElementView/WebView, not a Flutter map API."
+  - id: "Tmapv3.Map#getMaxZoom"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getMaxZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
+  - id: "Tmapv3.Map#getMinZoom"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getMinZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
+  - id: "Tmapv3.Map#getPitch"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getPitch
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
+  - id: "Tmapv3.Map#getZoom"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.getZoom
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map camera getters return SDK center zoom bearing pitch"
+  - id: "Tmapv3.Map#panBy"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.panBy
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::panBy 80 horizontal pixels caused meaningful center change"
+  - id: "Tmapv3.Map#panTo"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.panTo
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::panTo destination center matches landmark"
+  - id: "Tmapv3.Map#realToScreen"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.realToScreen
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map realToScreen and screenToReal match SDK and round-trip"
+  - id: "Tmapv3.Map#resize"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.relayout
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::map stays usable and vsm canvas intact after relayout"
+    reason: "Flutter layout recalculation uses TMapController.relayout."
+  - id: "Tmapv3.Map#screenSize"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.screenSize
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map screenSize matches SDK rendered pixel dimensions"
+  - id: "Tmapv3.Map#screenToReal"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.screenToReal
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map realToScreen and screenToReal match SDK and round-trip"
+  - id: "Tmapv3.Map#setBearing"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setBearing
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::bearing settled at 60 via SDK getter"
+  - id: "Tmapv3.Map#setCenter"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setCenter
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::camera off-target setup at zoom 17"
+  - id: "Tmapv3.Map#setMapType"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setMapType
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::HYBRID style settled (SAM/DEFAULT)"
+  - id: "Tmapv3.Map#setPitch"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setPitch
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::pitch settled at 40 via SDK getter"
+  - id: "Tmapv3.Map#setZoom"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setZoom
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::camera off-target setup at zoom 17"
+  - id: "Tmapv3.Map#setZoomLimit"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.setZoomLimit
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::Map setZoomLimit updates SDK min and max getters"
+  - id: "Tmapv3.Map#zoomIn"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.zoomIn
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::zoomIn observed SDK zoom increased by 1 step"
+  - id: "Tmapv3.Map#zoomOut"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.zoomOut
+    tests:
+      - "example/test_driver/bridge/camera_scenarios.dart::zoomOut observed SDK zoom restored to"
+  - id: "Tmapv3.Map#zoomToMaxExtent"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.zoomToMaxExtent
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::zoomToMaxExtent reduced zoom level significantly towards maximum extent"
+  - id: "Tmapv3.Map@Click"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onMapTap
+    tests:
+      - "example/test_driver/bridge/map_gestures_scenario.dart::map tap callback"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@ConfigLoad"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onMapCreated
+    tests:
+      - "example/test_driver/bridge/map_contract_scenario.dart::ConfigLoad creates typed Flutter TMapController once"
+    reason: "The SDK ConfigLoad readiness signal is delivered through TMap.onMapCreated with a typed controller."
+  - id: "Tmapv3.Map@ContextMenu"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onMapLongTap
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map ContextMenu callback delivers typed LatLng from SDK event"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@DragEnd"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onDragChangeCallback
+    tests:
+      - "example/test_driver/bridge/map_gestures_scenario.dart::Dart onDragChangeCallback ordered start and end"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@DragStart"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onDragChangeCallback
+    tests:
+      - "example/test_driver/bridge/map_gestures_scenario.dart::Dart onDragChangeCallback ordered start and end"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@TouchEnd"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onTouchEnd
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map TouchEnd callback delivers typed LatLng at touch location"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@TouchStart"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onTouchStart
+    tests:
+      - "example/test_driver/bridge/map_touch_scenario.dart::Map TouchStart callback delivers typed LatLng at touch location"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+  - id: "Tmapv3.Map@Zoom"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample03.html
+    decision: adapt
+    status: done
+    dart: TMap.onZoomChangeCallback
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::zoom change callback received ZoomType enum on zoomIn"
+    reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
+
+  # Marker
+  - id: "Tmapv3.Marker"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Marker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
+    reason: "Mutable JS Marker controls are represented by Dart Marker values managed by TMapController."
+  - id: "Tmapv3.Marker#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Marker.new
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "Mutable JS Marker controls are represented by Dart Marker values managed by TMapController."
+  - id: "Tmapv3.Marker.options.anchor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.anchor
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.color"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.color
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.contextMenu"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.contextMenu
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
+  - id: "Tmapv3.Marker.options.draggable"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.draggable
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.icon"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Marker.icon
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS marker icon settings are grouped into the typed MarkerIcon value."
+  - id: "Tmapv3.Marker.options.iconHTML"
+    kind: option
+    decision: adapt
+    status: done
+    dart: MarkerIcon.iconHtml
+    tests:
+      - "example/test_driver/bridge/info_window_scenarios.dart::marker rendered"
+    reason: "JS marker icon settings are grouped into the typed MarkerIcon value."
+  - id: "Tmapv3.Marker.options.iconSize"
+    kind: option
+    decision: adapt
+    status: done
+    dart: MarkerIcon.size
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS marker icon settings are grouped into the typed MarkerIcon value."
+  - id: "Tmapv3.Marker.options.label"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.label
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.labelOption"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Marker.labelBackgroundColor
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS labelOption styling is mapped to typed Marker label color fields."
+  - id: "Tmapv3.Marker.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addMarker
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::marker DOM target rendered"
+    reason: "Overlay map ownership is provided by TMapController.addMarker."
+  - id: "Tmapv3.Marker.options.offset"
+    kind: option
+    decision: adapt
+    status: done
+    dart: MarkerIcon.offset
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS marker icon settings are grouped into the typed MarkerIcon value."
+  - id: "Tmapv3.Marker.options.opacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.opacity
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.position"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.position
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.title"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.title
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.titleOption"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Marker.titleStyle
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
+    reason: "JS title styling would be expressed as typed Flutter marker presentation options."
+  - id: "Tmapv3.Marker.options.visible"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.visible
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker.options.zIndex"
+    kind: option
+    decision: expose
+    status: done
+    dart: Marker.zIndex
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+  - id: "Tmapv3.Marker#getContextMenu"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.contextMenu
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker constructor options and SDK getter readback"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#getIcon"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.icon
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#getIconSize"
+    kind: method
+    decision: adapt
+    status: done
+    dart: MarkerIcon.size
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#getOffset"
+    kind: method
+    decision: adapt
+    status: done
+    dart: MarkerIcon.offset
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker visual presentation with local data-URI, size, offset, title and normalized label colors"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#getPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.position
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#getZIndex"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.zIndex
+    tests:
+      - "example/test_driver/bridge/cluster_members_scenario.dart::member options match independent SDK constructors"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#off"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.offMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker off stops hover and click callbacks"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#on"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setContextMenu"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearMarker
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::marker removed from map"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setOptions"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.addMarker
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker updated to visible: false reflected in SDK/DOM"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setVisible"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.addMarker
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::marker updated to visible: false reflected in SDK/DOM"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker#setZIndex"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Marker.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker position zIndex menu and title updated in SDK"
+    reason: "JS mutable Marker operations map to immutable Marker values and controller lifecycle/callback methods."
+  - id: "Tmapv3.Marker@click"
+    kind: event
+    decision: expose
+    status: done
+    dart: TMap.onMarkerTap
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::marker tap callback delivered to Dart"
+  - id: "Tmapv3.Marker@drag"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample19.html
+    decision: expose
+    status: done
+    dart: TMap.onMarkerDragChangeCallback
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::draggable marker received drag callbacks"
+  - id: "Tmapv3.Marker@dragend"
+    kind: event
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample19.html
+    decision: expose
+    status: done
+    dart: TMap.onMarkerDragChangeCallback
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::draggable marker received drag callbacks"
+  - id: "Tmapv3.Marker@mouseenter"
+    kind: event
+    decision: expose
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
+  - id: "Tmapv3.Marker@mouseleave"
+    kind: event
+    decision: expose
+    status: done
+    dart: TMapController.onMarkerEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::marker hover and click callbacks carry typed fields"
+
+  # MarkerCluster
+  - id: "Tmapv3.extension.MarkerCluster"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Clusterer
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster constructor options and two member grouping"
+    reason: "JS MarkerCluster is represented by Clusterer configuration and a TMapController-owned instance."
+  - id: "Tmapv3.extension.MarkerCluster#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Clusterer.new
+    tests:
+      - "example/test_driver/bridge/cluster_scenarios.dart::3-member group displayed"
+    reason: "JS MarkerCluster is represented by Clusterer configuration and a TMapController-owned instance."
+  - id: "Tmapv3.extension.MarkerCluster.options.gridSize"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.gridSize
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.icons"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.icons
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addMarkerClusterer
+    tests:
+      - "example/test_driver/bridge/cluster_scenarios.dart::3-member group displayed"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster.options.markers"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.markers
+    tests:
+      - "example/test_driver/bridge/cluster_scenarios.dart::3-member group displayed"
+  - id: "Tmapv3.extension.MarkerCluster.options.maxClusterZoom"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.maxClusterZoom
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.minClusterCount"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.minClusterCount
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.onClusterClick"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMap.onMarkerClustererTap
+    tests:
+      - "example/test_driver/bridge/overlay_interactions_scenario.dart::cluster group tap callback delivered to Dart"
+    reason: "JS cluster click handler is delivered as the typed TMap.onMarkerClustererTap callback."
+  - id: "Tmapv3.extension.MarkerCluster.options.onClusterMouseEnter"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.onClusterEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster hover callbacks contain typed member ids"
+    reason: "SDK cluster hover handlers are exposed as typed controller event subscriptions."
+  - id: "Tmapv3.extension.MarkerCluster.options.onClusterMouseLeave"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.onClusterEvent
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster hover callbacks contain typed member ids"
+    reason: "SDK cluster hover handlers are exposed as typed controller event subscriptions."
+  - id: "Tmapv3.extension.MarkerCluster.options.opacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.opacity
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.visible"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.visible
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster.options.zIndex"
+    kind: option
+    decision: expose
+    status: done
+    dart: Clusterer.zIndex
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster options grid zoom count icons opacity visible zIndex SDK readback"
+  - id: "Tmapv3.extension.MarkerCluster#addMarker"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Clusterer.addMarker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster addMarker updates three SDK members"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#clearMarkers"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearClusterMarkers
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::clearClusterMarkers keeps SDK clusterer and clears members"
+    reason: "Clearing cluster members while retaining the clusterer needs a dedicated controller operation."
+  - id: "Tmapv3.extension.MarkerCluster#destroy"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearMarkerClusterer
+    tests:
+      - "example/test_driver/bridge/cluster_scenarios.dart::clusterer removed, no stale groups"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#removeMarker"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Clusterer.removeMarker
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster removeMarker updates SDK members"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#setOpacity"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#setOptions"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.addMarkerClusterer
+    tests:
+      - "example/test_driver/bridge/cluster_scenarios.dart::2-member group displayed"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#setVisible"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+  - id: "Tmapv3.extension.MarkerCluster#setZIndex"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Clusterer.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::cluster setOpacity setVisible setZIndex recreate with options"
+    reason: "Cluster membership and lifecycle are controlled by TMapController."
+
+  # Bounds
+  - id: "Tmapv3.Bounds"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Bounds.Bounds
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "JS stores left/top/width/height (docs say left/bottom/right/top); Dart mirrors that with an immutable value whose mutators return copies."
+  - id: "Tmapv3.Bounds#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Bounds.new
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "JS stores left/top/width/height (docs say left/bottom/right/top); Dart mirrors that with an immutable value whose mutators return copies."
+  - id: "Tmapv3.Bounds.options.bottom"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Bounds.bottom
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "JS keeps bottom as top - height; Dart exposes it as a computed edge."
+  - id: "Tmapv3.Bounds.options.left"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Bounds.left
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds.options.right"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Bounds.right
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "JS keeps right as left + width; Dart exposes it as a computed edge."
+  - id: "Tmapv3.Bounds.options.top"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Bounds.top
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#clone"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.clone
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#contains"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.contains
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "JS contains reads point x/y and an undefined _ne._lng, so it returns false for every Bounds; Dart implements the documented rectangle containment."
+  - id: "Tmapv3.Bounds#getHeight"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.height
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#getLeft"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.left
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#getPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.position
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#getSize"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.size
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#getTop"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.top
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#getWidth"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.width
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#intersects"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.intersects
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK intersects uses an inverted bottom edge (top + height) and ignores its boundary flag; Dart follows the documented geometry (bottom = top - height) and honors includeBoundary."
+  - id: "Tmapv3.Bounds#setHeight"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.withHeight
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#setLeft"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.withLeft
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#setTop"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.withTop
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#setWidth"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.withWidth
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#toString"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.toString
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK Cartesian bounds are a separate immutable Dart Bounds value; mutators return copies."
+  - id: "Tmapv3.Bounds#union"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Bounds.union
+    tests:
+      - "test/value_types_test.dart::Bounds constructor, fields, cloning, updates and geometry"
+    reason: "SDK union mutates using an inverted bottom edge (top + height), which can exclude operands; Dart returns an immutable envelope containing both rectangles using documented bottom = top - height geometry."
+
+  # LatLngBounds
+  - id: "Tmapv3.LatLngBounds"
+    kind: class
+    decision: expose
+    status: done
+    dart: LatLngBounds.LatLngBounds
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+  - id: "Tmapv3.LatLngBounds#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: LatLngBounds.new
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+  - id: "Tmapv3.LatLngBounds#contains"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLngBounds.contains
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+  - id: "Tmapv3.LatLngBounds#equals"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.==
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "JS equals is Dart operator ==."
+  - id: "Tmapv3.LatLngBounds#extend"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.extend
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds operations mutate; Dart returns a new immutable envelope."
+  - id: "Tmapv3.LatLngBounds#getCenter"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.center
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "JS bounds getter methods are Dart value fields and the center property."
+  - id: "Tmapv3.LatLngBounds#getHeight"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.height
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#getNorthEast"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.normalizedNorthEast
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#getNorthWest"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.northWest
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#getSouthEast"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.southEast
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#getSouthWest"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.normalizedSouthWest
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#getWidth"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.width
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#intersects"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.intersects
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "The SDK returns null for non-overlapping bounds; Dart returns a non-nullable bool."
+  - id: "Tmapv3.LatLngBounds#isEmpty"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.isEmpty
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds methods are computed Dart value getters."
+  - id: "Tmapv3.LatLngBounds#toString"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLngBounds.toString
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+  - id: "Tmapv3.LatLngBounds#union"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLngBounds.union
+    tests:
+      - "test/value_types_test.dart::LatLngBounds corners, extend, union, metres and antimeridian"
+    reason: "SDK bounds operations mutate; Dart returns a new immutable envelope."
+
+  # InfoWindow
+  - id: "Tmapv3.InfoWindow"
+    kind: class
+    decision: adapt
+    status: done
+    dart: InfoWindow
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
+    reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
+  - id: "Tmapv3.InfoWindow#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: InfoWindow.new
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+    reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
+  - id: "Tmapv3.InfoWindow.options.anchor"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.anchor
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
+  - id: "Tmapv3.InfoWindow.options.border"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.border
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+  - id: "Tmapv3.InfoWindow.options.content"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.content
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+  - id: "Tmapv3.InfoWindow.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addInfoWindow
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+    reason: "Overlay attachment and replacement are managed by TMapController."
+  - id: "Tmapv3.InfoWindow.options.offset"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.offset
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+  - id: "Tmapv3.InfoWindow.options.position"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
+  - id: "Tmapv3.InfoWindow.options.type"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.type
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+  - id: "Tmapv3.InfoWindow.options.visible"
+    kind: option
+    decision: expose
+    status: done
+    dart: InfoWindow.visible
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+  - id: "Tmapv3.InfoWindow#getContent"
+    kind: method
+    decision: adapt
+    status: done
+    dart: InfoWindow.content
+    tests:
+      - "example/test_driver/bridge/info_window_scenarios.dart::both popups visible"
+    reason: "JS getter values are exposed as immutable Dart overlay fields."
+  - id: "Tmapv3.InfoWindow#getOffset"
+    kind: method
+    decision: adapt
+    status: done
+    dart: InfoWindow.offset
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::infoWindow replaced with visible: true, explicit type 2 and offset"
+    reason: "JS getter values are exposed as immutable Dart overlay fields."
+  - id: "Tmapv3.InfoWindow#getPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: InfoWindow.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow anchor position and content SDK readback"
+    reason: "JS getter values are exposed as immutable Dart overlay fields."
+  - id: "Tmapv3.InfoWindow#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearInfoWindow
+    tests:
+      - "example/test_driver/bridge/info_window_scenarios.dart::single removal"
+    reason: "Overlay attachment and replacement are managed by TMapController."
+  - id: "Tmapv3.InfoWindow#setPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: InfoWindow.copyWith
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::infoWindow setPosition via immutable replacement"
+    reason: "Overlay attachment and replacement are managed by TMapController."
+
+  # LatLng
+  - id: "Tmapv3.LatLng"
+    kind: class
+    decision: expose
+    status: done
+    dart: LatLng.LatLng
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: LatLng.new
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#clone"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLng.clone
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#distanceTo"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLng.distanceTo
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#equals"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.==
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "JS equals is Dart operator ==."
+  - id: "Tmapv3.LatLng#lat"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.latitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "JS coordinate getter methods are Dart latitude and longitude fields."
+  - id: "Tmapv3.LatLng#latitude"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.latitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "JS coordinate getter methods are Dart latitude and longitude fields."
+  - id: "Tmapv3.LatLng#lng"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.longitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "JS coordinate getter methods are Dart latitude and longitude fields."
+  - id: "Tmapv3.LatLng#longitude"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.longitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "JS coordinate getter methods are Dart latitude and longitude fields."
+  - id: "Tmapv3.LatLng#setLatitude"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.withLatitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "SDK coordinate setters mutate; Dart returns an updated immutable value."
+  - id: "Tmapv3.LatLng#setLongitude"
+    kind: method
+    decision: adapt
+    status: done
+    dart: LatLng.withLongitude
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+    reason: "SDK coordinate setters mutate; Dart returns an updated immutable value."
+  - id: "Tmapv3.LatLng#toBesselTm"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLng.toBesselTm
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#toEPSG3857"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLng.toEPSG3857
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+  - id: "Tmapv3.LatLng#toString"
+    kind: method
+    decision: expose
+    status: done
+    dart: LatLng.toString
+    tests:
+      - "test/value_types_test.dart::LatLng clone, distance, updates and two projections"
+
+  # Point
+  - id: "Tmapv3.Point"
+    kind: class
+    decision: expose
+    status: done
+    dart: Point.Point
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: Point.new
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point.options.x"
+    kind: option
+    decision: expose
+    status: done
+    dart: Point.x
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point.options.y"
+    kind: option
+    decision: expose
+    status: done
+    dart: Point.y
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point#clone"
+    kind: method
+    decision: expose
+    status: done
+    dart: Point.clone
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point#distanceTo"
+    kind: method
+    decision: expose
+    status: done
+    dart: Point.distanceTo
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+  - id: "Tmapv3.Point#equals"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.==
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "JS equals is Dart operator ==."
+  - id: "Tmapv3.Point#getX"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.x
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "JS numeric getters are immutable Dart fields."
+  - id: "Tmapv3.Point#getY"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.y
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "JS numeric getters are immutable Dart fields."
+  - id: "Tmapv3.Point#offset"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.offset
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
+  - id: "Tmapv3.Point#setValue"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.withValue
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
+  - id: "Tmapv3.Point#setX"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.withX
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
+  - id: "Tmapv3.Point#setY"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Point.withY
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+    reason: "SDK Point operations mutate; Dart returns an updated immutable point."
+  - id: "Tmapv3.Point#toString"
+    kind: method
+    decision: expose
+    status: done
+    dart: Point.toString
+    tests:
+      - "test/value_types_test.dart::Point constructor, clone, distance, setters, offset and equality"
+
+  # DotMap
+  - id: "Tmapv3.extension.DotMap"
+    kind: class
+    decision: expose
+    status: done
+    dart: DotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
+  - id: "Tmapv3.extension.DotMap#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: DotMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
+  - id: "Tmapv3.extension.DotMap.options.data"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DotMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
+  - id: "Tmapv3.extension.DotMap.options.fillColor"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DotMap.fillColor
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
+  - id: "Tmapv3.extension.DotMap.options.fillOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: DotMap.fillOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+  - id: "Tmapv3.extension.DotMap.options.lat"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.DotMap.options.lng"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.DotMap.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addDotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
+  - id: "Tmapv3.extension.DotMap.options.radius"
+    kind: option
+    decision: expose
+    status: done
+    dart: DotMap.radius
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+  - id: "Tmapv3.extension.DotMap.options.range"
+    kind: option
+    decision: expose
+    status: done
+    dart: DotMap.range
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+  - id: "Tmapv3.extension.DotMap.options.strokeColor"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DotMap.strokeColor
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
+  - id: "Tmapv3.extension.DotMap.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: DotMap.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+  - id: "Tmapv3.extension.DotMap.options.value"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap native radius range colors and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.DotMap#destroy"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.removeDotMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::DotMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
+
+  # SquareMap
+  - id: "Tmapv3.extension.SquareMap"
+    kind: class
+    decision: expose
+    status: done
+    dart: SquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
+  - id: "Tmapv3.extension.SquareMap#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: SquareMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
+  - id: "Tmapv3.extension.SquareMap.options.colors"
+    kind: option
+    decision: adapt
+    status: done
+    dart: SquareMap.colors
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Flutter Color values are serialized to SDK hexadecimal strings."
+  - id: "Tmapv3.extension.SquareMap.options.data"
+    kind: option
+    decision: adapt
+    status: done
+    dart: SquareMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
+  - id: "Tmapv3.extension.SquareMap.options.fillOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: SquareMap.fillOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+  - id: "Tmapv3.extension.SquareMap.options.lat"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.SquareMap.options.lng"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.SquareMap.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addSquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
+  - id: "Tmapv3.extension.SquareMap.options.origin"
+    kind: option
+    decision: expose
+    status: done
+    dart: SquareMap.origin
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+      - "test/visualization_bridge.test.mjs::SquareMap constructor options and data attached"
+  - id: "Tmapv3.extension.SquareMap.options.size"
+    kind: option
+    decision: expose
+    status: done
+    dart: SquareMap.size
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+  - id: "Tmapv3.extension.SquareMap.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: SquareMap.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+  - id: "Tmapv3.extension.SquareMap.options.value"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.SquareMap.options.values"
+    kind: option
+    decision: expose
+    status: done
+    dart: SquareMap.values
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap native size palette and weighted data"
+  - id: "Tmapv3.extension.SquareMap#destroy"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.removeSquareMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::SquareMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
+
+  # TData
+  - id: "Tmapv3.TData"
+    kind: class
+    decision: adapt
+    status: done
+    dart: TDataService
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
+    reason: "Callback-based JS TData is offered as static asynchronous TDataService methods."
+  - id: "Tmapv3.TData#constructor"
+    kind: constructor
+    decision: exclude
+    status: done
+    reason: "The Flutter REST service uses static Future methods and needs no JavaScript TData instance."
+  - id: "Tmapv3.TData#EVENT_TYPE"
+    kind: property
+    decision: exclude
+    status: done
+    reason: "JavaScript callback names are replaced by Dart Future completion and failure semantics."
+  - id: "Tmapv3.TData#events"
+    kind: property
+    decision: exclude
+    status: done
+    reason: "Request-specific results are returned as typed Futures, without a JavaScript event registry."
+  - id: "Tmapv3.TData#autoTraffic"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.toggleTrafficInfo
+    tests:
+      - "example/test_driver/bridge/map_display_scenario.dart::traffic layer lines attached on toggle true"
+    reason: "Traffic drawing is controlled through TMapController.toggleTrafficInfo."
+  - id: "Tmapv3.TData#getAddressFromGeoJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getAddressFromGeo
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/reversegeocoding decodes AddressInfo"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getAutoCompleteSearchJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getAutoCompleteSearch
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getAutoCompleteSearchv3Json"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getAutoCompleteSearchV2
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
+    reason: "Documented as v3; the SDK core and REST implement it as getAutoCompleteSearchV2Json -> /tmap/poi/V2autoComplete, exposed as a typed Future."
+  - id: "Tmapv3.TData#getGeoFromAddressJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getGeoFromAddress
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/fullAddrGeo decodes WGS84"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getPOIDataFromIdson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getPoiById
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/{poiInfo} yields typed POI details"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getPOIDataFromLonLatson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.searchPoiAround
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/search/around returns nearby POIs"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getPOIDataFromSearchJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.searchPoi
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois returns typed search POIs"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getRealTimeTrafficJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getRealTimeTraffic
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/traffic yields typed congestion segments"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getRoutePlanForPeopleJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getRoutePlanPedestrian
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes/pedestrian returns pedestrian route"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#getRoutePlanJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.getRoutePlan
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData#transformJson"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TDataService.transformJson
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/coordconvert preserves projected units"
+    reason: "JS callbacks and raw JSON are represented by typed Future results in TDataService."
+  - id: "Tmapv3.TData@onComplete"
+    kind: event
+    decision: exclude
+    status: done
+    reason: "A Dart Future completes with the typed result; a separate JavaScript completion event is redundant."
+  - id: "Tmapv3.TData@onError"
+    kind: event
+    decision: exclude
+    status: done
+    reason: "REST failures return null or empty results through Future APIs instead of JavaScript callbacks."
+  - id: "Tmapv3.TData@onProgress"
+    kind: event
+    decision: exclude
+    status: done
+    reason: "The Dart REST calls return completed parsed values, with no JavaScript request-progress callback."
+  # TData REST endpoints
+  - id: "rest:/tmap/routes"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapRouteDoc.html
+    decision: adapt
+    status: done
+    dart: TDataService.getRoutePlan
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes returns a typed route"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/routes/pedestrian"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapRoutePedestrianDoc.html
+    decision: adapt
+    status: done
+    dart: TDataService.getRoutePlanPedestrian
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/routes/pedestrian returns pedestrian route"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/pois"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiSearch.html
+    decision: adapt
+    status: done
+    dart: TDataService.searchPoi
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois returns typed search POIs"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/pois/search/around"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiAroundSearch.html
+    decision: adapt
+    status: done
+    dart: TDataService.searchPoiAround
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/search/around returns nearby POIs"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/geo/fullAddrGeo"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/fullTextGeocoding.html
+    decision: adapt
+    status: done
+    dart: TDataService.getGeoFromAddress
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/fullAddrGeo decodes WGS84"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/geo/reversegeocoding"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/reverseGeocoding.html
+    decision: adapt
+    status: done
+    dart: TDataService.getAddressFromGeo
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/reversegeocoding decodes AddressInfo"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/poi/autoComplete"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webv3VSM/sample/webSample88.html
+    decision: adapt
+    status: done
+    dart: TDataService.getAutoCompleteSearch
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/autoComplete parses suggestions"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/poi/V2autoComplete"
+    kind: rest
+    decision: adapt
+    status: done
+    dart: TDataService.getAutoCompleteSearchV2
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/poi/V2autoComplete parses location-aware suggestions"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/traffic"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapTrafficDoc.html
+    decision: adapt
+    status: done
+    dart: TDataService.getRealTimeTraffic
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/traffic yields typed congestion segments"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/pois/{poiInfo}"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/tmapPoiDetail.html
+    decision: adapt
+    status: done
+    dart: TDataService.getPoiById
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/pois/{poiInfo} yields typed POI details"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/geo/geocoding"
+    kind: rest
+    source: https://tmapapi.tmapmobility.com/webservice/docs/geocoding.html
+    decision: adapt
+    status: done
+    dart: TDataService.getGeoFromAddressLegacy
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/geocoding parses legacy coordinates"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+  - id: "rest:/tmap/geo/coordconvert"
+    kind: rest
+    decision: adapt
+    status: done
+    dart: TDataService.transformJson
+    tests:
+      - "test/tdata_recorded_responses_test.dart::recorded /tmap/geo/coordconvert preserves projected units"
+    reason: "REST endpoint results are exposed, or planned to be exposed, as typed Dart Future values."
+
+  # Drawing
+  - id: "Tmapv3.extension.Drawing"
+    kind: class
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingCircle
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingCircle
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.fillColor"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DrawingOptions.fillColor
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.fillOpacity"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DrawingOptions.fillOpacity
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingCircle
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing circle starts interactive mode"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.strokeColor"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DrawingOptions.strokeColor
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.strokeOpacity"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DrawingOptions.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing.options.strokeWeight"
+    kind: option
+    decision: adapt
+    status: done
+    dart: DrawingOptions.strokeWidth
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing constructor style and map options read back from SDK"
+    reason: "JS Drawing starts an interactive drawing mode; Flutter needs a dedicated drawing controller."
+  - id: "Tmapv3.extension.Drawing#clear"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearDrawings
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing clear detaches all four completed shapes"
+    reason: "JS Drawing starts an interactive drawing mode; the current Dart helpers create shapes from supplied coordinates."
+  - id: "Tmapv3.extension.Drawing#drawCircle"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingCircle
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing circle Dart callback returns geographic radius"
+    reason: "JS Drawing starts an interactive drawing mode; the current Dart helpers create shapes from supplied coordinates."
+  - id: "Tmapv3.extension.Drawing#drawPolygon"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingPolygon
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing polygon Dart callback returns vertices"
+    reason: "JS Drawing starts an interactive drawing mode; the current Dart helpers create shapes from supplied coordinates."
+  - id: "Tmapv3.extension.Drawing#drawPolyline"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingPolyline
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing polyline Dart callback returns vertices"
+    reason: "JS Drawing starts an interactive drawing mode; the current Dart helpers create shapes from supplied coordinates."
+  - id: "Tmapv3.extension.Drawing#drawRectangle"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.startDrawingRectangle
+    tests:
+      - "example/test_driver/bridge/drawing_pointer_scenario.dart::Drawing rectangle Dart callback returns geographic bounds"
+    reason: "JS Drawing starts an interactive drawing mode; the current Dart helpers create shapes from supplied coordinates."
+
+  # Polygon
+  - id: "Tmapv3.Polygon"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Polygon
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::polygon contains and area match SDK"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Polygon#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Polygon.new
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Polygon.options.fillColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polygon.fillColor
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::drawing styles applied with normalized stroke and fill from real runtime"
+  - id: "Tmapv3.Polygon.options.fillOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polygon.fillOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Polygon.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addPolygon
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "Shape attachment and removal are owned by TMapController."
+  - id: "Tmapv3.Polygon.options.paths"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Polygon.points
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS shape path coordinates are exposed as typed Dart points."
+  - id: "Tmapv3.Polygon.options.strokeColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polygon.strokeColor
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::drawing styles applied with normalized stroke and fill from real runtime"
+  - id: "Tmapv3.Polygon.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polygon.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Polygon.options.strokeWeight"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Polygon.strokeWidth
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS strokeWeight is named strokeWidth in the Dart shape model."
+  - id: "Tmapv3.Polygon#contains"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.polygonContains
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::polygon contains and area match SDK"
+  - id: "Tmapv3.Polygon#getArea"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.getPolygonArea
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::polygon contains and area match SDK"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Polygon#getPath"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Polygon.points
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::polygon vertices"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Polygon#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearPolygon
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::zone_danger gone"
+    reason: "Shape attachment and removal are owned by TMapController."
+
+  # Circle
+  - id: "Tmapv3.Circle"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Circle
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::circle getPath exposes center and radius"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Circle#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Circle.new
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Circle.options.center"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.center
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Circle.options.fillColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.fillColor
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::drawing styles applied with normalized stroke and fill from real runtime"
+  - id: "Tmapv3.Circle.options.fillOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.fillOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Circle.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addCircle
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "Shape attachment and removal are owned by TMapController."
+  - id: "Tmapv3.Circle.options.radius"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.radius
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::circle attached + radius=250"
+  - id: "Tmapv3.Circle.options.strokeColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.strokeColor
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::drawing styles applied with normalized stroke and fill from real runtime"
+  - id: "Tmapv3.Circle.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Circle.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Circle.options.strokeWeight"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Circle.strokeWidth
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS strokeWeight is named strokeWidth in the Dart shape model."
+  - id: "Tmapv3.Circle#getPath"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Circle.center
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::circle getPath exposes center and radius"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Circle#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearCircle
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::fence_radius gone"
+    reason: "Shape attachment and removal are owned by TMapController."
+
+  # Rectangle
+  - id: "Tmapv3.Rectangle"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Rectangle
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::rectangle getPath exposes both corners"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Rectangle#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Rectangle.new
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Rectangle.options.bounds"
+    kind: option
+    decision: expose
+    status: done
+    dart: Rectangle.bounds
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Rectangle.options.fillColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Rectangle.fillColor
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::rectangle custom fill and stroke read back from SDK"
+  - id: "Tmapv3.Rectangle.options.fillOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Rectangle.fillOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Rectangle.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addRectangle
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "Shape attachment and removal are owned by TMapController."
+  - id: "Tmapv3.Rectangle.options.strokeColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Rectangle.strokeColor
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::rectangle custom fill and stroke read back from SDK"
+  - id: "Tmapv3.Rectangle.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Rectangle.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Rectangle.options.strokeWeight"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Rectangle.strokeWidth
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS strokeWeight is named strokeWidth in the Dart shape model."
+  - id: "Tmapv3.Rectangle#getBounds"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Rectangle.bounds
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::rectangle bounds"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Rectangle#getPath"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Rectangle.bounds
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::rectangle getPath exposes both corners"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Rectangle#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearRectangle
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::grid_box gone"
+    reason: "Shape attachment and removal are owned by TMapController."
+
+  # Label
+  - id: "Tmapv3.Label"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Label
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
+    reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
+  - id: "Tmapv3.Label#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Label.new
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 attached with GPU VSM layer and SDK options"
+    reason: "JS mutable overlay controls are represented by typed Dart overlay values managed by TMapController."
+  - id: "Tmapv3.Label.options.content"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.content
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 attached with GPU VSM layer and SDK options"
+  - id: "Tmapv3.Label.options.fontColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.fontColor
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 attached with GPU VSM layer and SDK options"
+  - id: "Tmapv3.Label.options.fontSize"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.fontSize
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 attached with GPU VSM layer and SDK options"
+  - id: "Tmapv3.Label.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addLabel
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 attached with GPU VSM layer and SDK options"
+    reason: "Overlay attachment and replacement are managed by TMapController."
+  - id: "Tmapv3.Label.options.maxLevel"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.maxLevel
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
+  - id: "Tmapv3.Label.options.minLevel"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.minLevel
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
+  - id: "Tmapv3.Label.options.position"
+    kind: option
+    decision: expose
+    status: done
+    dart: Label.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
+  - id: "Tmapv3.Label#getPosition"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Label.position
+    tests:
+      - "example/test_driver/bridge/overlay_contract_scenarios.dart::label zoom levels and position SDK readback"
+    reason: "JS getter values are exposed as immutable Dart overlay fields."
+  - id: "Tmapv3.Label#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearLabel
+    tests:
+      - "example/test_driver/bridge/overlay_tools_scenario.dart::label1 detached and removed from registry"
+    reason: "Overlay attachment and replacement are managed by TMapController."
+
+  # HeatMap
+  - id: "Tmapv3.extension.HeatMap"
+    kind: class
+    decision: expose
+    status: done
+    dart: HeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
+  - id: "Tmapv3.extension.HeatMap#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: HeatMap.new
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
+  - id: "Tmapv3.extension.HeatMap.options.data"
+    kind: option
+    decision: adapt
+    status: done
+    dart: HeatMap.data
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Typed samples are serialized inside the SDK's nested data object."
+  - id: "Tmapv3.extension.HeatMap.options.lat"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lat
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.HeatMap.options.lng"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.lng
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.HeatMap.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addHeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap constructor options and data attached"
+    reason: "The controller supplies the map instance when attaching the layer."
+  - id: "Tmapv3.extension.HeatMap.options.max"
+    kind: option
+    decision: adapt
+    status: done
+    dart: HeatMap.max
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "The Dart max property is serialized as data.max for the SDK."
+  - id: "Tmapv3.extension.HeatMap.options.radius"
+    kind: option
+    decision: expose
+    status: done
+    dart: HeatMap.radius
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+  - id: "Tmapv3.extension.HeatMap.options.value"
+    kind: option
+    decision: adapt
+    status: done
+    dart: VisualizationPoint.value
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap native radius max and weighted data"
+    reason: "Coordinates and weight are fields on each typed VisualizationPoint sample."
+  - id: "Tmapv3.extension.HeatMap#destroy"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.removeHeatMap
+    tests:
+      - "example/test_driver/bridge/visualization_scenario.dart::HeatMap destroy detaches SDK layer"
+    reason: "The controller calls the native destroy() and unregisters the layer."
+
+  # Polyline
+  - id: "Tmapv3.Polyline"
+    kind: class
+    decision: adapt
+    status: done
+    dart: Polyline
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::polyline direction arrow style in SDK"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Polyline#constructor"
+    kind: constructor
+    decision: adapt
+    status: done
+    dart: Polyline.new
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS mutable shape controls are represented by immutable Dart shape values and controller operations."
+  - id: "Tmapv3.Polyline.options.direction"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polyline.direction
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::polyline direction arrow style in SDK"
+  - id: "Tmapv3.Polyline.options.map"
+    kind: option
+    decision: adapt
+    status: done
+    dart: TMapController.addPolyline
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "Shape attachment and removal are owned by TMapController."
+  - id: "Tmapv3.Polyline.options.path"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Polyline.points
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS shape path coordinates are exposed as typed Dart points."
+  - id: "Tmapv3.Polyline.options.strokeColor"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polyline.strokeColor
+    tests:
+      - "example/test_driver/bridge/overlay_presentation_scenario.dart::drawing styles applied with normalized stroke and fill from real runtime"
+  - id: "Tmapv3.Polyline.options.strokeOpacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: Polyline.strokeOpacity
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+  - id: "Tmapv3.Polyline.options.strokeWeight"
+    kind: option
+    decision: adapt
+    status: done
+    dart: Polyline.strokeWidth
+    tests:
+      - "example/test_driver/bridge/shape_style_scenario.dart::$type $variant attached"
+    reason: "JS strokeWeight is named strokeWidth in the Dart shape model."
+  - id: "Tmapv3.Polyline#getPath"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Polyline.points
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::route vertices"
+    reason: "JS shape geometry getters are represented by Dart shape fields or planned typed accessors."
+  - id: "Tmapv3.Polyline#setMap"
+    kind: method
+    decision: adapt
+    status: done
+    dart: TMapController.clearPolyline
+    tests:
+      - "example/test_driver/bridge/shape_scenarios.dart::route_main gone"
+    reason: "Shape attachment and removal are owned by TMapController."
+
+  # Projection
+  - id: "Tmapv3.Projection"
+    kind: class
+    decision: expose
+    status: done
+    dart: Projection
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: Projection.new
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertBesselGEOToWGS84GEO"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertBesselGEOToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertBesselTMToWGS84GEO"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertBesselTMToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertEPSG3857ToWGS84GEO"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertEPSG3857ToWGS84GEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertWGS84GEOToBesselGEO"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertWGS84GEOToBesselGEO
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertWGS84GEOToBesselTM"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertWGS84GEOToBesselTM
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertWGS84GEOToEPSG3857"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertWGS84GEOToEPSG3857
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+  - id: "Tmapv3.Projection#convertWGS84GEOToKatec"
+    kind: method
+    decision: expose
+    status: done
+    dart: Projection.convertWGS84GEOToKatec
+    tests:
+      - "example/test_driver/bridge/projection_scenario.dart::Projection seven conversions match official SDK within 1e-7 at three points"
+
+  # Size
+  - id: "Tmapv3.Size"
+    kind: class
+    decision: expose
+    status: done
+    dart: Size.Size
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+  - id: "Tmapv3.Size#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: Size.new
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+  - id: "Tmapv3.Size.options.height"
+    kind: option
+    decision: expose
+    status: done
+    dart: Size.height
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+  - id: "Tmapv3.Size.options.width"
+    kind: option
+    decision: expose
+    status: done
+    dart: Size.width
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+  - id: "Tmapv3.Size#equals"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Size.==
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+    reason: "JS equals is Dart operator ==."
+  - id: "Tmapv3.Size#getHeight"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Size.height
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+    reason: "JS numeric getters are immutable Dart fields."
+  - id: "Tmapv3.Size#getWidth"
+    kind: method
+    decision: adapt
+    status: done
+    dart: Size.width
+    tests:
+      - "test/value_types_test.dart::Size constructor, fields and structural equality"
+    reason: "JS numeric getters are immutable Dart fields."
+
+  # GroundOverlay
+  - id: "Tmapv3.GroundOverlay"
+    kind: class
+    decision: expose
+    status: done
+    dart: GroundOverlay
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay#constructor"
+    kind: constructor
+    decision: expose
+    status: done
+    dart: GroundOverlay.new
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay.options.bounds"
+    kind: option
+    decision: expose
+    status: done
+    dart: GroundOverlay.bounds
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay.options.map"
+    kind: option
+    decision: expose
+    status: done
+    dart: TMapController.addGroundOverlay
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay.options.opacity"
+    kind: option
+    decision: expose
+    status: done
+    dart: GroundOverlay.opacity
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay.options.url"
+    kind: option
+    decision: expose
+    status: done
+    dart: GroundOverlay.url
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay options attached with image layer"
+  - id: "Tmapv3.GroundOverlay#setMap"
+    kind: method
+    decision: expose
+    status: done
+    dart: TMapController.clearGroundOverlay
+    tests:
+      - "example/test_driver/bridge/shape_contract_scenario.dart::ground overlay setMap null detaches layer"

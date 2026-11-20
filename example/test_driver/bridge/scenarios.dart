@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 import 'shape_scenarios.dart';
 import 'cluster_scenarios.dart';
 import 'cluster_members_scenario.dart';
 import 'tdata_scenarios.dart';
+import 'tdata_rest_scenario.dart';
 import 'tdata_coordinate_scenario.dart';
 import 'camera_scenarios.dart';
 import 'info_window_scenarios.dart';
@@ -17,9 +19,18 @@ import 'overlay_presentation_scenario.dart';
 import 'overlay_regression_scenario.dart';
 import 'polygon_zindex_scenario.dart';
 import 'shape_style_scenario.dart';
+import 'shape_contract_scenario.dart';
+import 'drawing_pointer_scenario.dart';
 import 'scroll_screen_scenario.dart';
 import 'place_area_popup_scenario.dart';
 import 'place_response_capture.dart';
+import 'overlay_contract_scenarios.dart';
+import 'projection_scenario.dart';
+import 'map_contract_scenario.dart';
+import 'map_options_scenario.dart';
+import 'map_touch_scenario.dart';
+import 'value_types_scenario.dart';
+import 'visualization_scenario.dart';
 
 void main() async {
   const filter = String.fromEnvironment('SCENARIO_FILTER');
@@ -73,6 +84,7 @@ Future<void> _runScenarios() async {
     'shapes': () => testShapeScenarios(controller),
     'cluster': () => testClusterScenarios(controller),
     'tdata': () => testTDataScenarios(controller),
+    'tdata_rest': testTDataRestScenario,
     'tdata_coordinates': () => testTdataCoordinateScenario(controller),
     'place_search': () => testPlaceSearchScenario(controller),
     'walking': () => testWalkingScenario(controller),
@@ -88,13 +100,32 @@ Future<void> _runScenarios() async {
     'polygon_zindex': testPolygonZIndex,
     'shape_zindex': testShapeZIndex,
     'shape_style': testShapeStyle,
+    'shape_contracts': testShapeContracts,
+    'shape_drawing': testDrawingPointerScenario,
     'cluster_members': testClusterMembers,
+    'marker_contract': testMarkerContract,
+    'cluster_contract': testClusterContract,
+    'info_window_contract': testInfoWindowContract,
+    'label_contract': testLabelContract,
     'scroll_screen': testScrollScreenScenario,
     'scroll_screen_dynamic': testScrollScreenDynamic,
     'place_area_popup': testPlaceAreaPopupScenario,
+    'projection': testProjectionScenario,
+    'map_contract': testMapContract,
+    'map_controls': testMapControls,
+    'map_advanced_options': testMapAdvancedOptions,
+    'map_touch': testMapTouchEvents,
+    'map_context_menu': testMapContextMenu,
+    'value_types': testValueTypes,
+    'visualization': testVisualizationScenario,
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
+  const chromeCdpRequired = {
+    'shape_drawing',
+    'map_touch',
+    'map_context_menu',
+  };
   final List<String> suitesToRun;
   bool allPassed = true;
 
@@ -102,7 +133,9 @@ Future<void> _runScenarios() async {
     // The dynamic case already runs inside scroll_screen on iOS; the alias is
     // only for selecting that case directly.
     suitesToRun = scenarios.keys
-        .where((name) => name != 'scroll_screen_dynamic')
+        .where((name) =>
+            name != 'scroll_screen_dynamic' &&
+            (kIsWeb || !chromeCdpRequired.contains(name)))
         .toList();
   } else {
     final filterNames = filterEnv
@@ -123,16 +156,23 @@ Future<void> _runScenarios() async {
           debugPrint('SCENARIO $name FAIL: unknown scenario');
         }
       }
-      suitesToRun = scenarios.keys.where((name) =>
-          filterSet.contains(name) &&
-          !(name == 'scroll_screen_dynamic' &&
-              filterSet.contains('scroll_screen'))).toList();
+      suitesToRun = scenarios.keys
+          .where((name) =>
+              filterSet.contains(name) &&
+              !(name == 'scroll_screen_dynamic' &&
+                  filterSet.contains('scroll_screen')))
+          .toList();
     }
   }
 
   int ranCount = 0;
 
   for (final name in suitesToRun) {
+    if (!kIsWeb && chromeCdpRequired.contains(name)) {
+      allPassed = false;
+      debugPrint('SCENARIO $name FAIL: requires Chrome CDP input driver');
+      continue;
+    }
     final runner = scenarios[name]!;
     final timeoutSeconds =
         name == 'scroll_screen' || name == 'place_area_popup' ? 150 : 75;

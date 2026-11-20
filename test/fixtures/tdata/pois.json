@@ -1,0 +1,123 @@
+{
+  "searchPoiInfo": {
+    "totalCount": "184",
+    "count": "2",
+    "page": "1",
+    "pois": {
+      "poi": [
+        {
+          "id": "40189",
+          "pkey": "4018900",
+          "navSeq": "0",
+          "collectionType": "poi",
+          "name": "서울특별시청",
+          "telNo": "02-731-6114",
+          "frontLat": "37.56689860",
+          "frontLon": "126.97871544",
+          "noorLat": "37.56670417",
+          "noorLon": "126.97838214",
+          "pnsLat": "37.56689860",
+          "pnsLon": "126.97871544",
+          "upperAddrName": "서울",
+          "middleAddrName": "중구",
+          "lowerAddrName": "태평로1가",
+          "detailAddrName": "",
+          "mlClass": "1",
+          "firstNo": "31",
+          "secondNo": "0",
+          "roadName": "세종대로",
+          "firstBuildNo": "110",
+          "secondBuildNo": "0",
+          "radius": "0.0",
+          "bizName": "",
+          "upperBizName": "공공편의",
+          "middleBizName": "행정기관",
+          "lowerBizName": "도\\/시\\/구\\/군청",
+          "detailBizName": "특별시청",
+          "rpFlag": "16",
+          "parkFlag": "1",
+          "detailInfoFlag": "1",
+          "desc": "다산콜센터 : 02-120",
+          "dataKind": "",
+          "zipCode": "04524",
+          "adminDongCode": "1114055000",
+          "legalDongCode": "1114010300",
+          "newAddressList": {
+            "newAddress": [
+              {
+                "centerLat": "37.56670417",
+                "centerLon": "126.97838214",
+                "frontLat": "37.56689860",
+                "frontLon": "126.97871544",
+                "roadName": "세종대로",
+                "bldNo1": "110",
+                "bldNo2": "0",
+                "roadId": "00206",
+                "fullAddressRoad": "서울 중구 세종대로 110"
+              }
+            ]
+          },
+          "evChargers": {
+            "evCharger": []
+          }
+        },
+        {
+          "id": "40189",
+          "pkey": "4018902",
+          "navSeq": "2",
+          "collectionType": "poi",
+          "name": "서울특별시청 정문",
+          "telNo": "02-731-6114",
+          "frontLat": "37.56617647",
+          "frontLon": "126.97893766",
+          "noorLat": "37.56617647",
+          "noorLon": "126.97893766",
+          "pnsLat": "37.56642643",
+          "pnsLon": "126.97857657",
+          "upperAddrName": "서울",
+          "middleAddrName": "중구",
+          "lowerAddrName": "태평로1가",
+          "detailAddrName": "",
+          "mlClass": "1",
+          "firstNo": "31",
+          "secondNo": "0",
+          "roadName": "세종대로",
+          "firstBuildNo": "110",
+          "secondBuildNo": "0",
+          "radius": "0.0",
+          "bizName": "",
+          "upperBizName": "공공편의",
+          "middleBizName": "행정기관",
+          "lowerBizName": "도\\/시\\/구\\/군청",
+          "detailBizName": "특별시청",
+          "rpFlag": "8",
+          "parkFlag": "1",
+          "detailInfoFlag": "1",
+          "desc": "다산콜센터 : 02-120",
+          "dataKind": "",
+          "zipCode": "04524",
+          "adminDongCode": "1114055000",
+          "legalDongCode": "1114010300",
+          "newAddressList": {
+            "newAddress": [
+              {
+                "centerLat": "37.56617647",
+                "centerLon": "126.97893766",
+                "frontLat": "37.56617647",
+                "frontLon": "126.97893766",
+                "roadName": "세종대로",
+                "bldNo1": "110",
+                "bldNo2": "0",
+                "roadId": "00206",
+                "fullAddressRoad": "서울 중구 세종대로 110"
+              }
+            ]
+          },
+          "evChargers": {
+            "evCharger": []
+          }
+        }
+      ]
+    }
+  }
+}

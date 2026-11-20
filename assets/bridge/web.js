@@ -63,6 +63,17 @@
         if (options.maxZoom != null) mapOptions.maxZoom = options.maxZoom;
         if (options.bearing !== undefined) mapOptions.bearing = options.bearing;
         if (options.pitch !== undefined) mapOptions.pitch = options.pitch;
+        if (options.minPitch !== undefined) mapOptions.minPitch = options.minPitch;
+        if (options.maxPitch !== undefined) mapOptions.maxPitch = options.maxPitch;
+        function createLatLngBounds(data) {
+          var sw = data.southWest;
+          var ne = data.northEast;
+          return new Tmapv3.LatLngBounds(
+            new Tmapv3.LatLng(sw.latitude, sw.longitude),
+            new Tmapv3.LatLng(ne.latitude, ne.longitude));
+        }
+        if (options.bounds) mapOptions.bounds = createLatLngBounds(options.bounds);
+        if (options.maxBounds) mapOptions.maxBounds = createLatLngBounds(options.maxBounds);
 
         var typeStr = (options.mapType || 'ROAD').toUpperCase();
         mapOptions.mapType = typeStr;
@@ -93,9 +104,12 @@
           customOverlays: {},
           customOverlayListeners: {},
           polylines: {},
-          polygons: {},
+          polygons: Object.create(null),
           circles: {},
           rectangles: {},
+          groundOverlays: Object.create(null),
+          visualizations: {},
+          drawingSession: null,
           clusterer: null,
           clusterGeneration: 0,
           clusterMarkersList: [],
@@ -125,6 +139,11 @@
             var cb = getCb("onMapCreated");
             if (cb) {
               ready = true;
+              // Some SDK builds only partially apply the initial bounds during
+              // construction. Fit after readiness to include both corners.
+              if (options.bounds && typeof map.fitBounds === 'function') {
+                map.fitBounds(createLatLngBounds(options.bounds));
+              }
               cb(viewId);
             }
           });
@@ -201,6 +220,17 @@
           };
           addListener("ContextMenu", handleLongTap);
           addListener("LongTap", handleLongTap);
+
+          // TouchStart / TouchEnd: forward actual SDK event coordinates.
+          ["TouchStart", "TouchEnd"].forEach(function(name) {
+            addListener(name, function(event) {
+              if (state.disposed) return;
+              var callback = getCb(name === 'TouchStart' ? 'onTouchStart' : 'onTouchEnd');
+              if (!callback) return;
+              var coordinate = extractEventLatLng(event);
+              if (coordinate) callback(coordinate.lat, coordinate.lng);
+            });
+          });
 
           // Drag: onDragChange(lat, lng, zoom, phase)
           function notifyDrag(phase) {
@@ -353,6 +383,22 @@
     }
   };
 
+  window.tmap_readMapData = function(viewId, name, args) {
+    var state = window.tmap_instances[viewId];
+    return tmapBridge.readMapData(state && state.map, name, args);
+  };
+
+  window.tmap_setZoomLimit = function(viewId, minZoom, maxZoom) {
+    var state = window.tmap_instances[viewId];
+    tmapBridge.setZoomLimit(state && state.map, minZoom, maxZoom);
+  };
+
+  window.tmap_convertProjection = function(viewId, method, args) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) throw new Error('Map is not initialized');
+    return tmapBridge.convertProjection(method, args);
+  };
+
   window.tmap_zoomIn = function(viewId) {
     var state = window.tmap_instances[viewId];
     if (state && state.map) {
@@ -445,6 +491,12 @@
     state.markerDragListeners = state.markerDragListeners || {};
     tmapBridge.addMarker(state.map, state.markers, m, {
       click: state.callbacks.onMarkerTap,
+      mouseenter: function(id, lat, lng, zoom) {
+        if (state.callbacks.onMarkerInteraction) state.callbacks.onMarkerInteraction(id, lat, lng, zoom, 'mouseenter');
+      },
+      mouseleave: function(id, lat, lng, zoom) {
+        if (state.callbacks.onMarkerInteraction) state.callbacks.onMarkerInteraction(id, lat, lng, zoom, 'mouseleave');
+      },
       drag: state.callbacks.onMarkerDrag || state.callbacks.onMarkerDragChangeCallback
     }, state.markerDragListeners);
   };
@@ -502,15 +554,26 @@
             state.callbacks.onMarkerTap(id, lat, lng, zoom);
           }
         });
+        ['mouseenter', 'mouseleave'].forEach(function(type) {
+          marker.on(type, function() {
+            if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
+            if (currentClusterer && state.clusterer !== currentClusterer) return;
+            if (state.callbacks && state.callbacks.onMarkerInteraction) {
+              var p = marker.getPosition ? marker.getPosition() : pos;
+              var zoom = (state.map && typeof state.map.getZoom === 'function') ? Math.round(state.map.getZoom()) : 16;
+              state.callbacks.onMarkerInteraction(id, latitudeOf(p), longitudeOf(p), zoom, type);
+            }
+          });
+        });
       }
 
       if (m.draggable && typeof bindTmapMarkerDrag === 'function') {
         try {
-          state.clusterDragListeners[id] = bindTmapMarkerDrag(marker, state.map, function(lat, lng, phase) {
+          state.clusterDragListeners[id] = bindTmapMarkerDrag(marker, state.map, function(lat, lng, phase, zoom) {
             if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
             if (currentClusterer && state.clusterer !== currentClusterer) return;
             var dragCb = state.callbacks.onMarkerDrag || state.callbacks.onMarkerDragChangeCallback;
-            if (dragCb) dragCb(id, lat, lng, phase);
+            if (dragCb) dragCb(id, lat, lng, phase, zoom);
           });
         } catch (_) {}
       }
@@ -531,6 +594,18 @@
     };
 
     if (clusterData.icons) clusterOptions.icons = clusterData.icons;
+    if (clusterData.zIndex !== undefined && clusterData.zIndex !== null) clusterOptions.zIndex = clusterData.zIndex;
+
+    function onClusterPointer(type, cluster) {
+      if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
+      if (currentClusterer && state.clusterer !== currentClusterer) return;
+      var payload = tmapClusterEventPayload(cluster, state.map);
+      if (payload && state.callbacks && state.callbacks.onClusterInteraction) {
+        state.callbacks.onClusterInteraction(payload.lat, payload.lng, payload.zoom, payload.markerIds, type);
+      }
+    }
+    clusterOptions.onClusterMouseEnter = function(cluster) { onClusterPointer('mouseenter', cluster); };
+    clusterOptions.onClusterMouseLeave = function(cluster) { onClusterPointer('mouseleave', cluster); };
 
     clusterOptions.onClusterClick = function(cluster) {
       if (state.disposed || !cluster || !state.callbacks || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
@@ -609,6 +684,18 @@
         state.clusterMarkersList = [];
       }
     }
+  };
+
+  window.tmap_clearClusterMarkers = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.clusterer) return;
+    state.clusterGeneration = (state.clusterGeneration || 0) + 1;
+    if (typeof state.clusterer.clearMarkers === 'function') state.clusterer.clearMarkers();
+    _clearWebClusterDragListeners(state);
+    for (var marker of state.clusterMarkersList || []) {
+      if (marker && typeof marker.setMap === 'function') marker.setMap(null);
+    }
+    state.clusterMarkersList = [];
   };
 
   function _removeWebInfoWindowClick(state, id) {
@@ -979,7 +1066,9 @@
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
 
-    if (state.polygons[p.id]) state.polygons[p.id].setMap(null);
+    if (Object.prototype.hasOwnProperty.call(state.polygons, p.id)) {
+      state.polygons[p.id].setMap(null);
+    }
 
     var paths = (p.points || []).map(function(pt) {
       return new Tmapv3.LatLng(pt.lat, pt.lng);
@@ -996,6 +1085,7 @@
       zIndex: p.zIndex || 0
     });
 
+    prepareTmapPolygonContains(polygon);
     state.polygons[p.id] = polygon;
   };
 
@@ -1022,6 +1112,76 @@
     });
 
     state.rectangles[r.id] = rectangle;
+  };
+
+  window.tmap_addGroundOverlay = function(viewId, p) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) return;
+    removeOverlay(state.groundOverlays, p.id);
+    var bounds = new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(p.bounds.southWest.latitude, p.bounds.southWest.longitude),
+      new Tmapv3.LatLng(p.bounds.northEast.latitude, p.bounds.northEast.longitude)
+    );
+    state.groundOverlays[p.id] = new Tmapv3.GroundOverlay({
+      url: p.url, bounds: bounds, opacity: p.opacity, map: state.map
+    });
+  };
+
+  window.tmap_clearGroundOverlay = function(viewId, id) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeOverlay(state.groundOverlays, id);
+  };
+
+  window.tmap_clearAllGroundOverlays = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state) removeAllOverlays(state.groundOverlays);
+  };
+
+  window.tmap_addVisualization = function(viewId, type, payload) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map || state.disposed) return;
+    if (!state.visualizations) state.visualizations = {};
+    addTmapVisualization(state.visualizations, type, state.map, payload);
+  };
+
+  window.tmap_removeVisualization = function(viewId, type, id) {
+    var state = window.tmap_instances[viewId];
+    if (state && state.visualizations) {
+      removeTmapVisualization(state.visualizations, type, id);
+    }
+  };
+
+  window.tmap_polygonContains = function(viewId, id, lat, lng) {
+    var state = window.tmap_instances[viewId];
+    var shape = state && Object.prototype.hasOwnProperty.call(state.polygons, id)
+      ? state.polygons[id] : null;
+    return !!(shape && shape.contains(new Tmapv3.LatLng(lat, lng)));
+  };
+
+  window.tmap_polygonAreaJson = function(viewId, id) {
+    var state = window.tmap_instances[viewId];
+    var shape = state && Object.prototype.hasOwnProperty.call(state.polygons, id)
+      ? state.polygons[id] : null;
+    return JSON.stringify(shape ? shape.getArea() : null);
+  };
+
+  window.tmap_startDrawing = function(viewId, mode, options) {
+    var state = window.tmap_instances[viewId];
+    if (!state || !state.map) return;
+    if (!state.drawingSession) {
+      state.drawingSession = createTmapDrawingSession(state.map, function(payload) {
+        if (!state.disposed && state.callbacks &&
+            typeof state.callbacks.onDrawingComplete === 'function') {
+          state.callbacks.onDrawingComplete(payload);
+        }
+      });
+    }
+    state.drawingSession.start(mode, options);
+  };
+
+  window.tmap_clearDrawings = function(viewId) {
+    var state = window.tmap_instances[viewId];
+    if (state && state.drawingSession) state.drawingSession.clear();
   };
 
   function removeOverlay(collection, id) {
@@ -1085,6 +1245,9 @@
       removeAllOverlays(state.polygons);
       removeAllOverlays(state.circles);
       removeAllOverlays(state.rectangles);
+      removeAllOverlays(state.groundOverlays);
+      if (state.visualizations) clearTmapVisualizations(state.visualizations);
+      if (state.drawingSession) state.drawingSession.clear();
     }
   };
 
@@ -1111,6 +1274,10 @@
         tmapBridge.disposeControls(state.map);
       }
       window.tmap_clearAll(viewId);
+      if (state.drawingSession) {
+        state.drawingSession.dispose();
+        state.drawingSession = null;
+      }
     } finally {
       delete window.tmap_instances[viewId];
       if (state.map && typeof state.map.destroy === 'function') {

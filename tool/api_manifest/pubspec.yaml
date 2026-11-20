@@ -1,0 +1,12 @@
+name: tmap_api_manifest
+description: Offline TMAP API manifest validation and documentation drift checks.
+publish_to: none
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
+dependencies:
+  yaml: ^3.1.3
+
+dev_dependencies:
+  test: ^1.25.15

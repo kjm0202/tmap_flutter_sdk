@@ -13,6 +13,74 @@ function longitudeOf(pos) {
   return pos._lng ?? pos.lng;
 }
 
+// Data visualization extensions own SDK layers and expose destroy(), not
+// setMap(null). Keep their registries separate from ordinary map overlays.
+function tmapVisualizationOptions(type, map, payload) {
+  var options = { map: map, data: payload.data };
+  if (type === 'dot') {
+    options.radius = payload.radius;
+    options.range = payload.range;
+    options.strokeColor = payload.strokeColor;
+    options.strokeOpacity = payload.strokeOpacity;
+    options.fillColor = payload.fillColor;
+    options.fillOpacity = payload.fillOpacity;
+  } else if (type === 'square') {
+    options.origin = new Tmapv3.LatLng(payload.origin.latitude, payload.origin.longitude);
+    options.size = payload.size;
+    options.values = payload.values;
+    options.colors = payload.colors;
+    options.strokeOpacity = payload.strokeOpacity;
+    options.fillOpacity = payload.fillOpacity;
+  } else if (type === 'heat') {
+    options.radius = payload.radius;
+  } else {
+    throw new Error('Unknown TMAP visualization type: ' + type);
+  }
+  return options;
+}
+
+function tmapVisualizationGroup(registry, type) {
+  if (!['dot', 'square', 'heat'].includes(type)) {
+    throw new Error('Unknown TMAP visualization type: ' + type);
+  }
+  return registry[type] || (registry[type] = Object.create(null));
+}
+
+function addTmapVisualization(registry, type, map, payload) {
+  var group = tmapVisualizationGroup(registry, type);
+  var constructors = { dot: 'DotMap', square: 'SquareMap', heat: 'HeatMap' };
+  var Constructor = Tmapv3.extension && Tmapv3.extension[constructors[type]];
+  if (typeof Constructor !== 'function') {
+    throw new Error('TMAP visualization extension unavailable: ' + type);
+  }
+  var replacement = new Constructor(tmapVisualizationOptions(type, map, payload));
+  var original = group[payload.id];
+  if (original && typeof original.destroy === 'function') {
+    try {
+      original.destroy();
+    } catch (error) {
+      if (replacement && typeof replacement.destroy === 'function') replacement.destroy();
+      throw error;
+    }
+  }
+  group[payload.id] = replacement;
+}
+
+function removeTmapVisualization(registry, type, id) {
+  var group = tmapVisualizationGroup(registry, type);
+  if (!Object.prototype.hasOwnProperty.call(group, id)) return;
+  var instance = group[id];
+  if (instance && typeof instance.destroy === 'function') instance.destroy();
+  delete group[id];
+}
+
+function clearTmapVisualizations(registry) {
+  for (var type of ['dot', 'square', 'heat']) {
+    var group = tmapVisualizationGroup(registry, type);
+    for (var id of Object.keys(group)) removeTmapVisualization(registry, type, id);
+  }
+}
+
 function extractEventLatLng(evt) {
   if (!evt) return null;
   var raw = (evt.data && evt.data.lngLat) ? evt.data.lngLat : (evt.latLng || evt.lngLat || (evt.data && (evt.data.lat !== undefined || evt.data.latitude !== undefined) ? evt.data : null));
@@ -76,7 +144,8 @@ function bindTmapMarkerDrag(marker, map, callback) {
     var lat = latitudeOf(pos);
     var lng = longitudeOf(pos);
     if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
-      callback(lat, lng, phase);
+      var zoom = map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16;
+      callback(lat, lng, phase, zoom);
     }
   }
 
@@ -243,6 +312,8 @@ function tmapMarkerOptions(data, nativeDraggable) {
   };
   if (data.color) options.color = data.color;
   if (data.title) options.title = data.title;
+  if (data.titleOption) options.titleOption = data.titleOption;
+  if (data.contextMenu) options.contextMenu = data.contextMenu;
   if (data.label) {
     options.label = data.label;
     if (data.labelBackgroundColor || data.labelTextColor) {
@@ -271,6 +342,29 @@ function tmapMarkerOptions(data, nativeDraggable) {
   }
 
   return options;
+}
+
+// Cluster callbacks may receive a group marker or a cluster descriptor.
+// Normalize both into an event payload with stable member IDs.
+function tmapClusterEventPayload(cluster, map) {
+  if (!cluster) return null;
+  var center = cluster.center ||
+      (typeof cluster.getCenter === 'function' ? cluster.getCenter() : null) ||
+      (typeof cluster.getPosition === 'function' ? cluster.getPosition() : null) ||
+      cluster.position;
+  if (!center) return null;
+  var members = Array.isArray(cluster.markers) ? cluster.markers :
+      (typeof cluster.getMarkers === 'function' ? cluster.getMarkers() : []);
+  var ids = [];
+  if (Array.isArray(members)) {
+    for (var member of members) {
+      var id = member && (member._customMarkerId || member.markerId || member.id);
+      if (typeof id === 'string' && id && !ids.includes(id)) ids.push(id);
+    }
+  }
+  return {lat: latitudeOf(center), lng: longitudeOf(center),
+    zoom: map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16,
+    markerIds: ids};
 }
 
 const tmapBridge = {
@@ -311,9 +405,9 @@ const tmapBridge = {
 
     if (data.draggable && callbacks && (callbacks.drag || callbacks.onMarkerDrag)) {
       const dragCb = callbacks.drag || callbacks.onMarkerDrag;
-      const binding = bindTmapMarkerDrag(marker, map, (lat, lng, phase) => {
+      const binding = bindTmapMarkerDrag(marker, map, (lat, lng, phase, zoom) => {
         if (markers[id] !== marker) return;
-        dragCb(id, lat, lng, phase);
+        dragCb(id, lat, lng, phase, zoom);
       });
       if (dragListeners) {
         dragListeners[id] = binding;
@@ -769,6 +863,225 @@ const tmapBridge = {
   }
 };
 
+// Map readback is shared by Web (synchronous window entry point) and mobile
+// (runJavaScriptReturningResult). Returning JSON keeps numeric and coordinate
+// data identical across the two Dart runtimes.
+tmapBridge.readMapData = function(map, name, args) {
+  if (!map) throw new Error('Map is not initialized');
+  args = args || {};
+  var value;
+  switch (name) {
+    case 'getBearing':
+    case 'getPitch':
+    case 'getZoom':
+    case 'getMinZoom':
+    case 'getMaxZoom':
+      if (typeof map[name] !== 'function') throw new Error('Unsupported Map method: ' + name);
+      value = {value: map[name]()};
+      break;
+    case 'getCenter':
+      var center = map.getCenter();
+      value = {latitude: latitudeOf(center), longitude: longitudeOf(center)};
+      break;
+    case 'getBounds':
+      var bounds = extractMapBounds(map);
+      if (!bounds) throw new Error('Map bounds unavailable');
+      value = {
+        southWest: {latitude: bounds.swLat, longitude: bounds.swLng},
+        northEast: {latitude: bounds.neLat, longitude: bounds.neLng}
+      };
+      break;
+    case 'realToScreen':
+      var pixel = map.realToScreen(new Tmapv3.LatLng(args.latitude, args.longitude));
+      value = {x: typeof pixel.getX === 'function' ? pixel.getX() : (pixel.x ?? pixel._x),
+        y: typeof pixel.getY === 'function' ? pixel.getY() : (pixel.y ?? pixel._y)};
+      break;
+    case 'screenToReal':
+      var coordinate = map.screenToReal(new Tmapv3.Point(args.x, args.y));
+      value = {latitude: latitudeOf(coordinate), longitude: longitudeOf(coordinate)};
+      break;
+    case 'screenSize':
+      var size = map.screenSize();
+      value = {
+        width: typeof size.getWidth === 'function' ? size.getWidth() : (size.width ?? size._width),
+        height: typeof size.getHeight === 'function' ? size.getHeight() : (size.height ?? size._height)
+      };
+      break;
+    default:
+      throw new Error('Unsupported Map read: ' + name);
+  }
+  return JSON.stringify(value);
+};
+
+tmapBridge.setZoomLimit = function(map, minZoom, maxZoom) {
+  if (!map || typeof map.setZoomLimit !== 'function') {
+    throw new Error('Map.setZoomLimit is unavailable');
+  }
+  map.setZoomLimit(minZoom, maxZoom);
+};
+
+// Bessel and KATEC conversions deliberately delegate to the vendor SDK: its
+// datum shift and TM parameters must agree with the map's coordinate system.
+tmapBridge.convertProjection = function(method, data) {
+  var methods = {
+    convertBesselGEOToWGS84GEO: 'geographic',
+    convertBesselTMToWGS84GEO: 'projected',
+    convertWGS84GEOToBesselGEO: 'geographic',
+    convertWGS84GEOToBesselTM: 'geographic',
+    convertWGS84GEOToKatec: 'geographic'
+  };
+  if (!Object.prototype.hasOwnProperty.call(methods, method)) {
+    throw new Error('Unsupported projection conversion: ' + method);
+  }
+  var projection = new Tmapv3.Projection();
+  var source = methods[method] === 'projected'
+    ? new Tmapv3.Point(data.x, data.y)
+    : new Tmapv3.LatLng(data.latitude, data.longitude);
+  // The documented functions are exposed as static methods by the 20231206
+  // SDK build; older builds may also provide instance methods.
+  var fn = typeof projection[method] === 'function'
+    ? projection[method] : Tmapv3.Projection[method];
+  if (typeof fn !== 'function') throw new Error('Projection method unavailable: ' + method);
+  var target = fn.call(projection, source);
+  if (!target) throw new Error('Projection conversion returned no coordinate');
+  var geographic = method.endsWith('ToWGS84GEO') || method.endsWith('ToBesselGEO');
+  return JSON.stringify(geographic
+    ? {latitude: latitudeOf(target), longitude: longitudeOf(target)}
+    : {x: typeof target.getX === 'function' ? target.getX() : (target.x ?? target._x),
+       y: typeof target.getY === 'function' ? target.getY() : (target.y ?? target._y)});
+};
+
 if (typeof window !== 'undefined') {
   window.tmapBridge = tmapBridge;
+}
+
+// A single SDK Drawing instance per map. The SDK installs map event listeners
+// in its constructor and has no public listener-disposal API, so reuse it when
+// switching modes/styles instead of accumulating listeners.
+function createTmapDrawingSession(map, onComplete) {
+  var drawing = null;
+  var mode = null;
+  var seenCount = 0;
+  var sequence = 0;
+  var previousInteractive = null;
+  var disposed = false;
+
+  function position(p) {
+    if (!p) return null;
+    var lat = latitudeOf(p), lng = longitudeOf(p);
+    return Number.isFinite(lat) && Number.isFinite(lng)
+      ? {latitude: lat, longitude: lng} : null;
+  }
+
+  function resultFor(shape, completedMode) {
+    var type = completedMode.toLowerCase();
+    var payload = {type: type, id: 'drawing_' + type + '_' + (++sequence)};
+    if (type === 'circle') {
+      var circlePath = shape.getPath();
+      payload.center = position(circlePath.center);
+      payload.radius = circlePath.radius;
+      if (!payload.center || !Number.isFinite(payload.radius)) return null;
+    } else if (type === 'rectangle') {
+      var rectPath = shape.getPath();
+      var sw = position(rectPath._sw), ne = position(rectPath._ne);
+      if (!sw || !ne) return null;
+      payload.bounds = {southWest: sw, northEast: ne};
+    } else {
+      var path = shape.getPath().path;
+      if (!Array.isArray(path) || path.length < 2) return null;
+      payload.points = path.map(position);
+      if (payload.points.some(function(p) { return !p; })) return null;
+    }
+    return payload;
+  }
+
+  function restoreInteraction() {
+    if (previousInteractive && typeof map.setInteractive === 'function') {
+      map.setInteractive(previousInteractive);
+    }
+    previousInteractive = null;
+  }
+
+  function completed() {
+    var completingMode = mode;
+    if (!completingMode || disposed) return;
+    // Native MouseUp/ContextMenu handlers must finish and store their shape
+    // before we inspect the SDK registry.
+    setTimeout(function() {
+      if (disposed || mode !== completingMode || !drawing || !drawing.isFinish()) return;
+      var shapes = drawing.getShapes();
+      if (shapes.length <= seenCount) return;
+      var latest = shapes[shapes.length - 1];
+      seenCount = shapes.length;
+      mode = null;
+      restoreInteraction();
+      if (!latest) return;
+      var payload = resultFor(latest, completingMode);
+      if (payload) onComplete(JSON.stringify(payload));
+    }, 0);
+  }
+
+  return {
+    start: function(nextMode, style) {
+      if (disposed || !/^(Circle|Rectangle|Polyline|Polygon)$/.test(nextMode)) {
+        throw new Error('Unsupported Drawing mode: ' + nextMode);
+      }
+      if (drawing && !drawing.isFinish()) {
+        drawing.cancel();
+        restoreInteraction();
+      }
+      if (!drawing) {
+        drawing = new Tmapv3.extension.Drawing(Object.assign({map: map}, style));
+        // The SDK binds its own handlers above, so these run after them.
+        if (typeof map.on === 'function') {
+          map.on('MouseUp', completed);
+          map.on('ContextMenu', completed);
+        }
+      } else {
+        // The pinned SDK exposes no style setter. Updating the single native
+        // instance avoids leaking constructor-registered map event handlers.
+        Object.assign(drawing._status.drawOptions, style);
+      }
+      previousInteractive = map.vsmMap && map.vsmMap().getInteractive
+        ? Object.assign({}, map.vsmMap().getInteractive()) : null;
+      seenCount = drawing.getShapes().length;
+      mode = nextMode;
+      drawing['draw' + nextMode]();
+    },
+    clear: function() {
+      mode = null;
+      if (!drawing) return;
+      if (!drawing.isFinish()) drawing.cancel();
+      drawing.clear();
+      seenCount = 0;
+      restoreInteraction();
+    },
+    dispose: function() {
+      this.clear();
+      disposed = true;
+      if (drawing && typeof map.off === 'function') {
+        map.off('MouseUp', completed);
+        map.off('ContextMenu', completed);
+      }
+    },
+    nativeDrawing: function() { return drawing; }
+  };
+}
+
+// The pinned SDK Polygon constructor fills path/outerPath but its documented
+// contains() reads pathE7/outerPathE7, which the constructor leaves unset.
+// Populate those projected caches from the very same native path vertices.
+function prepareTmapPolygonContains(polygon) {
+  var data = polygon && polygon._shape_data;
+  if (!data || !Array.isArray(data.path)) return;
+  if (!Array.isArray(data.pathE7)) {
+    data.pathE7 = data.path.map(function(point) {
+      return point.toEPSG3857();
+    });
+  }
+  if (Array.isArray(data.outerPath) && !Array.isArray(data.outerPathE7)) {
+    data.outerPathE7 = data.outerPath.map(function(ring) {
+      return ring.map(function(point) { return point.toEPSG3857(); });
+    });
+  }
 }

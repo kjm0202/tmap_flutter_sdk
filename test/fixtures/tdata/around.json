@@ -1,0 +1,85 @@
+{
+  "searchPoiInfo": {
+    "totalCount": 215,
+    "count": 2,
+    "page": 1,
+    "pois": {
+      "poi": [
+        {
+          "id": "12390293",
+          "name": "서울시청신매점",
+          "telNo": "",
+          "frontLat": "37.56662085",
+          "frontLon": "126.97821549",
+          "noorLat": "37.56662085",
+          "noorLon": "126.97821549",
+          "upperAddrName": "서울",
+          "middleAddrName": "중구",
+          "lowerAddrName": "태평로1가",
+          "detailAddrName": "",
+          "mlClass": "1",
+          "firstNo": "31",
+          "secondNo": "0",
+          "roadName": "세종대로",
+          "buildingNo1": "110",
+          "buildingNo2": "0",
+          "rpFlag": "16",
+          "parkFlag": "0",
+          "merchantFlag": "",
+          "radius": "0.023",
+          "dataKind": "",
+          "stId": "",
+          "highHhSale": "0",
+          "minOilYn": "N",
+          "oilBaseSdt": "",
+          "hhPrice": "0",
+          "ggPrice": "0",
+          "llPrice": "0",
+          "highHhPrice": "0",
+          "highGgPrice": "0",
+          "pkey": "1239029301",
+          "evChargers": {
+            "evCharger": []
+          }
+        },
+        {
+          "id": "10211823",
+          "name": "CU 한국프레스센터점",
+          "telNo": "15778007",
+          "frontLat": "37.56787069",
+          "frontLon": "126.97771550",
+          "noorLat": "37.56745408",
+          "noorLon": "126.97790994",
+          "upperAddrName": "서울",
+          "middleAddrName": "중구",
+          "lowerAddrName": "태평로1가",
+          "detailAddrName": "",
+          "mlClass": "1",
+          "firstNo": "25",
+          "secondNo": "0",
+          "roadName": "세종대로",
+          "buildingNo1": "124",
+          "buildingNo2": "0",
+          "rpFlag": "16",
+          "parkFlag": "1",
+          "merchantFlag": "",
+          "radius": "0.106",
+          "dataKind": "",
+          "stId": "",
+          "highHhSale": "0",
+          "minOilYn": "N",
+          "oilBaseSdt": "",
+          "hhPrice": "0",
+          "ggPrice": "0",
+          "llPrice": "0",
+          "highHhPrice": "0",
+          "highGgPrice": "0",
+          "pkey": "1021182301",
+          "evChargers": {
+            "evCharger": []
+          }
+        }
+      ]
+    }
+  }
+}

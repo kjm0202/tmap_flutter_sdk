@@ -3,9 +3,12 @@ var markers = Object.create(null);
 var infoWindows = {};
 var labels = {};
 var polylines = {};
-var polygons = {};
+var polygons = Object.create(null);
 var circles = {};
 var rectangles = {};
+var groundOverlays = Object.create(null);
+var visualizations = {};
+var drawingSession = null;
 var customOverlays = {};
 var markerCluster = null;
 var tdata = null;
@@ -13,6 +16,11 @@ var defaultCenter;
 var mapListeners = [];
 
 window.tmap_dispose_mobile = function() {
+  if (typeof clearAllVisualizations === 'function') clearAllVisualizations();
+  if (drawingSession) {
+    drawingSession.dispose();
+    drawingSession = null;
+  }
   if (window.__tmapIosScrollGuardDispose) window.__tmapIosScrollGuardDispose();
   if (map && typeof tmapBridge !== 'undefined' && tmapBridge.disposeControls) {
     tmapBridge.disposeControls(map);
@@ -63,12 +71,23 @@ function initTmap() {
     maxZoom: config.maxZoom,
     bearing: config.bearing,
     pitch: config.pitch,
+    minPitch: config.minPitch,
+    maxPitch: config.maxPitch,
     mapType: config.mapType,
     naviControl: false,
     scaleBar: false,
     width: "100%",
     height: "100%"
   };
+  function createLatLngBounds(data) {
+    var sw = data.southWest;
+    var ne = data.northEast;
+    return new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(sw.latitude, sw.longitude),
+      new Tmapv3.LatLng(ne.latitude, ne.longitude));
+  }
+  if (config.bounds) options.bounds = createLatLngBounds(config.bounds);
+  if (config.maxBounds) options.maxBounds = createLatLngBounds(config.maxBounds);
 
   if (config.iosScrollableGuard) installIosScrollableGuard(document.getElementById("map_div"));
   map = new Tmapv3.Map("map_div", options);
@@ -114,6 +133,9 @@ function initTmap() {
   bindMapEvent("ConfigLoad", function() {
     if (configLoaded) return;
     configLoaded = true;
+    if (config.bounds && typeof map.fitBounds === 'function') {
+      map.fitBounds(createLatLngBounds(config.bounds));
+    }
     if (window.onMapCreated) {
       onMapCreated.postMessage("ready");
     }
@@ -198,6 +220,23 @@ function initTmap() {
     bindMapEvent("ContextMenu", handleLongTap);
     bindMapEvent("LongTap", handleLongTap);
   }
+
+  bindMapEvent('TouchStart', function(event) {
+    var coordinate = extractEventLatLng(event);
+    if (coordinate && window.onTouchStart) {
+      onTouchStart.postMessage(JSON.stringify({
+        latitude: coordinate.lat, longitude: coordinate.lng
+      }));
+    }
+  });
+  bindMapEvent('TouchEnd', function(event) {
+    var coordinate = extractEventLatLng(event);
+    if (coordinate && window.onTouchEnd) {
+      onTouchEnd.postMessage(JSON.stringify({
+        latitude: coordinate.lat, longitude: coordinate.lng
+      }));
+    }
+  });
 
   var hasDrag = (typeof config !== 'undefined' && config.hasOnDragChangeCallback) || typeof dragStart !== 'undefined' || typeof dragMove !== 'undefined' || typeof dragEnd !== 'undefined';
   if (hasDrag) {
@@ -395,6 +434,19 @@ function setZoom(level) {
   if (map) tmapBridge.setZoom(map, level);
 }
 
+function readMapData(name, args) {
+  return tmapBridge.readMapData(map, name, args);
+}
+
+function setZoomLimit(minZoom, maxZoom) {
+  tmapBridge.setZoomLimit(map, minZoom, maxZoom);
+}
+
+function convertProjection(method, args) {
+  if (!map) throw new Error('Map is not initialized');
+  return tmapBridge.convertProjection(method, args);
+}
+
 function zoomIn() {
   if (map) {
     map.zoomIn();
@@ -521,10 +573,17 @@ function addMarker(data) {
       }
     };
   }
+  for (const event of ['mouseenter', 'mouseleave']) {
+    callbacks[event] = (markerId, latitude, longitude, zoom) => {
+      if (window.onMarkerInteraction) {
+        onMarkerInteraction.postMessage(JSON.stringify({markerId, latitude, longitude, zoom, event}));
+      }
+    };
+  }
   if ((config.hasMarkerDragCallback || window.onMarkerDragChangeCallback) && data.draggable) {
-    callbacks.drag = (markerId, latitude, longitude, dragType) => {
+    callbacks.drag = (markerId, latitude, longitude, dragType, zoom) => {
       if (window.onMarkerDragChangeCallback) {
-        onMarkerDragChangeCallback.postMessage(JSON.stringify({markerId, latitude, longitude, dragType}));
+        onMarkerDragChangeCallback.postMessage(JSON.stringify({markerId, latitude, longitude, dragType, zoom}));
       }
     };
   }
@@ -601,7 +660,8 @@ function installAndroidTouchZoomRecovery(map, container, maxZoom) {
         pending = null;
         var interactive = vsmMap.getInteractive();
         if (!cam.isMoving() && Math.abs(map.getZoom() - scheduled.start) < 0.001 && interactive.zoom && interactive.touch && interactive.doubleClick) {
-          var limit = Math.min(maxZoom, (typeof ray.getMaxZoom === 'function') ? ray.getMaxZoom() : maxZoom);
+          var sdkMaxZoom = typeof ray.getMaxZoom === 'function' ? ray.getMaxZoom() : null;
+          var limit = Number.isFinite(sdkMaxZoom) ? sdkMaxZoom : maxZoom;
           if (limit > scheduled.start) {
             cam.easeTo({
               zoom: Math.min(scheduled.start + 1, limit),

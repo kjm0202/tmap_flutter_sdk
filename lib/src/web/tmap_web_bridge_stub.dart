@@ -4,6 +4,7 @@ import '../models/lat_lng_bounds.dart';
 import '../overlays/circle.dart';
 import '../overlays/clusterer.dart';
 import '../overlays/custom_overlay.dart';
+import '../overlays/ground_overlay.dart';
 import '../overlays/info_window.dart';
 import '../overlays/label.dart';
 import '../overlays/marker.dart';
@@ -15,6 +16,13 @@ import '../overlays/rectangle.dart';
 class TMapWebBridge {
   static void setCenter(String viewId, LatLng center) {}
   static void setZoom(String viewId, int zoom) {}
+  static String? readMapData(
+          String viewId, String method, Map<String, dynamic> args) =>
+      null;
+  static String? convertProjection(
+          String viewId, String method, Map<String, dynamic> args) =>
+      null;
+  static void setZoomLimit(String viewId, int minZoom, int maxZoom) {}
   static void zoomIn(String viewId) {}
   static void zoomOut(String viewId) {}
   static void zoomToMaxExtent(String viewId) {}
@@ -31,6 +39,7 @@ class TMapWebBridge {
   static void clearAllMarkers(String viewId) {}
   static void addClusterer(String viewId, Clusterer clusterer) {}
   static void clearClusterer(String viewId) {}
+  static void clearClusterMarkers(String viewId) {}
   static void addInfoWindow(String viewId, InfoWindow iw) {}
   static void clearInfoWindow(String viewId, String infoWindowId) {}
   static void clearAllInfoWindows(String viewId) {}
@@ -52,6 +61,17 @@ class TMapWebBridge {
   static void addCircle(String viewId, Circle circle) {}
   static void addPolygon(String viewId, Polygon polygon) {}
   static void addRectangle(String viewId, Rectangle rect) {}
+  static void addGroundOverlay(String viewId, GroundOverlay overlay) {}
+  static void clearGroundOverlay(String viewId, String id) {}
+  static void clearAllGroundOverlays(String viewId) {}
+  static void addVisualization(
+      String viewId, String type, Map<String, dynamic> data) {}
+  static void removeVisualization(String viewId, String type, String id) {}
+  static bool polygonContains(String viewId, String id, LatLng point) => false;
+  static String? polygonAreaJson(String viewId, String id) => null;
+  static void startDrawing(
+      String viewId, String mode, Map<String, dynamic> options) {}
+  static void clearDrawings(String viewId) {}
   static void clearAll(String viewId) {}
   static void toggleTraffic(String viewId, bool isVisible) {}
 }

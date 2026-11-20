@@ -11,17 +11,24 @@ import 'models/address_info.dart';
 import 'models/auto_complete_item.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
+import 'models/overlay_interaction.dart';
 import 'models/poi_item.dart';
+import 'models/point.dart';
+import 'models/polygon_area.dart';
 import 'models/route_info.dart';
+import 'models/size.dart' as tmap_size;
 import 'overlays/circle.dart';
 import 'overlays/clusterer.dart';
 import 'overlays/custom_overlay.dart';
+import 'overlays/drawing_options.dart';
+import 'overlays/ground_overlay.dart';
 import 'overlays/info_window.dart';
 import 'overlays/label.dart';
 import 'overlays/marker.dart';
 import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
+import 'overlays/visualization.dart';
 import 'services/tdata_service.dart';
 import 'utils/hex_color.dart';
 import 'web/tmap_web_bridge_stub.dart'
@@ -31,6 +38,13 @@ import 'web/tmap_web_bridge_stub.dart'
 class TMapController {
   final WebViewController? _webViewController;
   final String? _webViewId;
+  void Function(Map<String, dynamic>)? _drawingHandler;
+
+  final Map<String,
+          Map<MarkerInteractionType, Set<void Function(MarkerInteraction)>>>
+      _markerListeners = {};
+  final Map<ClusterInteractionType, Set<void Function(ClusterInteraction)>>
+      _clusterListeners = {};
 
   /// 모바일 WebViewController 반환
   WebViewController get webViewController {
@@ -104,6 +118,111 @@ class TMapController {
       return;
     }
     await _runJs('setZoom($zoom);');
+  }
+
+  Map<String, dynamic> _parseJsData(Object? raw, String operation) {
+    if (raw == null) {
+      throw StateError('$operation returned no data; the map may be disposed');
+    }
+    dynamic decoded = raw;
+    // WKWebView returns JSON strings directly, while Android can return a
+    // JSON-encoded representation of the string. Web already returns a String.
+    for (var i = 0; i < 2 && decoded is String; i++) {
+      decoded = jsonDecode(decoded);
+    }
+    if (decoded is! Map) {
+      throw StateError('$operation returned an unexpected result: $decoded');
+    }
+    return Map<String, dynamic>.from(decoded);
+  }
+
+  Future<Map<String, dynamic>> _readMap(String name,
+      [Map<String, dynamic> args = const {}]) async {
+    final viewId = _webViewId;
+    final Object? response;
+    if (viewId != null) {
+      response = TMapWebBridge.readMapData(viewId, name, args);
+    } else {
+      response = await _webViewController!.runJavaScriptReturningResult(
+        'readMapData(${jsonEncode(name)}, ${jsonEncode(args)});',
+      );
+    }
+    return _parseJsData(response, name);
+  }
+
+  Future<double> _getNumber(String getter) async {
+    final value = (await _readMap(getter))['value'];
+    if (value is! num) throw StateError('$getter did not return a number');
+    return value.toDouble();
+  }
+
+  /// 현재 지도의 중심 좌표를 SDK로부터 읽습니다.
+  Future<LatLng> getCenter() async =>
+      LatLng.fromJson(await _readMap('getCenter'));
+
+  /// 현재 화면에서 보이는 지도 경계를 반환합니다.
+  Future<LatLngBounds> getBounds() async =>
+      LatLngBounds.fromJson(await _readMap('getBounds'));
+
+  /// 현재 줌을 반환합니다. 애니메이션 중에는 소수점 줌일 수 있습니다.
+  Future<double> getZoom() => _getNumber('getZoom');
+
+  /// SDK 지도에 설정된 최소 허용 줌 레벨을 반환합니다.
+  ///
+  /// 현재 카메라 줌은 [getZoom]으로 확인합니다.
+  Future<double> getMinZoom() => _getNumber('getMinZoom');
+
+  /// SDK 지도에 설정된 최대 허용 줌 레벨을 반환합니다.
+  ///
+  /// [setZoomLimit]으로 변경한 값이 반영되며 현재 카메라 줌과는 다릅니다.
+  Future<double> getMaxZoom() => _getNumber('getMaxZoom');
+
+  /// 현재 지도 회전각을 도(degrees) 단위로 반환합니다.
+  Future<double> getBearing() => _getNumber('getBearing');
+
+  /// 현재 지도 기울기를 도(degrees) 단위로 반환합니다.
+  Future<double> getPitch() => _getNumber('getPitch');
+
+  /// 지도상 위경도를 지도 컨테이너 기준 화면 픽셀로 변환합니다.
+  Future<Point> realToScreen(LatLng position) async => Point.fromJson(
+        await _readMap('realToScreen', position.toJson()),
+      );
+
+  /// 지도 컨테이너 기준 화면 픽셀을 위경도로 변환합니다.
+  Future<LatLng> screenToReal(Point pixel) async => LatLng.fromJson(
+        await _readMap('screenToReal', pixel.toJson()),
+      );
+
+  /// 지도 SDK가 사용 중인 화면 크기를 픽셀로 반환합니다.
+  Future<tmap_size.Size> screenSize() async =>
+      tmap_size.Size.fromJson(await _readMap('screenSize'));
+
+  /// 최소/최대 허용 줌을 변경합니다.
+  Future<void> setZoomLimit(int minZoom, int maxZoom) async {
+    if (minZoom > maxZoom) {
+      throw ArgumentError.value(minZoom, 'minZoom', 'Must be <= maxZoom');
+    }
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.setZoomLimit(viewId, minZoom, maxZoom);
+      return;
+    }
+    await _runJs('setZoomLimit($minZoom, $maxZoom);');
+  }
+
+  /// SDK 고유의 Bessel 및 KATEC 좌표 변환용 내부 전달 함수입니다.
+  Future<Map<String, dynamic>> convertProjection(
+      String method, Map<String, dynamic> args) async {
+    final viewId = _webViewId;
+    final Object? response;
+    if (viewId != null) {
+      response = TMapWebBridge.convertProjection(viewId, method, args);
+    } else {
+      response = await _webViewController!.runJavaScriptReturningResult(
+        'convertProjection(${jsonEncode(method)}, ${jsonEncode(args)});',
+      );
+    }
+    return _parseJsData(response, method);
   }
 
   /// 1레벨 확대합니다.
@@ -212,7 +331,6 @@ class TMapController {
   }
 
   /// 지도 옵션(줌 제한, 컨트롤 표시 여부 등)을 업데이트합니다.
-  @visibleForTesting
   Future<void> updateMapOptions(Map<String, dynamic> options) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -258,7 +376,8 @@ class TMapController {
             })();
           ''';
           final result = await controller.runJavaScriptReturningResult(js);
-          final docId = result.toString().replaceAll('"', '').replaceAll("'", '');
+          final docId =
+              result.toString().replaceAll('"', '').replaceAll("'", '');
           if (docId == _currentDocId) {
             await controller.loadHtmlString(_lastLoadedHtml!,
                 baseUrl: _lastLoadedBaseUrl);
@@ -275,6 +394,42 @@ class TMapController {
   // ========================================
   // 마커 제어
   // ========================================
+
+  /// 한 마커의 SDK 이벤트를 구독합니다. 등록 후에도 마커 교체가 가능합니다.
+  void onMarkerEvent(String markerId, MarkerInteractionType type,
+      void Function(MarkerInteraction) listener) {
+    _markerListeners
+        .putIfAbsent(markerId, () => {})
+        .putIfAbsent(type, () => {})
+        .add(listener);
+  }
+
+  /// 이전에 등록한 마커 이벤트 핸들러를 해제합니다.
+  void offMarkerEvent(String markerId, MarkerInteractionType type,
+      void Function(MarkerInteraction) listener) {
+    final byType = _markerListeners[markerId];
+    byType?[type]?.remove(listener);
+    if (byType?[type]?.isEmpty ?? false) byType!.remove(type);
+    if (byType?.isEmpty ?? false) _markerListeners.remove(markerId);
+  }
+
+  /// 브리지에서 전달된 마커 이벤트를 Dart 구독자에게 전달합니다.
+  void dispatchMarkerInteraction(MarkerInteraction event) {
+    final listeners = _markerListeners[event.markerId]?[event.type];
+    if (listeners == null) return;
+    for (final listener in listeners.toList()) {
+      try {
+        listener(event);
+      } catch (error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'tmap_flutter_sdk',
+          context: ErrorDescription('while dispatching a marker interaction'),
+        ));
+      }
+    }
+  }
 
   /// 지도에 마커를 추가합니다.
   Future<void> addMarker(Marker marker) async {
@@ -317,6 +472,38 @@ class TMapController {
   // 마커 클러스터러 제어
   // ========================================
 
+  /// 클러스터 그룹의 포인터 이벤트를 구독합니다.
+  void onClusterEvent(
+      ClusterInteractionType type, void Function(ClusterInteraction) listener) {
+    _clusterListeners.putIfAbsent(type, () => {}).add(listener);
+  }
+
+  /// 클러스터 그룹의 포인터 이벤트 구독을 해제합니다.
+  void offClusterEvent(
+      ClusterInteractionType type, void Function(ClusterInteraction) listener) {
+    _clusterListeners[type]?.remove(listener);
+    if (_clusterListeners[type]?.isEmpty ?? false) {
+      _clusterListeners.remove(type);
+    }
+  }
+
+  /// 브리지에서 전달된 클러스터 이벤트를 Dart 구독자에게 전달합니다.
+  void dispatchClusterInteraction(ClusterInteraction event) {
+    for (final listener in _clusterListeners[event.type]?.toList() ??
+        <void Function(ClusterInteraction)>[]) {
+      try {
+        listener(event);
+      } catch (error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'tmap_flutter_sdk',
+          context: ErrorDescription('while dispatching a cluster interaction'),
+        ));
+      }
+    }
+  }
+
   /// 마커 클러스터러를 추가/활성화합니다.
   Future<void> addMarkerClusterer(Clusterer clusterer) async {
     final viewId = _webViewId;
@@ -326,9 +513,21 @@ class TMapController {
     }
     final jsonStr =
         jsonEncode(clusterer.markers.map((e) => e.toJson()).toList());
+    final icons = jsonEncode(clusterer.icons);
+    final zIndex = clusterer.zIndex;
     await _runJs(
-      "addMarkerClusterer($jsonStr, ${clusterer.maxClusterZoom}, ${clusterer.minClusterCount}, ${clusterer.gridSize}, ${clusterer.opacity}, ${clusterer.visible});",
+      "addMarkerClusterer($jsonStr, ${clusterer.maxClusterZoom}, ${clusterer.minClusterCount}, ${clusterer.gridSize}, ${clusterer.opacity}, ${clusterer.visible}, $icons, $zIndex);",
     );
+  }
+
+  /// 클러스터러를 유지하면서 현재 멤버를 모두 제거합니다.
+  Future<void> clearClusterMarkers() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearClusterMarkers(viewId);
+      return;
+    }
+    await _runJs('clearClusterMarkers();');
   }
 
   /// 마커 클러스터러를 제거합니다.
@@ -543,6 +742,245 @@ class TMapController {
     await _runJs("clearRectangle('$rectangleId');");
   }
 
+  /// Adds an image overlay bounded by two geographic corners.
+  Future<void> addGroundOverlay(GroundOverlay overlay) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addGroundOverlay(viewId, overlay);
+      return;
+    }
+    await _runJs('addGroundOverlay(${jsonEncode(overlay.groundOverlayId)}, '
+        '${jsonEncode(overlay.url)}, '
+        '${overlay.bounds.southWest.latitude}, '
+        '${overlay.bounds.southWest.longitude}, '
+        '${overlay.bounds.northEast.latitude}, '
+        '${overlay.bounds.northEast.longitude}, ${overlay.opacity});');
+  }
+
+  /// Detaches an image overlay from this map.
+  Future<void> clearGroundOverlay(String groundOverlayId) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearGroundOverlay(viewId, groundOverlayId);
+      return;
+    }
+    await _runJs('clearGroundOverlay(${jsonEncode(groundOverlayId)});');
+  }
+
+  /// Removes every image overlay registered with this controller.
+  Future<void> clearAllGroundOverlays() async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearAllGroundOverlays(viewId);
+      return;
+    }
+    await _runJs('clearAllGroundOverlays();');
+  }
+
+  // ========================================
+  // 데이터 시각화 (DotMap, SquareMap, HeatMap)
+  // ========================================
+
+  Future<void> _addVisualization(String type, Map<String, dynamic> data) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.addVisualization(viewId, type, data);
+      return;
+    }
+    await _runJs('addVisualization(${jsonEncode(type)}, ${jsonEncode(data)});');
+  }
+
+  Future<void> _removeVisualization(String type, String id) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.removeVisualization(viewId, type, id);
+      return;
+    }
+    await _runJs(
+        'removeVisualization(${jsonEncode(type)}, ${jsonEncode(id)});');
+  }
+
+  /// Creates a dot-density visualization on this map.
+  Future<void> addDotMap(DotMap layer) =>
+      _addVisualization('dot', layer.toJson());
+
+  /// Replaces an existing dot layer with the same ID and new options/data.
+  Future<void> updateDotMap(DotMap layer) => addDotMap(layer);
+
+  /// Calls the underlying DotMap's `destroy()` and releases its ID.
+  Future<void> removeDotMap(String dotMapId) =>
+      _removeVisualization('dot', dotMapId);
+
+  /// Creates a geographic grid visualization on this map.
+  Future<void> addSquareMap(SquareMap layer) =>
+      _addVisualization('square', layer.toJson());
+
+  /// Replaces an existing square layer with the same ID and new options/data.
+  Future<void> updateSquareMap(SquareMap layer) => addSquareMap(layer);
+
+  /// Calls the underlying SquareMap's `destroy()` and releases its ID.
+  Future<void> removeSquareMap(String squareMapId) =>
+      _removeVisualization('square', squareMapId);
+
+  /// Creates a heat-density visualization on this map.
+  Future<void> addHeatMap(HeatMap layer) =>
+      _addVisualization('heat', layer.toJson());
+
+  /// Replaces an existing heat layer with the same ID and new options/data.
+  Future<void> updateHeatMap(HeatMap layer) => addHeatMap(layer);
+
+  /// Calls the underlying HeatMap's `destroy()` and releases its ID.
+  Future<void> removeHeatMap(String heatMapId) =>
+      _removeVisualization('heat', heatMapId);
+
+  /// Queries the SDK's polygon hit-test (including any interior rings).
+  Future<bool> polygonContains(String polygonId, LatLng point) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      return TMapWebBridge.polygonContains(viewId, polygonId, point);
+    }
+    final value = await webViewController.runJavaScriptReturningResult(
+      'polygonContains(${jsonEncode(polygonId)}, '
+      '${point.latitude}, ${point.longitude});',
+    );
+    return value == true || value == 1 || value == 'true';
+  }
+
+  /// Reads the SDK-computed exterior and interior polygon areas.
+  Future<PolygonArea?> getPolygonArea(String polygonId) async {
+    final viewId = _webViewId;
+    final String? raw;
+    if (viewId != null) {
+      raw = TMapWebBridge.polygonAreaJson(viewId, polygonId);
+    } else {
+      final result = await webViewController.runJavaScriptReturningResult(
+        'polygonAreaJson(${jsonEncode(polygonId)});',
+      );
+      raw = result.toString();
+    }
+    if (raw == null || raw == 'null' || raw.isEmpty) return null;
+    // WebView implementations can return either the JS string directly or
+    // its JSON-encoded representation.
+    dynamic decoded = jsonDecode(raw);
+    if (decoded is String) decoded = jsonDecode(decoded);
+    if (decoded == null) return null;
+    return PolygonArea.fromJson(Map<String, dynamic>.from(decoded as Map));
+  }
+
+  /// Starts a pointer-driven circle using Tmapv3.extension.Drawing.
+  Future<void> startDrawingCircle({
+    required void Function(Circle) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'circle') return;
+      onComplete(Circle(
+        circleId: data['id'] as String,
+        center:
+            LatLng.fromJson(Map<String, dynamic>.from(data['center'] as Map)),
+        radius: (data['radius'] as num).toDouble(),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Circle', options);
+  }
+
+  /// Starts a pointer-driven rectangle.
+  Future<void> startDrawingRectangle({
+    required void Function(Rectangle) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'rectangle') return;
+      onComplete(Rectangle(
+        rectangleId: data['id'] as String,
+        bounds: LatLngBounds.fromJson(
+            Map<String, dynamic>.from(data['bounds'] as Map)),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Rectangle', options);
+  }
+
+  /// Starts a pointer-driven polyline; finish with a secondary click.
+  Future<void> startDrawingPolyline({
+    required void Function(Polyline) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'polyline') return;
+      onComplete(Polyline(
+        polylineId: data['id'] as String,
+        points: (data['points'] as List<dynamic>)
+            .map((p) => LatLng.fromJson(Map<String, dynamic>.from(p as Map)))
+            .toList(growable: false),
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Polyline', options);
+  }
+
+  /// Starts a pointer-driven polygon; finish with a secondary click.
+  Future<void> startDrawingPolygon({
+    required void Function(Polygon) onComplete,
+    DrawingOptions options = const DrawingOptions(),
+  }) async {
+    _drawingHandler = (data) {
+      if (data['type'] != 'polygon') return;
+      onComplete(Polygon(
+        polygonId: data['id'] as String,
+        points: (data['points'] as List<dynamic>)
+            .map((p) => LatLng.fromJson(Map<String, dynamic>.from(p as Map)))
+            .toList(growable: false),
+        fillColor: options.fillColor,
+        fillOpacity: options.fillOpacity,
+        strokeColor: options.strokeColor,
+        strokeOpacity: options.strokeOpacity,
+        strokeWidth: options.strokeWidth,
+      ));
+    };
+    await _startDrawing('Polygon', options);
+  }
+
+  Future<void> _startDrawing(String mode, DrawingOptions options) async {
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.startDrawing(viewId, mode, options.toJson());
+      return;
+    }
+    await _runJs('startDrawing(${jsonEncode(mode)}, '
+        '${jsonEncode(options.toJson())});');
+  }
+
+  /// Clears completed drawings and cancels any in-progress gesture.
+  Future<void> clearDrawings() async {
+    _drawingHandler = null;
+    final viewId = _webViewId;
+    if (viewId != null) {
+      TMapWebBridge.clearDrawings(viewId);
+      return;
+    }
+    await _runJs('clearDrawings();');
+  }
+
+  /// Receives a completion payload from the platform bridge.
+  void handleDrawingComplete(String payload) {
+    final handler = _drawingHandler;
+    if (handler == null) return;
+    final parsed = jsonDecode(payload);
+    if (parsed is Map) handler(Map<String, dynamic>.from(parsed));
+  }
+
   /// 커스텀 HTML 오버레이를 추가합니다.
   Future<void> addCustomOverlay(CustomOverlay overlay) async {
     final viewId = _webViewId;
@@ -560,7 +998,6 @@ class TMapController {
   }
 
   /// 특정 커스텀 오버레이를 제거합니다.
-  @visibleForTesting
   Future<void> clearCustomOverlay(String customOverlayId) async {
     final viewId = _webViewId;
     if (viewId != null) {

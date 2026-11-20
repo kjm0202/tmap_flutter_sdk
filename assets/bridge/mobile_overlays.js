@@ -110,9 +110,9 @@ function clearAllInfoWindows() {
       if (infoWindows[id] && typeof infoWindows[id].setMap === 'function') {
         infoWindows[id].setMap(null);
       }
+      delete infoWindows[id];
     }
   }
-  infoWindows = {};
 }
 
 function addLabel(labelId, lat, lng, content, fontSize, fontColor, minLevel, maxLevel) {
@@ -181,12 +181,12 @@ function clearAllLabels() {
       if (labels[id] && typeof labels[id].setMap === 'function') {
         labels[id].setMap(null);
       }
+      delete labels[id];
     }
   }
-  labels = {};
 }
 
-function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSize, opacity, visible, icons) {
+function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSize, opacity, visible, icons, zIndex) {
   if (!map) return;
 
   clusterGeneration++;
@@ -224,11 +224,25 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
             }));
           }
         });
+        ['mouseenter', 'mouseleave'].forEach(function(event) {
+          currentMarker.on(event, function() {
+            if (currentGeneration !== clusterGeneration || !markerCluster) return;
+            if (currentInstance && markerCluster !== currentInstance) return;
+            if (window.onMarkerInteraction) {
+              var p = currentMarker.getPosition ? currentMarker.getPosition() : currentPos;
+              onMarkerInteraction.postMessage(JSON.stringify({
+                markerId: currentId, latitude: latitudeOf(p), longitude: longitudeOf(p),
+                zoom: map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16,
+                event: event
+              }));
+            }
+          });
+        });
       }
 
       if (isDraggable && typeof bindTmapMarkerDrag === 'function') {
         try {
-          clusterMarkerDragListeners[currentId] = bindTmapMarkerDrag(currentMarker, map, function(lat, lng, phase) {
+          clusterMarkerDragListeners[currentId] = bindTmapMarkerDrag(currentMarker, map, function(lat, lng, phase, zoom) {
             if (currentGeneration !== clusterGeneration || !markerCluster) return;
             if (currentInstance && markerCluster !== currentInstance) return;
             if (window.onMarkerDragChangeCallback) {
@@ -236,7 +250,8 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
                 markerId: currentId,
                 latitude: lat,
                 longitude: lng,
-                dragType: phase
+                dragType: phase,
+                zoom: zoom
               }));
             }
           });
@@ -263,6 +278,21 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
   };
 
   if (icons !== null && icons !== undefined) clusterOptions.icons = icons;
+  if (zIndex !== null && zIndex !== undefined) clusterOptions.zIndex = zIndex;
+
+  function onClusterPointer(event, cluster) {
+    if (currentGeneration !== clusterGeneration || !markerCluster) return;
+    if (currentInstance && markerCluster !== currentInstance) return;
+    var payload = tmapClusterEventPayload(cluster, map);
+    if (payload && window.onClusterInteraction) {
+      onClusterInteraction.postMessage(JSON.stringify({
+        event: event, latitude: payload.lat, longitude: payload.lng,
+        zoom: payload.zoom, markers: payload.markerIds
+      }));
+    }
+  }
+  clusterOptions.onClusterMouseEnter = function(cluster) { onClusterPointer('mouseenter', cluster); };
+  clusterOptions.onClusterMouseLeave = function(cluster) { onClusterPointer('mouseleave', cluster); };
 
   clusterOptions.onClusterClick = function(cluster) {
     if (currentGeneration !== clusterGeneration || !markerCluster) return;
@@ -354,6 +384,22 @@ function clearMarkerClusterer() {
   }
 }
 
+function clearClusterMarkers() {
+  if (!markerCluster) return;
+  clusterGeneration++;
+  if (typeof markerCluster.clearMarkers === 'function') markerCluster.clearMarkers();
+  for (var id in clusterMarkerDragListeners) {
+    if (Object.prototype.hasOwnProperty.call(clusterMarkerDragListeners, id)) {
+      try { clusterMarkerDragListeners[id].dispose(); } catch (_) {}
+    }
+  }
+  clusterMarkerDragListeners = {};
+  for (var i = 0; i < clusterMarkersList.length; i++) {
+    try { clusterMarkersList[i].setMap(null); } catch (_) {}
+  }
+  clusterMarkersList = [];
+}
+
 function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeWidth, direction, zIndex) {
   if (!map) return;
 
@@ -385,7 +431,7 @@ function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeW
 function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth, zIndex) {
   if (!map) return;
 
-  if (polygons[polygonId]) {
+  if (Object.prototype.hasOwnProperty.call(polygons, polygonId)) {
     polygons[polygonId].setMap(null);
     delete polygons[polygonId];
   }
@@ -408,6 +454,7 @@ function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, 
   if (zIndex !== undefined) options.zIndex = zIndex;
   var polygon = new Tmapv3.Polygon(options);
 
+  prepareTmapPolygonContains(polygon);
   polygons[polygonId] = polygon;
 }
 
@@ -463,6 +510,70 @@ function addRectangle(rectangleId, swLat, swLng, neLat, neLng, fillColor, fillOp
   var rectangle = new Tmapv3.Rectangle(options);
 
   rectangles[rectangleId] = rectangle;
+}
+
+function addGroundOverlay(id, url, swLat, swLng, neLat, neLng, opacity) {
+  if (!map) return;
+  clearGroundOverlay(id);
+  groundOverlays[id] = new Tmapv3.GroundOverlay({
+    url: url,
+    bounds: new Tmapv3.LatLngBounds(
+      new Tmapv3.LatLng(swLat, swLng), new Tmapv3.LatLng(neLat, neLng)),
+    opacity: opacity,
+    map: map
+  });
+}
+
+function clearGroundOverlay(id) {
+  if (!Object.prototype.hasOwnProperty.call(groundOverlays, id)) return;
+  if (groundOverlays[id] && typeof groundOverlays[id].setMap === 'function') {
+    groundOverlays[id].setMap(null);
+  }
+  delete groundOverlays[id];
+}
+
+function clearAllGroundOverlays() {
+  Object.keys(groundOverlays).forEach(clearGroundOverlay);
+}
+
+function addVisualization(type, payload) {
+  if (!map) return;
+  addTmapVisualization(visualizations, type, map, payload);
+}
+
+function removeVisualization(type, id) {
+  removeTmapVisualization(visualizations, type, id);
+}
+
+function clearAllVisualizations() {
+  clearTmapVisualizations(visualizations);
+}
+
+function polygonContains(id, lat, lng) {
+  return !!(Object.prototype.hasOwnProperty.call(polygons, id) &&
+    polygons[id].contains(new Tmapv3.LatLng(lat, lng)));
+}
+
+function polygonAreaJson(id) {
+  return JSON.stringify(Object.prototype.hasOwnProperty.call(polygons, id)
+    ? polygons[id].getArea() : null);
+}
+
+function startDrawing(mode, options) {
+  if (!map) return;
+  if (!drawingSession) {
+    drawingSession = createTmapDrawingSession(map, function(payload) {
+      if (window.onDrawingComplete &&
+          typeof window.onDrawingComplete.postMessage === 'function') {
+        window.onDrawingComplete.postMessage(payload);
+      }
+    });
+  }
+  drawingSession.start(mode, options);
+}
+
+function clearDrawings() {
+  if (drawingSession) drawingSession.clear();
 }
 
 function addCustomOverlay(customOverlayId, lat, lng, content, offsetX, offsetY, zIndex) {
@@ -550,7 +661,7 @@ function clearPolyline(id) {
 }
 
 function clearPolygon(id) {
-  if (polygons[id]) {
+  if (Object.prototype.hasOwnProperty.call(polygons, id)) {
     polygons[id].setMap(null);
     delete polygons[id];
   }
@@ -589,38 +700,33 @@ function clearCustomOverlay(id) {
 
 function clearAllPolylines() {
   for (var id in polylines) {
-    if (polylines.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(polylines, id)) {
       polylines[id].setMap(null);
+      delete polylines[id];
     }
   }
-  polylines = {};
 }
 
 function clearAllPolygons() {
-  for (var id in polygons) {
-    if (polygons.hasOwnProperty(id)) {
-      polygons[id].setMap(null);
-    }
-  }
-  polygons = {};
+  Object.keys(polygons).forEach(clearPolygon);
 }
 
 function clearAllCircles() {
   for (var id in circles) {
-    if (circles.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(circles, id)) {
       circles[id].setMap(null);
+      delete circles[id];
     }
   }
-  circles = {};
 }
 
 function clearAllRectangles() {
   for (var id in rectangles) {
-    if (rectangles.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(rectangles, id)) {
       rectangles[id].setMap(null);
+      delete rectangles[id];
     }
   }
-  rectangles = {};
 }
 
 function clearAllCustomOverlays() {
@@ -640,9 +746,9 @@ function clearAllCustomOverlays() {
       if (customOverlays[id] && typeof customOverlays[id].setMap === 'function') {
         customOverlays[id].setMap(null);
       }
+      delete customOverlays[id];
     }
   }
-  customOverlays = {};
 }
 
 function clearAll() {
@@ -654,5 +760,8 @@ function clearAll() {
   clearAllPolygons();
   clearAllCircles();
   clearAllRectangles();
+  clearAllGroundOverlays();
+  clearAllVisualizations();
+  clearDrawings();
   clearAllCustomOverlays();
 }

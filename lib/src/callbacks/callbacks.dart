@@ -16,6 +16,9 @@ typedef OnMapDoubleTap = void Function(LatLng latLng);
 /// 지도 롱 탭 (ContextMenu) 콜백
 typedef OnMapLongTap = void Function(LatLng latLng);
 
+/// 지도 표면 터치 시작·종료 콜백
+typedef OnMapTouch = void Function(LatLng latLng);
+
 /// 마커 탭 콜백
 typedef OnMarkerTap = void Function(String markerId, LatLng latLng, int zoom);
 

@@ -18,6 +18,7 @@ import 'constants/map_type.dart';
 import 'constants/zoom_type.dart';
 import 'models/lat_lng.dart';
 import 'models/lat_lng_bounds.dart';
+import 'models/overlay_interaction.dart';
 import 'overlays/circle.dart';
 import 'overlays/clusterer.dart';
 import 'overlays/custom_overlay.dart';
@@ -28,6 +29,7 @@ import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
 import 'tmap_controller.dart';
+import 'utils/bounds_on_ready.dart';
 import 'utils/overlay_snapshot.dart';
 import 'web/tmap_web_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_widget.dart';
@@ -53,6 +55,12 @@ class TMap extends StatefulWidget {
 
   /// 지도 롱 탭 (ContextMenu) 콜백
   final OnMapLongTap? onMapLongTap;
+
+  /// SDK 지도 터치 시작 이벤트
+  final OnMapTouch? onTouchStart;
+
+  /// SDK 지도 터치 종료 이벤트
+  final OnMapTouch? onTouchEnd;
 
   /// 마커 탭 콜백
   final OnMarkerTap? onMarkerTap;
@@ -93,6 +101,17 @@ class TMap extends StatefulWidget {
   /// 초기 지도 중심 좌표
   final LatLng? center;
 
+  /// 초기 지도에 표시할 영역입니다.
+  ///
+  /// 값이 변경되면 [TMapController.fitBounds]로 새 영역을 표시합니다.
+  /// [LatLngBounds.empty]와 null은 지도 영역 설정에서 제외됩니다.
+  final LatLngBounds? bounds;
+
+  /// 지도 이동을 제한할 영역입니다. SDK에서 생성할 때만 설정할 수 있습니다.
+  ///
+  /// null과 [LatLngBounds.empty]는 제한을 설정하지 않습니다.
+  final LatLngBounds? maxBounds;
+
   /// 초기 줌 레벨 (0 ~ 19)
   final int zoom;
 
@@ -107,6 +126,12 @@ class TMap extends StatefulWidget {
 
   /// 초기 기울기 각도 (0 ~ 60도)
   final double pitch;
+
+  /// SDK에서 허용하는 최소 기울기(도)입니다. 생성 시에만 적용됩니다.
+  final double? minPitch;
+
+  /// SDK에서 허용하는 최대 기울기(도)입니다. 생성 시에만 적용됩니다.
+  final double? maxPitch;
 
   /// 지도 타입
   final TMapType mapType;
@@ -153,6 +178,8 @@ class TMap extends StatefulWidget {
     this.onMapTap,
     this.onMapDoubleTap,
     this.onMapLongTap,
+    this.onTouchStart,
+    this.onTouchEnd,
     this.onMarkerTap,
     this.onMarkerClustererTap,
     this.onInfoWindowTap,
@@ -166,11 +193,15 @@ class TMap extends StatefulWidget {
     this.onPitchChangeCallback,
     this.onBoundsChangeCallback,
     this.center,
+    this.bounds,
+    this.maxBounds,
     this.zoom = 16,
     this.minZoom = 0,
     this.maxZoom = 19,
     this.bearing = 0.0,
     this.pitch = 0.0,
+    this.minPitch,
+    this.maxPitch,
     this.mapType = TMapType.road,
     this.naviControl = false,
     this.scaleBar = false,
@@ -194,6 +225,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   late final TMapController _mapController;
   final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isMapReady = false;
+  LatLngBounds? _boundsAtCreation;
   ScrollPosition? _iosScrollPosition;
   ScrollNotificationObserverState? _iosScrollObserver;
   String? _iosGuardDesired;
@@ -238,7 +270,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     _isMapReady = false;
     if (!kIsWeb) {
       try {
-        _mapController.webViewController.runJavaScript('if (window.tmap_dispose_mobile) window.tmap_dispose_mobile();');
+        _mapController.webViewController.runJavaScript(
+            'if (window.tmap_dispose_mobile) window.tmap_dispose_mobile();');
       } catch (e) {
         developer.log('Error disposing TMap: $e', name: 'TMap');
       }
@@ -300,11 +333,15 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     if (kIsWeb) {
       return TMapWebWidget(
         center: widget.center,
+        bounds: widget.bounds,
+        maxBounds: widget.maxBounds,
         zoom: widget.zoom,
         minZoom: widget.minZoom,
         maxZoom: widget.maxZoom,
         bearing: widget.bearing,
         pitch: widget.pitch,
+        minPitch: widget.minPitch,
+        maxPitch: widget.maxPitch,
         mapType: widget.mapType,
         naviControl: widget.naviControl,
         scaleBar: widget.scaleBar,
@@ -321,6 +358,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         onMapTap: widget.onMapTap,
         onMapDoubleTap: widget.onMapDoubleTap,
         onMapLongTap: widget.onMapLongTap,
+        onTouchStart: widget.onTouchStart,
+        onTouchEnd: widget.onTouchEnd,
         onDragChangeCallback: widget.onDragChangeCallback,
         onZoomChangeCallback: widget.onZoomChangeCallback,
         onCenterChangeCallback: widget.onCenterChangeCallback,
@@ -348,7 +387,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     );
   }
 
-    final Map<int, _PointerInfo> _activePointers = {};
+  final Map<int, _PointerInfo> _activePointers = {};
   bool _isDisqualified = false;
   Offset? _firstTapPosition;
   Duration? _firstTapTime;
@@ -357,7 +396,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   void _handleDoubleTap(LatLng latLng) {
     final now = DateTime.now();
-    if (_lastDispatchedTime != null && now.difference(_lastDispatchedTime!).inMilliseconds < 300) {
+    if (_lastDispatchedTime != null &&
+        now.difference(_lastDispatchedTime!).inMilliseconds < 300) {
       return;
     }
     _lastDispatchedTime = now;
@@ -365,10 +405,13 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   }
 
   void _updateIosScrollGuard() {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || !_isMapReady) return;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || !_isMapReady)
+      return;
     final position = _iosScrollPosition;
-    final enabled = widget.gestureRecognizers.isEmpty && position != null &&
-        position.hasContentDimensions && position.physics.shouldAcceptUserOffset(position);
+    final enabled = widget.gestureRecognizers.isEmpty &&
+        position != null &&
+        position.hasContentDimensions &&
+        position.physics.shouldAcceptUserOffset(position);
     _iosGuardDesired = enabled ? position.axis.name : '';
     if (!_iosGuardSyncing && _iosGuardDesired != _iosGuardApplied) {
       unawaited(_syncIosScrollGuard());
@@ -395,14 +438,17 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       }
     } catch (error) {
       // Navigation or disposal may invalidate the WebView while a write is pending.
-      developer.log('iOS scroll guard synchronization failed: ${error.runtimeType}', name: 'TMap');
+      developer.log(
+          'iOS scroll guard synchronization failed: ${error.runtimeType}',
+          name: 'TMap');
     } finally {
       _iosGuardSyncing = false;
     }
   }
 
   void _handlePointerDown(PointerDownEvent event) {
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.android) return;
     _updateIosScrollGuard();
 
     if (_activePointers.isNotEmpty) {
@@ -411,7 +457,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       _isDisqualified = false;
     }
 
-    _activePointers[event.pointer] = _PointerInfo(event.localPosition, event.timeStamp);
+    _activePointers[event.pointer] =
+        _PointerInfo(event.localPosition, event.timeStamp);
   }
 
   void _handlePointerMove(PointerMoveEvent event) {
@@ -425,7 +472,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   }
 
   void _handlePointerUp(PointerUpEvent event) {
-    if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) return;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.android) return;
 
     final wasDisqualified = _isDisqualified;
     final pointer = _activePointers.remove(event.pointer);
@@ -435,7 +483,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (pointer == null) return;
 
-    final isLongPress = (event.timeStamp - pointer.downTime) > kLongPressTimeout;
+    final isLongPress =
+        (event.timeStamp - pointer.downTime) > kLongPressTimeout;
 
     if (wasDisqualified || pointer.movedBeyondSlop || isLongPress) {
       if (_activePointers.isEmpty) _resetTap();
@@ -444,7 +493,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (_activePointers.isEmpty) {
       if (_firstTapTime != null && _firstTapPosition != null) {
-        if (event.timeStamp - _firstTapTime! < const Duration(milliseconds: 300) &&
+        if (event.timeStamp - _firstTapTime! <
+                const Duration(milliseconds: 300) &&
             (event.localPosition - _firstTapPosition!).distance < 50) {
           final baseline = _currentBaseline;
           _performDoubleTap(event.localPosition, baseline);
@@ -461,7 +511,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
   Future<double?> _readCameraZoom() async {
     try {
-      final result = await _mapController.webViewController.runJavaScriptReturningResult('''
+      final result = await _mapController.webViewController
+          .runJavaScriptReturningResult('''
         (function() {
           try {
             var r = map.vsmMap();
@@ -476,7 +527,6 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     }
   }
 
-
   void _handlePointerCancel(PointerCancelEvent event) {
     _activePointers.remove(event.pointer);
     _resetTap();
@@ -488,7 +538,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     _currentBaseline = null;
   }
 
-  Future<void> _performDoubleTap(Offset localPosition, Future<double?>? baselineFuture) async {
+  Future<void> _performDoubleTap(
+      Offset localPosition, Future<double?>? baselineFuture) async {
     if (!mounted) return;
 
     final x = localPosition.dx.round();
@@ -498,9 +549,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     late LatLng latLng;
     try {
-      final result = await _mapController.webViewController.runJavaScriptReturningResult(
-        'screenToReal($x, $y);'
-      );
+      final result = await _mapController.webViewController
+          .runJavaScriptReturningResult('screenToReal($x, $y);');
       if (!mounted) return;
       final json = jsonDecode(result.toString()) as Map<String, dynamic>;
       latLng = LatLng.fromJson(json);
@@ -510,7 +560,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     _handleDoubleTap(latLng);
 
-    await Future.delayed(const Duration(milliseconds: 110));
+    await Future<void>.delayed(const Duration(milliseconds: 110));
     if (!mounted || _isDisqualified || baseline == null) {
       return;
     }
@@ -529,7 +579,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           if (!enabled) return;
 
           if (Math.abs(raw - $baseline) < 1e-4 && !cam.isMoving()) {
-            var maxZoom = Math.min(${widget.maxZoom}, t.getMaxZoom());
+            var maxZoom = t && typeof t.getMaxZoom === 'function' ? t.getMaxZoom() : NaN;
+            if (!Number.isFinite(maxZoom)) maxZoom = ${widget.maxZoom};
             if (raw < maxZoom) {
               var target = Math.min(raw + 1, maxZoom);
               var pivot = t.screenPointToLngLat({x: $x, y: $y});
@@ -541,9 +592,10 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     ''';
     try {
       await _mapController.webViewController.runJavaScript(js);
-    } catch (e) {}
+    } catch (_) {
+      // The WebView may have been disposed before this optional probe completes.
+    }
   }
-
 
   Future<void> _loadMap(WebViewController controller) async {
     final scripts = await loadBridgeAssets(const [
@@ -553,17 +605,25 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'mobile_tdata.js',
     ]);
     if (!mounted) return;
+    final boundsAtCreation = widget.bounds;
+    _boundsAtCreation = boundsAtCreation;
     final config = {
       'appKey': AuthRepository.instance.appKey,
       'iosScrollableGuard': defaultTargetPlatform == TargetPlatform.iOS,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
+      if (boundsAtCreation != null && !boundsAtCreation.isEmpty)
+        'bounds': boundsAtCreation.toJson(),
+      if (widget.maxBounds != null && !widget.maxBounds!.isEmpty)
+        'maxBounds': widget.maxBounds!.toJson(),
       'mapType': widget.mapType.value,
       'zoom': widget.zoom,
       'minZoom': widget.minZoom,
       'maxZoom': widget.maxZoom,
       'bearing': widget.bearing,
       'pitch': widget.pitch,
+      if (widget.minPitch != null) 'minPitch': widget.minPitch,
+      if (widget.maxPitch != null) 'maxPitch': widget.maxPitch,
       'scaleBar': widget.scaleBar,
       'naviControl': widget.naviControl,
       'hasOnMapTap': widget.onMapTap != null,
@@ -613,6 +673,11 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (widget.pitch != oldWidget.pitch) {
       _mapController.setPitch(widget.pitch);
+    }
+    if (widget.bounds != oldWidget.bounds &&
+        widget.bounds != null &&
+        !widget.bounds!.isEmpty) {
+      _mapController.fitBounds(widget.bounds!);
     }
 
     if (widget.mapType != oldWidget.mapType) {
@@ -714,7 +779,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     controller
       ..addJavaScriptChannel(
         'onMapCreated',
-        onMessageReceived: (JavaScriptMessage result) {
+        onMessageReceived: (JavaScriptMessage result) async {
           if (!mounted) return;
           _isMapReady = true;
           _iosGuardDocumentEpoch++;
@@ -722,6 +787,17 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           _updateIosScrollGuard();
           _overlaySnapshot.clear();
           _syncOverlays();
+          final pendingBounds =
+              boundsToApplyOnReady(_boundsAtCreation, widget.bounds);
+          if (pendingBounds != null) {
+            try {
+              await _mapController.fitBounds(pendingBounds);
+            } catch (e) {
+              developer.log('Error applying pending map bounds: $e',
+                  name: 'TMap');
+            }
+            if (!mounted) return;
+          }
           final onMapCreated = widget.onMapCreated;
           if (onMapCreated != null) {
             onMapCreated(_mapController);
@@ -759,17 +835,75 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         },
       )
       ..addJavaScriptChannel(
+        'onTouchStart',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final listener = widget.onTouchStart;
+          if (listener != null) {
+            listener(LatLng.fromJson(
+                jsonDecode(result.message) as Map<String, dynamic>));
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onTouchEnd',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final listener = widget.onTouchEnd;
+          if (listener != null) {
+            listener(LatLng.fromJson(
+                jsonDecode(result.message) as Map<String, dynamic>));
+          }
+        },
+      )
+      ..addJavaScriptChannel(
         'onMarkerTap',
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final id = (json['markerId'] ?? json['id'] ?? '') as String;
+          final latLng = LatLng.fromJson(json);
+          final zoom = (json['zoom'] as num? ?? 16).toInt();
+          _mapController.dispatchMarkerInteraction(MarkerInteraction(
+            markerId: id,
+            type: MarkerInteractionType.click,
+            position: latLng,
+            zoom: zoom,
+          ));
           final onMarkerTap = widget.onMarkerTap;
           if (onMarkerTap != null) {
-            final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = (json['markerId'] ?? json['id'] ?? '') as String;
-            final latLng = LatLng.fromJson(json);
-            final zoom = (json['zoom'] as num? ?? 16).toInt();
             onMarkerTap(id, latLng, zoom);
           }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onMarkerInteraction',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final type =
+              MarkerInteractionType.values.byName(json['event'] as String);
+          _mapController.dispatchMarkerInteraction(MarkerInteraction(
+            markerId: (json['markerId'] ?? '') as String,
+            type: type,
+            position: LatLng.fromJson(json),
+            zoom: (json['zoom'] as num? ?? 16).toInt(),
+          ));
+        },
+      )
+      ..addJavaScriptChannel(
+        'onClusterInteraction',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          _mapController.dispatchClusterInteraction(ClusterInteraction(
+            type: ClusterInteractionType.values.byName(json['event'] as String),
+            center: LatLng.fromJson(json),
+            zoom: (json['zoom'] as num? ?? 16).toInt(),
+            markerIds: (json['markers'] as List<dynamic>? ?? [])
+                .map((e) => e.toString())
+                .toList(),
+          ));
         },
       )
       ..addJavaScriptChannel(
@@ -793,13 +927,23 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
         'onMarkerDragChangeCallback',
         onMessageReceived: (JavaScriptMessage result) {
           if (!mounted) return;
+          final json = jsonDecode(result.message) as Map<String, dynamic>;
+          final id = (json['markerId'] ?? json['id'] ?? '') as String;
+          final latLng = LatLng.fromJson(json);
+          final typeStr =
+              json['dragType'] as String? ?? json['phase'] as String? ?? '';
+          if (typeStr == 'move' || typeStr == 'end') {
+            _mapController.dispatchMarkerInteraction(MarkerInteraction(
+              markerId: id,
+              type: typeStr == 'move'
+                  ? MarkerInteractionType.drag
+                  : MarkerInteractionType.dragend,
+              position: latLng,
+              zoom: (json['zoom'] as num? ?? widget.zoom).round(),
+            ));
+          }
           final onMarkerDragChange = widget.onMarkerDragChangeCallback;
           if (onMarkerDragChange != null) {
-            final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final id = (json['markerId'] ?? json['id'] ?? '') as String;
-            final latLng = LatLng.fromJson(json);
-            final typeStr =
-                json['dragType'] as String? ?? json['phase'] as String? ?? '';
             final type = typeStr == 'start'
                 ? DragType.start
                 : (typeStr == 'move' ? DragType.move : DragType.end);
@@ -887,10 +1031,9 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           final onZoomChange = widget.onZoomChangeCallback;
           if (onZoomChange != null) {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
-            final zoom = (json['zoomLevel'] as num? ??
-                    json['zoom'] as num? ??
-                    16)
-                .toInt();
+            final zoom =
+                (json['zoomLevel'] as num? ?? json['zoom'] as num? ?? 16)
+                    .toInt();
             final phaseStr = json['phase'] as String?;
             final phase = phaseStr == 'start' ? ZoomType.start : ZoomType.end;
             onZoomChange(zoom, phase);
@@ -958,6 +1101,13 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
             final json = jsonDecode(result.message) as Map<String, dynamic>;
             onBoundsChange(LatLngBounds.fromJson(json));
           }
+        },
+      )
+      ..addJavaScriptChannel(
+        'onDrawingComplete',
+        onMessageReceived: (JavaScriptMessage result) {
+          if (!mounted) return;
+          _mapController.handleDrawingComplete(result.message);
         },
       )
       ..addJavaScriptChannel(

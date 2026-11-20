@@ -2,15 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../auth/auth_repository.dart';
 import '../models/address_info.dart';
 import '../models/auto_complete_item.dart';
+import '../models/auto_complete_v2_item.dart';
 import '../models/lat_lng.dart';
+import '../models/lat_lng_bounds.dart';
+import '../models/poi_detail_info.dart';
 import '../models/poi_item.dart';
+import '../models/projected_coordinate.dart';
 import '../models/route_info.dart';
+import '../models/traffic_segment.dart';
 import 'tdata_protocol.dart';
 
 /// TData 서비스 요청 및 비동기 응답 처리기
@@ -98,8 +102,6 @@ class TDataService {
   }) async {
     try {
       final appKey = AuthRepository.instance.appKey;
-      debugPrint(
-          '[TDataService] searchPoi start: keyword=$searchKeyword, center=$center, radius=$radius');
       final params = <String, String>{
         'version': '1',
         'format': 'json',
@@ -121,18 +123,12 @@ class TDataService {
       }
 
       final uri = Uri.https('apis.openapi.sk.com', '/tmap/pois', params);
-      debugPrint('[TDataService] Request URI: $uri');
       final json = await _get(uri, appKey);
       if (json != null) {
         final res = TDataResponse(requestId: '', success: true, data: json);
-        final list = res.toPoiList();
-        debugPrint('[TDataService] Parsed POI count: ${list.length}');
-        return list;
-      } else {
-        debugPrint('[TDataService] searchPoi returned null json');
+        return res.toPoiList();
       }
     } catch (e, st) {
-      debugPrint('[TDataService] searchPoi exception: $e\n$st');
       developer.log('searchPoi error: $e',
           name: 'TDataService', error: e, stackTrace: st);
     }
@@ -199,36 +195,7 @@ class TDataService {
       final uri =
           Uri.https('apis.openapi.sk.com', '/tmap/geo/fullAddrGeo', params);
       final json = await _get(uri, appKey);
-      if (json != null) {
-        final coordInfo = json['coordinateInfo'];
-        if (coordInfo is Map) {
-          final coordType = coordInfo['coordType'];
-          if (coordType is String &&
-              coordType.isNotEmpty &&
-              coordType != 'WGS84GEO') {
-            return null;
-          }
-          final coordinates = coordInfo['coordinate'];
-          final List<dynamic> coordList;
-          if (coordinates is List) {
-            coordList = coordinates;
-          } else if (coordinates is Map) {
-            coordList = [coordinates];
-          } else {
-            // Keep the prior flat coordinateInfo representation.
-            coordList = [coordInfo];
-          }
-
-          for (final item in coordList) {
-            if (item is! Map) continue;
-            // 지번과 도로명은 서로 다른 위치이므로 좌표 쌍 단위로 선택한다.
-            final point =
-                _parseWgs84Coordinate(item['lat'], item['lon']) ??
-                    _parseWgs84Coordinate(item['newLat'], item['newLon']);
-            if (point != null) return point;
-          }
-        }
-      }
+      if (json != null) return _geoFromResponse(json);
     } catch (e, st) {
       developer.log('getGeoFromAddress error: $e',
           name: 'TDataService', error: e, stackTrace: st);
@@ -317,10 +284,204 @@ class TDataService {
     return [];
   }
 
+  /// Location-aware keyword autocomplete.
+  ///
+  /// Implements the documented `Tmapv3.TData#getAutoCompleteSearchv3Json`
+  /// through the SDK's V2 REST endpoint `/tmap/poi/V2autoComplete`. Results are
+  /// sorted by distance from [center]; [radius] is in kilometres (1-33) and
+  /// [numResults] is limited to 1-100.
+  static Future<List<AutoCompleteV2Item>> getAutoCompleteSearchV2({
+    required String keyword,
+    required LatLng center,
+    int? radius,
+    int? numResults,
+  }) async {
+    try {
+      final appKey = AuthRepository.instance.appKey;
+      final params = <String, String>{
+        'version': '1',
+        'format': 'json',
+        'searchKeyword': keyword.trim(),
+        'centerLat': center.latitude.toString(),
+        'centerLon': center.longitude.toString(),
+        if (radius != null) 'radius': radius.clamp(1, 33).toString(),
+        if (numResults != null)
+          'numResults': numResults.clamp(1, 100).toString(),
+      };
+      final uri =
+          Uri.https('apis.openapi.sk.com', '/tmap/poi/V2autoComplete', params);
+      final json = await _get(uri, appKey);
+      if (json != null) {
+        return TDataResponse(requestId: '', success: true, data: json)
+            .toAutoCompleteV2List();
+      }
+    } catch (e, st) {
+      developer.log('getAutoCompleteSearchV2 error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return [];
+  }
+
+  /// Fetches real-time traffic links within [bounds].
+  ///
+  /// The response contains WGS84 GeoJSON line segments and congestion codes.
+  static Future<List<TrafficSegment>> getRealTimeTraffic({
+    required LatLngBounds bounds,
+    required int zoomLevel,
+    String? trafficType,
+  }) async {
+    try {
+      final params = <String, String>{
+        'version': '1',
+        'format': 'json',
+        'minLat': bounds.southWest.latitude.toString(),
+        'minLon': bounds.southWest.longitude.toString(),
+        'maxLat': bounds.northEast.latitude.toString(),
+        'maxLon': bounds.northEast.longitude.toString(),
+        'zoomLevel': zoomLevel.toString(),
+        'reqCoordType': 'WGS84GEO',
+        'resCoordType': 'WGS84GEO',
+        if (trafficType != null) 'trafficType': trafficType,
+      };
+      final uri = Uri.https('apis.openapi.sk.com', '/tmap/traffic', params);
+      final json = await _get(uri, AuthRepository.instance.appKey);
+      if (json != null) return TrafficSegment.fromFeatureCollection(json);
+    } catch (e, st) {
+      developer.log('getRealTimeTraffic error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return [];
+  }
+
+  /// Retrieves a single POI's details using its ID from [searchPoi].
+  static Future<PoiDetailInfo?> getPoiById({required String poiId}) async {
+    if (poiId.trim().isEmpty) return null;
+    try {
+      final uri = Uri(
+        scheme: 'https',
+        host: 'apis.openapi.sk.com',
+        pathSegments: ['tmap', 'pois', poiId],
+        queryParameters: const {
+          'version': '1',
+          'format': 'json',
+          'resCoordType': 'WGS84GEO',
+        },
+      );
+      final json = await _get(uri, AuthRepository.instance.appKey);
+      if (json != null && json['poiDetailInfo'] is Map<String, dynamic>) {
+        return PoiDetailInfo.fromJson(json);
+      }
+    } catch (e, st) {
+      developer.log('getPoiById error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return null;
+  }
+
+  /// Geocodes address components using the legacy `/tmap/geo/geocoding` API.
+  ///
+  /// [getGeoFromAddress] handles a free-text address instead.
+  static Future<LatLng?> getGeoFromAddressLegacy({
+    required String cityDo,
+    required String guGun,
+    required String dong,
+    required String bunji,
+    String? detailAddress,
+    String? addressFlag,
+  }) async {
+    try {
+      final params = <String, String>{
+        'version': '1',
+        'format': 'json',
+        'city_do': cityDo,
+        'gu_gun': guGun,
+        'dong': dong,
+        'bunji': bunji,
+        'coordType': 'WGS84GEO',
+        if (detailAddress != null) 'detailAddress': detailAddress,
+        if (addressFlag != null) 'addressFlag': addressFlag,
+      };
+      final uri =
+          Uri.https('apis.openapi.sk.com', '/tmap/geo/geocoding', params);
+      final json = await _get(uri, AuthRepository.instance.appKey);
+      if (json != null) return _geoFromResponse(json);
+    } catch (e, st) {
+      developer.log('getGeoFromAddressLegacy error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return null;
+  }
+
+  /// Converts a coordinate between TMAP coordinate systems.
+  ///
+  /// The API names the inputs `lat` and `lon` even when they are projected
+  /// northing/easting values. The returned [ProjectedCoordinate] preserves the
+  /// target unit and projection rather than assuming all values are degrees.
+  static Future<ProjectedCoordinate?> transformJson({
+    required double latitude,
+    required double longitude,
+    required String fromCoord,
+    required String toCoord,
+  }) async {
+    if (!latitude.isFinite ||
+        !longitude.isFinite ||
+        fromCoord.isEmpty ||
+        toCoord.isEmpty) {
+      return null;
+    }
+    try {
+      final params = {
+        'version': '1',
+        'format': 'json',
+        'lat': latitude.toString(),
+        'lon': longitude.toString(),
+        'fromCoord': fromCoord,
+        'toCoord': toCoord,
+      };
+      final uri =
+          Uri.https('apis.openapi.sk.com', '/tmap/geo/coordconvert', params);
+      final json = await _get(uri, AuthRepository.instance.appKey);
+      if (json != null) {
+        return ProjectedCoordinate.fromJson(json, coordType: toCoord);
+      }
+    } catch (e, st) {
+      developer.log('transformJson error: $e',
+          name: 'TDataService', error: e, stackTrace: st);
+    }
+    return null;
+  }
+
   /// The `resCoordType` actually sent, after caller options were applied.
   static String? _effectiveResCoordType(Map<String, dynamic> body) {
     final value = body['resCoordType'];
     return value is String ? value : null;
+  }
+
+  static LatLng? _geoFromResponse(Map<String, dynamic> json) {
+    final coordInfo = json['coordinateInfo'];
+    if (coordInfo is! Map) return null;
+    final coordType = coordInfo['coordType'];
+    if (coordType is String &&
+        coordType.isNotEmpty &&
+        coordType != 'WGS84GEO') {
+      return null;
+    }
+    final coordinates = coordInfo['coordinate'];
+    final List<dynamic> coordList;
+    if (coordinates is List) {
+      coordList = coordinates;
+    } else if (coordinates is Map) {
+      coordList = [coordinates];
+    } else {
+      coordList = [coordInfo];
+    }
+    for (final item in coordList) {
+      if (item is! Map) continue;
+      final point = _parseWgs84Coordinate(item['lat'], item['lon']) ??
+          _parseWgs84Coordinate(item['newLat'], item['newLon']);
+      if (point != null) return point;
+    }
+    return null;
   }
 
   /// Parses one WGS84 coordinate pair without mixing values from two sources.
@@ -363,21 +524,16 @@ class TDataService {
         },
       ).timeout(const Duration(seconds: 10));
 
-      final body = utf8.decode(response.bodyBytes);
-      debugPrint(
-          '[TDataService] GET status: ${response.statusCode}, response snippet: ${body.length > 200 ? body.substring(0, 200) : body}');
-
       if (response.statusCode == 200) {
-        return _decodeBody(body);
+        return _decodeBody(utf8.decode(response.bodyBytes));
       } else {
-        debugPrint(
-            '[TDataService] GET $uri failed: ${response.statusCode} - $body');
-        developer.log('GET $uri failed: ${response.statusCode} - $body',
+        developer.log('GET ${uri.path} failed: ${response.statusCode}',
             name: 'TDataService');
         return null;
       }
     } catch (e, st) {
-      debugPrint('[TDataService] _get exception: $e\n$st');
+      developer.log('GET ${uri.path} exception',
+          name: 'TDataService', error: e, stackTrace: st);
       return null;
     }
   }
@@ -397,17 +553,15 @@ class TDataService {
           )
           .timeout(const Duration(seconds: 10));
 
-      final body = utf8.decode(response.bodyBytes);
-
       if (response.statusCode == 200) {
-        return _decodeBody(body);
+        return _decodeBody(utf8.decode(response.bodyBytes));
       } else {
-        developer.log('POST $uri failed: ${response.statusCode} - $body',
+        developer.log('POST ${uri.path} failed: ${response.statusCode}',
             name: 'TDataService');
         return null;
       }
     } catch (e, st) {
-      developer.log('POST $uri exception: $e',
+      developer.log('POST ${uri.path} exception',
           name: 'TDataService', error: e, stackTrace: st);
       return null;
     }
