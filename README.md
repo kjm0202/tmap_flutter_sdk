@@ -299,11 +299,19 @@ flutter run -d chrome -t test_driver/bridge/main.dart --dart-define-from-file=/p
 
 On Android and iOS, replace `chrome` with the device ID. Once map creation, center and zoom changes, and marker taps and removal are verified, the console prints `BRIDGE_PROBE_PASS`.
 
-To run every use-case scenario, target `scenarios.dart` from the example directory. On Android and iOS, use the device ID instead of `-d chrome`.
+To run every use-case scenario, target `scenarios.dart` from the example directory and open a Chrome debug port:
 
 ```sh
-flutter run -d chrome -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
+flutter run -d chrome --web-browser-debug-port=8257 -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
 ```
+
+The `shape_drawing`, `map_touch` and `map_context_menu` scenarios wait for trusted pointer input, which `test_driver/bridge/web_input/driver.mjs` sends through the Chrome DevTools Protocol. Once the app is running, start the driver from the example directory in a second terminal with the same port. The driver needs Node.js 22 or later. Without it, those three scenarios time out and the run ends with `SCENARIOS_FAIL`; to run without the driver, pick other scenarios with `SCENARIO_FILTER`.
+
+```sh
+node test_driver/bridge/web_input/driver.mjs --port=8257
+```
+
+On Android and iOS, use the device ID instead of `-d chrome` and leave out the debug port and the driver. Mobile runs skip those three Chrome-only scenarios, so `SCENARIOS_PASS` there does not cover them; run them in Chrome. Selecting one of them with `SCENARIO_FILTER` on a device reports `SCENARIO <name> FAIL`.
 
 To check that `zIndex` is passed to Circle, Rectangle and Polyline and that a shape with the same ID is replaced, add `--dart-define=SCENARIO_FILTER=shape_zindex` to the command above. Polygon uses `--dart-define=SCENARIO_FILTER=polygon_zindex`. These scenarios check the values the SDK stores and layer cleanup; they do not verify the on-screen stacking order.
 

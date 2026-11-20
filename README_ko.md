@@ -300,11 +300,19 @@ flutter run -d chrome -t test_driver/bridge/main.dart --dart-define-from-file=/p
 
 Android와 iOS에서는 `chrome`을 기기 ID로 바꿉니다. 지도 생성, 중심·줌 변경, 마커 클릭과 삭제를 확인하면 콘솔에 `BRIDGE_PROBE_PASS`가 표시됩니다.
 
-유스케이스 시나리오 전체를 실행하려면 예제 디렉터리에서 `scenarios.dart`를 대상으로 지정하세요. Android·iOS에서는 `-d chrome` 대신 기기 ID를 사용합니다.
+유스케이스 시나리오 전체를 실행하려면 예제 디렉터리에서 `scenarios.dart`를 대상으로 지정하고 Chrome 디버그 포트를 엽니다.
 
 ```sh
-flutter run -d chrome -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
+flutter run -d chrome --web-browser-debug-port=8257 -t test_driver/bridge/scenarios.dart --dart-define-from-file=/path/to/key.json
 ```
+
+`shape_drawing`, `map_touch`, `map_context_menu` 시나리오는 실제 포인터 입력을 기다립니다. 이 입력은 `test_driver/bridge/web_input/driver.mjs`가 Chrome DevTools Protocol로 보냅니다. 앱이 실행되면 두 번째 터미널의 예제 디렉터리에서 같은 포트로 드라이버를 실행하세요. 드라이버에는 Node.js 22 이상이 필요합니다. 드라이버 없이 실행하면 이 세 시나리오는 시간 초과로 실패하고 전체 결과는 `SCENARIOS_FAIL`이 됩니다. 드라이버 없이 실행하려면 `SCENARIO_FILTER`로 다른 시나리오만 선택하세요.
+
+```sh
+node test_driver/bridge/web_input/driver.mjs --port=8257
+```
+
+Android·iOS에서는 `-d chrome` 대신 기기 ID를 사용하고, 디버그 포트와 드라이버는 필요 없습니다. 모바일 실행에서는 Chrome 전용인 이 세 시나리오를 건너뛰므로, `SCENARIOS_PASS`가 나와도 세 시나리오는 실행되지 않은 것입니다. 이 시나리오들은 Chrome에서 실행하세요. 기기에서 `SCENARIO_FILTER`로 이 중 하나를 지정하면 `SCENARIO <이름> FAIL`로 표시됩니다.
 
 Circle, Rectangle, Polyline의 `zIndex` 전달과 같은 ID 교체를 확인하려면 위 명령에 `--dart-define=SCENARIO_FILTER=shape_zindex`를 추가합니다. Polygon은 기존 `--dart-define=SCENARIO_FILTER=polygon_zindex`로 확인할 수 있습니다. 이 시나리오들은 SDK의 저장 값과 레이어 정리를 확인하며 화면상의 겹침 순서는 검증하지 않습니다.
 
