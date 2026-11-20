@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:tmap_flutter_sdk/tmap_flutter_sdk.dart';
 import 'shape_scenarios.dart';
@@ -120,6 +121,11 @@ Future<void> _runScenarios() async {
   };
 
   final filterEnv = const String.fromEnvironment('SCENARIO_FILTER');
+  const chromeCdpRequired = {
+    'shape_drawing',
+    'map_touch',
+    'map_context_menu',
+  };
   final List<String> suitesToRun;
   bool allPassed = true;
 
@@ -127,7 +133,9 @@ Future<void> _runScenarios() async {
     // The dynamic case already runs inside scroll_screen on iOS; the alias is
     // only for selecting that case directly.
     suitesToRun = scenarios.keys
-        .where((name) => name != 'scroll_screen_dynamic')
+        .where((name) =>
+            name != 'scroll_screen_dynamic' &&
+            (kIsWeb || !chromeCdpRequired.contains(name)))
         .toList();
   } else {
     final filterNames = filterEnv
@@ -160,6 +168,11 @@ Future<void> _runScenarios() async {
   int ranCount = 0;
 
   for (final name in suitesToRun) {
+    if (!kIsWeb && chromeCdpRequired.contains(name)) {
+      allPassed = false;
+      debugPrint('SCENARIO $name FAIL: requires Chrome CDP input driver');
+      continue;
+    }
     final runner = scenarios[name]!;
     final timeoutSeconds =
         name == 'scroll_screen' || name == 'place_area_popup' ? 150 : 75;

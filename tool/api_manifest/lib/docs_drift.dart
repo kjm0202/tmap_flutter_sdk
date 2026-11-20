@@ -58,9 +58,11 @@ Set<String> extractDocumentedIds(String html) {
       }
     } else if (level == '4' && owner != null) {
       final attributes = heading.group(2)!;
-      final anchored = RegExp(r"""(?:^|\s)id\s*=\s*["']([^"']+)["']""")
-          .firstMatch(attributes);
-      if (anchored != null &&
+      final anchored = RegExp(
+        r'''(?:^|\s)id\s*=\s*(?:"[^"]+"|'[^']+'|[^\s"'`=<>]+)''',
+        caseSensitive: false,
+      ).hasMatch(attributes);
+      if (anchored &&
           (section == 'Methods' || section == 'Properties') &&
           RegExp(r'^[A-Za-z_$][\w$]*$').hasMatch(name)) {
         ids.add('$owner#$name');

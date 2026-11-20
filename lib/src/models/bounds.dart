@@ -9,14 +9,25 @@ import 'size.dart';
 /// published constructor description naming its arguments left/bottom/right/top.
 /// This value type follows the observed numeric SDK representation.
 class Bounds {
+  /// Left (minimum X) edge.
   final double left;
+
+  /// Top (maximum Y) edge.
   final double top;
+
+  /// Horizontal distance from [left] to [right].
   final double width;
+
+  /// Vertical distance from [bottom] to [top].
   final double height;
 
+  /// Creates a rectangle from its left and top edges, width and height.
+  ///
+  /// This matches the SDK's stored (left, top, width, height) values. The
+  /// exposed bottom edge is [top] minus [height].
   const Bounds(this.left, this.top, this.width, this.height);
 
-  /// Builds the same rectangle from its four edges.
+  /// Creates a rectangle from its left, bottom, right and top edges.
   const Bounds.fromEdges({
     required this.left,
     required double bottom,
@@ -25,17 +36,31 @@ class Bounds {
   })  : width = right - left,
         height = top - bottom;
 
+  /// Right (maximum X) edge.
   double get right => left + width;
+
+  /// Bottom (minimum Y) edge.
   double get bottom => top - height;
+
+  /// Top-left corner of the rectangle.
   Point get position => Point(left, top);
+
+  /// Rectangle dimensions.
   Size get size => Size(width, height);
 
+  /// Returns an independent copy of this immutable rectangle.
   Bounds clone() => Bounds(left, top, width, height);
 
-  /// Immutable equivalents of the SDK's setLeft/setTop/setWidth/setHeight.
+  /// Returns a copy with a different [left] edge and the same dimensions.
   Bounds withLeft(double value) => Bounds(value, top, width, height);
+
+  /// Returns a copy with a different [top] edge and the same dimensions.
   Bounds withTop(double value) => Bounds(left, value, width, height);
+
+  /// Returns a copy with a different [width].
   Bounds withWidth(double value) => Bounds(left, top, value, height);
+
+  /// Returns a copy with a different [height].
   Bounds withHeight(double value) => Bounds(left, top, width, value);
 
   /// Tests whether the entire Cartesian rectangle is contained.
@@ -69,25 +94,36 @@ class Bounds {
         other.y < top;
   }
 
-  /// Cartesian overlap matching the official SDK's intersects method.
+  /// Tests whether the rectangles overlap using their exposed edges.
   ///
-  /// That method treats top as the origin of a positive-height Y interval.
-  /// Its optional boundary flag in the docs is ignored by the SDK.
-  bool intersects(Bounds other) =>
-      right >= other.left &&
-      left <= other.right &&
-      top + height >= other.top &&
-      top <= other.top + other.height;
+  /// Edge-only contact counts when [includeBoundary] is true. The SDK
+  /// mistakenly uses top + height for its bottom-edge calculation and ignores
+  /// the boundary flag; Dart follows the documented rectangle geometry.
+  bool intersects(Bounds other, {bool includeBoundary = true}) {
+    if (includeBoundary) {
+      return right >= other.left &&
+          left <= other.right &&
+          top >= other.bottom &&
+          bottom <= other.top;
+    }
+    return right > other.left &&
+        left < other.right &&
+        top > other.bottom &&
+        bottom < other.top;
+  }
 
-  /// An immutable equivalent of the SDK's mutating union.
+  /// Returns the smallest rectangle enclosing both operands.
+  ///
+  /// The SDK's mutating union uses an inverted bottom edge; Dart keeps the
+  /// documented edge convention and returns a new value.
   Bounds union(Bounds other) {
     final minLeft = math.min(left, other.left);
-    final minTop = math.min(top, other.top);
+    final maxTop = math.max(top, other.top);
     return Bounds(
       minLeft,
-      minTop,
+      maxTop,
       math.max(right, other.right) - minLeft,
-      math.max(top + height, other.top + other.height) - minTop,
+      maxTop - math.min(bottom, other.bottom),
     );
   }
 
