@@ -28,65 +28,155 @@ import '../utils/zoom_phase.dart';
 import 'tmap_web_bridge.dart';
 import 'tmap_web_loader.dart';
 
-/// Flutter Web 전용 네이티브 TMAP DOM 렌더링 위젯
+/// A Flutter Web widget that renders a TMAP map in a native DOM element.
 class TMapWebWidget extends StatefulWidget {
+  /// Map center in WGS84 latitude/longitude, or null to omit the option.
+  ///
+  /// Non-null changes after the map is initialized call
+  /// [TMapWebBridge.setCenter]. Changes made while the SDK script loads are
+  /// included in the options passed to [TMapWebBridge.initMap]; changes made
+  /// after that call and before the map reports creation are not applied.
   final LatLng? center;
 
-  /// 지도에 표시할 영역입니다. 변경하면 [TMapWebBridge.fitBounds]로 적용됩니다.
+  /// Geographic bounds displayed by the map.
   ///
-  /// null과 [LatLngBounds.empty]는 초기 설정 및 변경에서 제외됩니다.
+  /// Changes after initialization call [TMapWebBridge.fitBounds].
+  /// Null or [LatLngBounds.empty] values are ignored at creation and on update.
   final LatLngBounds? bounds;
 
-  /// 지도 이동 제한 영역입니다. SDK 지도 생성 시에만 적용됩니다.
+  /// Map movement restriction bounds, applied only during SDK map creation.
+  ///
+  /// Null and empty bounds are omitted from the creation options.
   final LatLngBounds? maxBounds;
+
+  /// Camera zoom level, 16 by default; later changes update the web map.
   final int zoom;
+
+  /// Minimum zoom level, 0 by default; later changes update the zoom limits.
   final int minZoom;
+
+  /// Maximum zoom level, 19 by default; later changes update the zoom limits.
   final int maxZoom;
+
+  /// Camera bearing in degrees, 0 by default; later changes update the map.
   final double bearing;
+
+  /// Camera pitch in degrees, 0 by default; later changes update the map.
   final double pitch;
 
-  /// 최소 기울기(도)입니다. 생성 시에만 적용됩니다.
+  /// Minimum camera pitch in degrees, applied only during map creation.
   final double? minPitch;
 
-  /// 최대 기울기(도)입니다. 생성 시에만 적용됩니다.
+  /// Maximum camera pitch in degrees, applied only during map creation.
   final double? maxPitch;
+
+  /// Map style, [TMapType.road] by default; later changes update the map.
   final TMapType mapType;
+
+  /// Navigation control visibility, false by default; later changes apply.
   final bool naviControl;
+
+  /// Scale bar visibility, false by default; later changes apply.
+  ///
+  /// "Later changes" for [zoom], [minZoom], [maxZoom], [bearing], [pitch],
+  /// [mapType], [naviControl] and this field mean changes made after the map
+  /// is initialized. Changes made while the SDK script loads are included in
+  /// the options passed to [TMapWebBridge.initMap]; changes made after that
+  /// call and before the map reports creation are not applied.
   final bool scaleBar;
+
+  /// Map markers, or null for none, synchronized by marker ID and JSON.
   final List<Marker>? markers;
+
+  /// Marker clusterer, or null to remove the existing clusterer.
   final Clusterer? clusterer;
+
+  /// Information windows, or null for none, synchronized by window ID.
   final List<InfoWindow>? infoWindows;
+
+  /// Map labels, or null for none, synchronized by label ID.
   final List<Label>? labels;
+
+  /// Map polylines, or null for none, synchronized by polyline ID.
   final List<Polyline>? polylines;
+
+  /// Map polygons, or null for none, synchronized by polygon ID.
   final List<Polygon>? polygons;
+
+  /// Map circles, or null for none, synchronized by circle ID.
   final List<Circle>? circles;
+
+  /// Map rectangles, or null for none, synchronized by rectangle ID.
   final List<Rectangle>? rectangles;
+
+  /// Custom overlays, or null for none, synchronized by overlay ID.
   final List<CustomOverlay>? customOverlays;
+
+  /// Callback receiving the [TMapController] after map initialization.
+  ///
+  /// Registered overlays are synchronized before this callback is invoked.
   final MapCreateCallback? onMapCreated;
+
+  /// Callback for map taps at WGS84 latitude/longitude coordinates.
   final OnMapTap? onMapTap;
+
+  /// Callback for map double-taps at WGS84 coordinates.
   final OnMapDoubleTap? onMapDoubleTap;
+
+  /// Callback for map long-press events at WGS84 coordinates.
   final OnMapLongTap? onMapLongTap;
 
-  /// SDK 터치 시작 시 최신 콜백을 호출합니다.
+  /// Callback for SDK touch-start events at WGS84 coordinates.
   final OnMapTouch? onTouchStart;
 
-  /// SDK 터치 종료 시 최신 콜백을 호출합니다.
+  /// Callback for SDK touch-end events at WGS84 coordinates.
   final OnMapTouch? onTouchEnd;
+
+  /// Callback for map drag start, move, and end events.
+  ///
+  /// Receives the WGS84 center, zoom level, and [DragType] phase.
   final OnDragChangeCallback? onDragChangeCallback;
 
-  /// 줌 시작 및 종료 콜백. 제스처 중간의 줌 변경은 전달하지 않습니다.
+  /// Callback for zoom start and end; intermediate gesture zoom changes are
+  /// not reported.
   final OnZoomChangeCallback? onZoomChangeCallback;
+
+  /// Callback for center changes with WGS84 coordinates and zoom level.
   final OnCenterChangeCallback? onCenterChangeCallback;
+
+  /// Callback for changes to the displayed WGS84 coordinate bounds.
   final OnBoundsChangeCallback? onBoundsChangeCallback;
+
+  /// Callback for camera bearing changes in degrees.
   final OnBearingChangeCallback? onBearingChangeCallback;
+
+  /// Callback for camera pitch changes in degrees.
   final OnPitchChangeCallback? onPitchChangeCallback;
+
+  /// Callback for camera idle events with center, zoom, bearing, and pitch.
+  ///
+  /// The center uses WGS84 latitude/longitude; angles are in degrees.
   final OnCameraIdle? onCameraIdle;
+
+  /// Callback for marker taps with marker ID, WGS84 position, and zoom.
   final OnMarkerTap? onMarkerTap;
+
+  /// Callback for marker drag events with ID, WGS84 position, and phase.
   final OnMarkerDragChangeCallback? onMarkerDragChangeCallback;
+
+  /// Callback for cluster taps with WGS84 center, zoom, and marker IDs.
   final OnMarkerClustererTap? onMarkerClustererTap;
+
+  /// Callback for information window taps with ID and WGS84 position.
   final OnInfoWindowTap? onInfoWindowTap;
+
+  /// Callback for custom overlay taps with ID and WGS84 position.
   final OnCustomOverlayTap? onCustomOverlayTap;
 
+  /// Creates a Tmapv3 web map widget with camera options and overlays.
+  ///
+  /// [minPitch], [maxPitch], and [maxBounds] apply only during map creation.
+  /// Null overlay collections are treated as empty during synchronization.
   const TMapWebWidget({
     super.key,
     this.center,
@@ -131,10 +221,12 @@ class TMapWebWidget extends StatefulWidget {
     this.onCustomOverlayTap,
   });
 
+  /// Creates state to register the map DOM view and manage its JS lifecycle.
   @override
   State<TMapWebWidget> createState() => _TMapWebWidgetState();
 }
 
+/// Manages the Tmapv3 HTML view, JavaScript callbacks, and overlay snapshots.
 class _TMapWebWidgetState extends State<TMapWebWidget> {
   static int _nextViewId = 0;
   late final String _viewId;
@@ -146,6 +238,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   bool _isMapInitialized = false;
   LatLngBounds? _boundsAtCreation;
 
+  /// Registers the HTML platform view and begins loading the Tmapv3 SDK.
   @override
   void initState() {
     super.initState();
@@ -155,7 +248,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     _viewType = 'tmap_web_view_$_viewId';
     _controller = TMapController.fromWeb(_viewId);
 
-    // DOM 플랫폼 뷰 등록
+    // Register the DOM platform view.
     ui_web.platformViewRegistry.registerViewFactory(
       _viewType,
       (int viewId) {
@@ -194,7 +287,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       debugPrint(
           '[TMapWebLoader] loadScript completed, initializing map in DOM...');
 
-      // 콜백 객체 생성
+      // Create the JavaScript callback object.
       final callbacks = JSObject();
       callbacks.setProperty(
           'onInitError'.toJS,
@@ -478,6 +571,10 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     }
   }
 
+  /// Applies changed map options and synchronizes overlays once the map is
+  /// initialized.
+  ///
+  /// Before the map is ready, starts initialization if none is in progress.
   @override
   void didUpdateWidget(TMapWebWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -599,6 +696,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     );
   }
 
+  /// Disposes of the JavaScript map resources for this view.
   @override
   void dispose() {
     _isMapInitialized = false;
@@ -606,6 +704,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     super.dispose();
   }
 
+  /// Returns the HTML map view inside a detector that claims pointer input.
   @override
   Widget build(BuildContext context) {
     // The HTML map receives DOM input independently of Flutter's gesture

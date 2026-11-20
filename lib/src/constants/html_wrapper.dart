@@ -1,6 +1,6 @@
 import '../auth/auth_repository.dart';
 
-/// TMAP Vector Map JS SDK를 포함하는 HTML 템플릿을 생성합니다.
+/// Builds an HTML document embedding the TMAP Vector Map JS SDK.
 String htmlWrapper(String script) {
   final appKey = AuthRepository.instance.appKey;
   return '''

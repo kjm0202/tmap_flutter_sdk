@@ -4,25 +4,25 @@ import '../models/lat_lng.dart';
 import '../models/point.dart';
 import '../tmap_controller.dart';
 
-/// TMAP v3 좌표 변환 API입니다.
+/// Coordinate conversions supported by the TMAP v3 API.
 ///
-/// EPSG:3857 변환은 동기식 순수 Dart 연산입니다. TMAP 고유의 Bessel 및
-/// KATEC 보정은 SDK와 동일한 값을 얻기 위해 연결된 지도를 통해 실행합니다.
+/// EPSG:3857 conversions are synchronous, pure Dart calculations.
+/// SDK-specific Bessel and KATEC conversions run through a connected map.
 class Projection {
   final TMapController? _controller;
 
-  /// 좌표 변환 도우미를 생성합니다.
+  /// Creates a coordinate conversion helper.
   ///
-  /// EPSG:3857 변환은 컨트롤러 없이 로컬에서 동기 실행됩니다.
-  /// Bessel/KATEC 변환은 SDK 지도를 호출하므로 [TMapController]가 필요하며,
-  /// 없으면 호출 시 [StateError]가 발생합니다.
+  /// EPSG:3857 conversions run synchronously without a controller.
+  /// Bessel/KATEC conversions require a [TMapController] for SDK calls and
+  /// fail with [StateError] when no controller is provided.
   const Projection([this._controller]);
 
   static const double _earthRadius = 6378137.0;
 
-  /// WGS84 위경도(도)를 EPSG:3857 평면 좌표(미터)로 동기 변환합니다.
+  /// Converts WGS84 latitude/longitude in degrees to EPSG:3857 meters.
   ///
-  /// 지도나 네트워크 연결이 필요하지 않습니다.
+  /// Runs synchronously without a map or network connection.
   Point convertWGS84GEOToEPSG3857(LatLng coordinate) {
     final latitude = coordinate.latitude * math.pi / 180;
     final x = _earthRadius * coordinate.longitude * math.pi / 180;
@@ -30,9 +30,9 @@ class Projection {
     return Point(x, y);
   }
 
-  /// EPSG:3857 평면 좌표(미터)를 WGS84 위경도(도)로 동기 변환합니다.
+  /// Converts EPSG:3857 coordinates in meters to WGS84 degrees.
   ///
-  /// 지도나 네트워크 연결이 필요하지 않습니다.
+  /// Runs synchronously without a map or network connection.
   LatLng convertEPSG3857ToWGS84GEO(Point coordinate) {
     final longitude = coordinate.x / _earthRadius * 180 / math.pi;
     final latitude =
@@ -42,27 +42,27 @@ class Projection {
     return LatLng(latitude, longitude);
   }
 
-  /// Bessel 지리 좌표(도)를 WGS84 위경도(도)로 SDK를 통해 비동기 변환합니다.
+  /// Converts Bessel geographic degrees to WGS84 degrees through the SDK.
   Future<LatLng> convertBesselGEOToWGS84GEO(LatLng coordinate) async =>
       LatLng.fromJson(
           await _convert('convertBesselGEOToWGS84GEO', coordinate.toJson()));
 
-  /// Bessel TM 평면 좌표(미터)를 WGS84 위경도(도)로 비동기 변환합니다.
+  /// Converts Bessel TM projected coordinates in meters to WGS84 degrees.
   Future<LatLng> convertBesselTMToWGS84GEO(Point coordinate) async =>
       LatLng.fromJson(
           await _convert('convertBesselTMToWGS84GEO', coordinate.toJson()));
 
-  /// WGS84 위경도(도)를 Bessel 지리 좌표(도)로 비동기 변환합니다.
+  /// Converts WGS84 latitude/longitude in degrees to Bessel geographic degrees.
   Future<LatLng> convertWGS84GEOToBesselGEO(LatLng coordinate) async =>
       LatLng.fromJson(
           await _convert('convertWGS84GEOToBesselGEO', coordinate.toJson()));
 
-  /// WGS84 위경도(도)를 Bessel TM 평면 좌표(미터)로 비동기 변환합니다.
+  /// Converts WGS84 latitude/longitude degrees to Bessel TM meters.
   Future<Point> convertWGS84GEOToBesselTM(LatLng coordinate) async =>
       Point.fromJson(
           await _convert('convertWGS84GEOToBesselTM', coordinate.toJson()));
 
-  /// WGS84 위경도(도)를 KATEC 평면 좌표(미터)로 비동기 변환합니다.
+  /// Converts WGS84 latitude/longitude degrees to KATEC meters.
   Future<Point> convertWGS84GEOToKatec(LatLng coordinate) async =>
       Point.fromJson(
           await _convert('convertWGS84GEOToKatec', coordinate.toJson()));

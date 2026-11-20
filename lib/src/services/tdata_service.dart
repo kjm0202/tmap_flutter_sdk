@@ -17,11 +17,11 @@ import '../models/route_info.dart';
 import '../models/traffic_segment.dart';
 import 'tdata_protocol.dart';
 
-/// TData 서비스 요청 및 비동기 응답 처리기
+/// An asynchronous client for TMAP TData REST services.
 class TDataService {
   static final http.Client _httpClient = http.Client();
 
-  /// 자동차 경로 탐색 (REST API)
+  /// Requests a driving route through the TMAP REST API.
   static Future<RouteInfo?> getRoutePlan({
     required LatLng start,
     required LatLng end,
@@ -55,7 +55,7 @@ class TDataService {
     return null;
   }
 
-  /// 보행자 경로 탐색 (REST API)
+  /// Requests a pedestrian route through the TMAP REST API.
   static Future<RouteInfo?> getRoutePlanPedestrian({
     required LatLng start,
     required LatLng end,
@@ -92,7 +92,7 @@ class TDataService {
     return null;
   }
 
-  /// POI 키워드 검색 (REST API)
+  /// Searches for POIs by keyword through the TMAP REST API.
   static Future<List<PoiItem>> searchPoi({
     required String searchKeyword,
     int count = 20,
@@ -135,7 +135,7 @@ class TDataService {
     return [];
   }
 
-  /// POI 주변 검색 (REST API)
+  /// Searches for nearby POIs around [center] through the TMAP REST API.
   static Future<List<PoiItem>> searchPoiAround({
     required LatLng center,
     String? categories,
@@ -179,7 +179,7 @@ class TDataService {
     return [];
   }
 
-  /// 주소로 좌표 검색 (지오코딩)
+  /// Geocodes [address] to WGS84 coordinates through the TMAP REST API.
   static Future<LatLng?> getGeoFromAddress({
     required String address,
   }) async {
@@ -203,7 +203,7 @@ class TDataService {
     return null;
   }
 
-  /// 좌표로 주소 검색 (역지오코딩)
+  /// Reverse-geocodes [point] to an address through the TMAP REST API.
   static Future<AddressInfo?> getAddressFromGeo({
     required LatLng point,
     String addressType = 'A04',
@@ -259,7 +259,7 @@ class TDataService {
     return null;
   }
 
-  /// 키워드 자동완성 검색
+  /// Retrieves keyword autocomplete suggestions through the TMAP REST API.
   static Future<List<AutoCompleteItem>> getAutoCompleteSearch({
     required String keyword,
   }) async {
@@ -284,12 +284,12 @@ class TDataService {
     return [];
   }
 
-  /// Location-aware keyword autocomplete.
+  /// Requests location-aware keyword autocomplete suggestions.
   ///
   /// Implements the documented `Tmapv3.TData#getAutoCompleteSearchv3Json`
-  /// through the SDK's V2 REST endpoint `/tmap/poi/V2autoComplete`. Results are
-  /// sorted by distance from [center]; [radius] is in kilometres (1-33) and
-  /// [numResults] is limited to 1-100.
+  /// through the SDK's V2 REST endpoint `/tmap/poi/V2autoComplete`. Sends
+  /// [center] with the request, clamps [radius] to 1-33 kilometres, and
+  /// limits [numResults] to 1-100.
   static Future<List<AutoCompleteV2Item>> getAutoCompleteSearchV2({
     required String keyword,
     required LatLng center,
@@ -451,7 +451,7 @@ class TDataService {
     return null;
   }
 
-  /// The `resCoordType` actually sent, after caller options were applied.
+  /// Returns the effective `resCoordType` after applying caller options.
   static String? _effectiveResCoordType(Map<String, dynamic> body) {
     final value = body['resCoordType'];
     return value is String ? value : null;
@@ -506,7 +506,7 @@ class TDataService {
   }
 
   // ========================================
-  // HTTP 내부 통신 헬퍼
+  // HTTP request helpers
   // ========================================
 
   static Map<String, dynamic>? _decodeBody(String body) {

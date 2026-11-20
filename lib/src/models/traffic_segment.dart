@@ -2,22 +2,24 @@ import 'lat_lng.dart';
 
 /// A road section in the TMAP real-time traffic GeoJSON response.
 class TrafficSegment {
-  /// 응답 `properties.id`의 도로 구간 식별자입니다. 누락 시 빈 문자열입니다.
+  /// Road segment identifier from `properties.id`, or an empty string.
   final String id;
 
-  /// 응답 `properties.name`의 도로 구간 이름입니다. 누락 시 빈 문자열입니다.
+  /// Road segment name from `properties.name`, or an empty string.
   final String name;
 
   /// TMAP congestion code: 0 unknown, 1 smooth, 2 slow, 3 congested, 4 jammed.
   final int congestion;
 
-  /// 실시간 교통 응답의 구간 속도 값입니다. 누락 시 0입니다.
+  /// Segment speed from the traffic response, or zero when absent.
   final int speed;
 
-  /// 구간 경로의 WGS84 위경도 순서 목록입니다. 유효한 좌표가 두 개 이상 있어야 합니다.
+  /// WGS84 latitude/longitude positions along the road segment.
+  ///
+  /// Parsed LineStrings must contain at least two valid coordinates.
   final List<LatLng> path;
 
-  /// 식별자, 혼잡도, 속도 및 지리적 경로로 교통 구간을 생성합니다.
+  /// Creates a traffic segment with its ID, congestion, speed, and path.
   const TrafficSegment({
     required this.id,
     required this.name,
@@ -26,9 +28,9 @@ class TrafficSegment {
     required this.path,
   });
 
-  /// GeoJSON FeatureCollection에서 유효한 LineString 구간만 파싱합니다.
+  /// Parses valid LineString features in a GeoJSON FeatureCollection.
   ///
-  /// `features`가 없거나 배열이 아니면 빈 목록을 반환합니다.
+  /// Returns an empty list when `features` is absent or not an array.
   static List<TrafficSegment> fromFeatureCollection(Map<String, dynamic> json) {
     final features = json['features'];
     if (features is! List) return const [];
@@ -39,10 +41,11 @@ class TrafficSegment {
     ];
   }
 
-  /// GeoJSON Feature 하나에서 교통 구간을 파싱합니다.
+  /// Parses a road segment from one GeoJSON LineString feature.
   ///
-  /// `geometry.coordinates`는 [경도, 위도] 순서입니다. 잘못된 좌표,
-  /// LineString 이외의 도형 또는 좌표가 두 개 미만이면 null을 반환합니다.
+  /// `geometry.coordinates` pairs are `[longitude, latitude]`.
+  /// Returns null for malformed coordinates, missing properties,
+  /// other geometry types, or fewer than two points.
   static TrafficSegment? fromFeature(Map<String, dynamic> json) {
     final geometry = json['geometry'];
     final props = json['properties'];

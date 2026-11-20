@@ -4,15 +4,15 @@ import 'dart:js_interop_unsafe';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 
-/// TMAP JavaScript SDK를 웹 브라우저의 `head`에 동적으로 로드하는 로더
+/// A loader for the TMAP JavaScript SDK in the browser document head.
 class TMapWebLoader {
   static Completer<void>? _loadCompleter;
 
-  /// TMAP Vector Map v3 JS SDK 로드
+  /// Loads the TMAP Vector Map v3 JavaScript SDK using [appKey].
   static Future<void> loadScript(String appKey) async {
     final jsWindow = web.window as JSObject;
 
-    // 이미 Tmapv3.Map이 로드되어 있는지 확인
+    // Return if Tmapv3.Map is already available.
     if (jsWindow.hasProperty('Tmapv3'.toJS).toDart) {
       final tmapObj = jsWindow.getProperty('Tmapv3'.toJS);
       if (tmapObj != null &&
@@ -31,7 +31,7 @@ class TMapWebLoader {
 
     debugPrint('[TMapWebLoader] Loading TMAP SDK');
 
-    // 1. Tmapvector 전역 객체 설정 (SK TMAP SDK 요구사항)
+    // 1. Configure the global Tmapvector object required by the SDK.
     const domain = 'https://toptmaptile1.tmap.co.kr/scriptSDKV3/';
     final tmapVectorObj = JSObject();
     tmapVectorObj.setProperty(
@@ -39,7 +39,7 @@ class TMapWebLoader {
     tmapVectorObj.setProperty('VERSION_NUMBER'.toJS, 1.0.toJS);
     jsWindow.setProperty('Tmapvector'.toJS, tmapVectorObj);
 
-    // 2. vsm.css 스타일시트 추가
+    // 2. Add the vsm.css stylesheet if it is missing.
     if (web.document.querySelector('link[href*="vsm.css"]') == null) {
       final link = web.document.createElement('link') as web.HTMLLinkElement;
       link.rel = 'stylesheet';
@@ -47,7 +47,7 @@ class TMapWebLoader {
       web.document.head?.append(link);
     }
 
-    // 3. vectorjs 인증 스크립트 로드
+    // 3. Insert the vectorjs authorization script.
     final authScript =
         web.document.createElement('script') as web.HTMLScriptElement;
     authScript.type = 'text/javascript';
@@ -55,7 +55,7 @@ class TMapWebLoader {
         'https://apis.openapi.sk.com/tmap/vectorjs?version=1&appKey=$appKey';
     web.document.head?.append(authScript);
 
-    // 4. tmapjs3.min.js 코어 엔진 스크립트 직접 로드 (document.write 차단 문제 해결)
+    // 4. Load the core engine directly to avoid blocked document.write calls.
     if (web.document.querySelector('script[src*="tmapjs3"]') == null) {
       final coreScript =
           web.document.createElement('script') as web.HTMLScriptElement;

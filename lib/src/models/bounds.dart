@@ -6,7 +6,7 @@ import 'size.dart';
 /// Cartesian SDK bounds, kept separate from geographic [LatLngBounds].
 ///
 /// The JS constructor actually stores (left, top, width, height), despite the
-/// published constructor description naming its arguments left/bottom/right/top.
+/// published description naming its arguments left/bottom/right/top.
 /// This value type follows the observed numeric SDK representation.
 class Bounds {
   /// Left (minimum X) edge.
@@ -127,6 +127,7 @@ class Bounds {
     );
   }
 
+  /// Tests equality of [left], [top], [width], and [height].
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -136,9 +137,11 @@ class Bounds {
           width == other.width &&
           height == other.height;
 
+  /// Hash code derived from the four rectangle dimensions.
   @override
   int get hashCode => Object.hash(left, top, width, height);
 
+  /// Formats the four rectangle coordinates to two decimal places.
   @override
   String toString() => '${left.toStringAsFixed(2)},${top.toStringAsFixed(2)},'
       '${width.toStringAsFixed(2)},${height.toStringAsFixed(2)}';

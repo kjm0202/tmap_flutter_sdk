@@ -1,8 +1,8 @@
-/// 지도 줌 변경 이벤트 단계입니다.
+/// Phases of a map zoom change.
 enum ZoomType {
-  /// SDK `ZoomStart` 이벤트가 발생한 단계입니다.
+  /// A zoom change has started (SDK `ZoomStart`).
   start,
 
-  /// SDK `ZoomEnd` 또는 단독 `Zoom` 이벤트가 발생한 단계입니다.
+  /// A zoom change has ended (SDK `ZoomEnd`, or a standalone `Zoom`).
   end,
 }

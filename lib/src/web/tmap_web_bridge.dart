@@ -22,11 +22,11 @@ import '../utils/hex_color.dart';
 @JS('eval')
 external JSAny? _eval(JSString script);
 
-/// TMAP Web Bridge - 브라우저 window 객체에 TMAP 헬퍼 스크립트를 관리하고 인스턴스를 제어
+/// Controls TMAP web map instances through helpers on the browser window.
 class TMapWebBridge {
   static bool _scriptsInjected = false;
 
-  /// 웹 페이지에 공유 및 웹 지도 JS 브리지를 한 번만 삽입합니다.
+  /// Injects the shared and web JavaScript bridge scripts once per page.
   static Future<void> injectHelperScripts() async {
     if (_scriptsInjected) return;
     final scripts = await loadBridgeAssets(const ['shared.js', 'web.js']);
@@ -42,10 +42,10 @@ class TMapWebBridge {
     );
   }
 
-  /// [viewId]로 식별되는 웹 지도 인스턴스를 초기화합니다.
+  /// Initializes the web map instance identified by [viewId].
   ///
-  /// 전달한 좌표 경계가 비어 있으면 `bounds` 또는 `maxBounds` 옵션을 생략합니다.
-  /// [callbacks]에는 SDK 이벤트를 받는 JS 콜백을 전달합니다.
+  /// Omits empty [bounds] or [maxBounds] from the creation options.
+  /// Passes [callbacks] to JavaScript to receive SDK events.
   static void initMap({
     required String viewId,
     required String containerId,
@@ -91,25 +91,26 @@ class TMapWebBridge {
     );
   }
 
-  /// [viewId]의 웹 지도 인스턴스 및 브리지 리소스를 해제합니다.
+  /// Disposes of the web map instance and bridge resources for [viewId].
   static void dispose(String viewId) {
     if (_scriptsInjected) _call('dispose', [viewId]);
   }
 
-  /// 지도 중심을 WGS84 위경도 [center]로 설정합니다.
+  /// Sets the map center to WGS84 [center].
   static void setCenter(String viewId, LatLng center) {
     _call('setCenter', [viewId, center.latitude, center.longitude]);
   }
 
-  /// 지도의 카메라 줌 레벨을 설정합니다.
+  /// Sets the camera zoom level to [zoom].
   static void setZoom(String viewId, int zoom) {
     _call('setZoom', [viewId, zoom]);
   }
 
-  /// SDK의 지도 상태 조회 [method]를 호출하고 JSON 문자열을 반환합니다.
+  /// Calls the SDK map state query [method] and returns its JSON string.
   ///
-  /// 중심·경계·줌·회전·기울기·스크린 좌표 등의 조회를 [args]와 함께 전달합니다.
-  /// JS에서 값을 반환하지 않으면 null이 됩니다.
+  /// Queries include center, bounds, zoom, bearing, pitch, and screen
+  /// coordinates. Passes [args] through to the SDK query.
+  /// Returns null when JavaScript returns no result.
   static String? readMapData(
       String viewId, String method, Map<String, dynamic> args) {
     return (web.window as JSObject).callMethodVarArgs<JSString?>(
@@ -118,9 +119,9 @@ class TMapWebBridge {
     )?.toDart;
   }
 
-  /// SDK의 Bessel/KATEC 좌표 변환 [method]를 호출하고 JSON을 반환합니다.
+  /// Calls the SDK's Bessel or KATEC projection conversion [method].
   ///
-  /// [args]는 입력 좌표이며 결과가 없으면 null을 반환합니다.
+  /// Supplies input coordinates in [args] and returns JSON or null.
   static String? convertProjection(
       String viewId, String method, Map<String, dynamic> args) {
     return (web.window as JSObject).callMethodVarArgs<JSString?>(
@@ -129,64 +130,66 @@ class TMapWebBridge {
     )?.toDart;
   }
 
-  /// 지도의 최소·최대 허용 줌 레벨을 함께 갱신합니다.
+  /// Updates the allowed map zoom range from [minZoom] to [maxZoom].
   static void setZoomLimit(String viewId, int minZoom, int maxZoom) {
     _call('setZoomLimit', [viewId, minZoom, maxZoom]);
   }
 
-  /// 지도를 한 단계 확대합니다.
+  /// Increases the map zoom by one level.
   static void zoomIn(String viewId) {
     _call('zoomIn', [viewId]);
   }
 
-  /// 지도를 한 단계 축소합니다.
+  /// Decreases the map zoom by one level.
   static void zoomOut(String viewId) {
     _call('zoomOut', [viewId]);
   }
 
-  /// SDK가 지원하는 최대 화면 범위로 줌을 조정합니다.
+  /// Zooms to the SDK's maximum map extent.
+  ///
+  /// Falls back to the minimum allowed zoom if that method is unavailable.
   static void zoomToMaxExtent(String viewId) {
     _call('zoomToMaxExtent', [viewId]);
   }
 
-  /// 컨테이너 크기가 바뀐 지도의 레이아웃을 갱신합니다.
+  /// Recalculates the map layout after its container size changes.
   static void relayout(String viewId) {
     _call('relayout', [viewId]);
   }
 
-  /// 줌 제한, 내비게이션 컨트롤, 스케일바 등의 런타임 옵션을 갱신합니다.
+  /// Updates runtime [options], including zoom limits and map controls.
   static void updateMapOptions(String viewId, Map<String, dynamic> options) {
     _call('updateMapOptions', [viewId, options]);
   }
 
-  /// WGS84 위경도 [target]으로 지도를 이동합니다.
+  /// Pans the map to WGS84 [target].
   static void panTo(String viewId, LatLng target) {
     _call('panTo', [viewId, target.latitude, target.longitude]);
   }
 
-  /// 지도 화면을 픽셀 오프셋 [x], [y]만큼 이동합니다.
+  /// Pans the map by [x] and [y] screen pixels.
   static void panBy(String viewId, int x, int y) {
     _call('panBy', [viewId, x, y]);
   }
 
-  /// 지도 회전각을 도 단위로 설정합니다.
+  /// Sets the map bearing in degrees.
   static void setBearing(String viewId, double bearing) {
     _call('setBearing', [viewId, bearing]);
   }
 
-  /// 지도 카메라 기울기를 도 단위로 설정합니다.
+  /// Sets the camera pitch in degrees.
   static void setPitch(String viewId, double pitch) {
     _call('setPitch', [viewId, pitch]);
   }
 
-  /// 지도 스타일 유형을 설정합니다.
+  /// Sets the map style to [mapType].
   static void setMapType(String viewId, TMapType mapType) {
     _call('setMapType', [viewId, mapType.name.toUpperCase()]);
   }
 
-  /// 지도의 화면 영역을 [bounds]에 맞춥니다.
+  /// Fits the map viewport to WGS84 [bounds].
   ///
-  /// [padding]은 지도 화면 가장자리의 여백을 픽셀로 지정합니다.
+  /// [padding] specifies the inset from the map edges in pixels.
   static void fitBounds(String viewId, LatLngBounds bounds, int? padding) {
     _call('fitBounds', [
       viewId,
@@ -198,22 +201,22 @@ class TMapWebBridge {
     ]);
   }
 
-  /// 지정한 지도에 [marker]를 추가하거나 같은 ID의 마커를 대체합니다.
+  /// Adds [marker] to the map, replacing any marker with the same ID.
   static void addMarker(String viewId, Marker marker) {
     _call('addMarker', [viewId, marker.toJson()]);
   }
 
-  /// 지도에서 [markerId]의 마커를 제거합니다.
+  /// Removes the map marker identified by [markerId].
   static void clearMarker(String viewId, String markerId) {
     _call('clearMarker', [viewId, markerId]);
   }
 
-  /// 지도에 등록된 모든 마커를 제거합니다.
+  /// Removes all markers registered on the map.
   static void clearAllMarkers(String viewId) {
     _call('clearAllMarkers', [viewId]);
   }
 
-  /// 지도에 [clusterer]와 그 멤버 마커를 등록합니다.
+  /// Registers [clusterer] and its member markers on the map.
   static void addClusterer(String viewId, Clusterer clusterer) {
     final data = {
       'maxZoom': clusterer.maxClusterZoom,
@@ -228,17 +231,17 @@ class TMapWebBridge {
     _call('addClusterer', [viewId, data]);
   }
 
-  /// 지도에서 마커 클러스터러를 해제합니다.
+  /// Removes the marker clusterer from the map.
   static void clearClusterer(String viewId) {
     _call('clearClusterer', [viewId]);
   }
 
-  /// 현재 클러스터러의 마커들을 제거합니다.
+  /// Removes markers from the active clusterer.
   static void clearClusterMarkers(String viewId) {
     _call('clearClusterMarkers', [viewId]);
   }
 
-  /// 지도에 정보 창을 추가하거나 같은 ID의 정보 창을 대체합니다.
+  /// Adds [iw] to the map, replacing an information window with the same ID.
   static void addInfoWindow(String viewId, InfoWindow iw) {
     final data = {
       'id': iw.infoWindowId,
@@ -255,17 +258,17 @@ class TMapWebBridge {
     _call('addInfoWindow', [viewId, data]);
   }
 
-  /// [infoWindowId]의 정보 창을 제거합니다.
+  /// Removes the information window identified by [infoWindowId].
   static void clearInfoWindow(String viewId, String infoWindowId) {
     _call('clearInfoWindow', [viewId, infoWindowId]);
   }
 
-  /// 등록된 모든 정보 창을 제거합니다.
+  /// Removes all registered information windows.
   static void clearAllInfoWindows(String viewId) {
     _call('clearAllInfoWindows', [viewId]);
   }
 
-  /// 지도에 텍스트 라벨을 추가하거나 같은 ID의 라벨을 대체합니다.
+  /// Adds [label] to the map, replacing any label with the same ID.
   static void addLabel(String viewId, Label label) {
     final data = {
       'id': label.labelId,
@@ -280,17 +283,17 @@ class TMapWebBridge {
     _call('addLabel', [viewId, data]);
   }
 
-  /// [labelId]의 라벨을 제거합니다.
+  /// Removes the label identified by [labelId].
   static void clearLabel(String viewId, String labelId) {
     _call('clearLabel', [viewId, labelId]);
   }
 
-  /// 등록된 모든 라벨을 제거합니다.
+  /// Removes all registered labels.
   static void clearAllLabels(String viewId) {
     _call('clearAllLabels', [viewId]);
   }
 
-  /// 지도에 사용자 정의 오버레이를 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [overlay], replacing any custom overlay with the same ID.
   static void addCustomOverlay(String viewId, CustomOverlay overlay) {
     final data = {
       'id': overlay.customOverlayId,
@@ -304,17 +307,17 @@ class TMapWebBridge {
     _call('addCustomOverlay', [viewId, data]);
   }
 
-  /// [customOverlayId]의 사용자 정의 오버레이를 제거합니다.
+  /// Removes the custom overlay identified by [customOverlayId].
   static void clearCustomOverlay(String viewId, String customOverlayId) {
     _call('clearCustomOverlay', [viewId, customOverlayId]);
   }
 
-  /// 등록된 모든 사용자 정의 오버레이를 제거합니다.
+  /// Removes all registered custom overlays.
   static void clearAllCustomOverlays(String viewId) {
     _call('clearAllCustomOverlays', [viewId]);
   }
 
-  /// 지도에 폴리라인을 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [polyline], replacing any polyline with the same ID.
   static void addPolyline(String viewId, Polyline polyline) {
     final data = {
       'id': polyline.polylineId,
@@ -330,47 +333,47 @@ class TMapWebBridge {
     _call('addPolyline', [viewId, data]);
   }
 
-  /// [polylineId]의 폴리라인을 제거합니다.
+  /// Removes the polyline identified by [polylineId].
   static void clearPolyline(String viewId, String polylineId) {
     _call('clearPolyline', [viewId, polylineId]);
   }
 
-  /// 등록된 모든 폴리라인을 제거합니다.
+  /// Removes all registered polylines.
   static void clearAllPolylines(String viewId) {
     _call('clearAllPolylines', [viewId]);
   }
 
-  /// [polygonId]의 다각형을 제거합니다.
+  /// Removes the polygon identified by [polygonId].
   static void clearPolygon(String viewId, String polygonId) {
     _call('clearPolygon', [viewId, polygonId]);
   }
 
-  /// 등록된 모든 다각형을 제거합니다.
+  /// Removes all registered polygons.
   static void clearAllPolygons(String viewId) {
     _call('clearAllPolygons', [viewId]);
   }
 
-  /// [circleId]의 원 오버레이를 제거합니다.
+  /// Removes the circle overlay identified by [circleId].
   static void clearCircle(String viewId, String circleId) {
     _call('clearCircle', [viewId, circleId]);
   }
 
-  /// 등록된 모든 원 오버레이를 제거합니다.
+  /// Removes all registered circle overlays.
   static void clearAllCircles(String viewId) {
     _call('clearAllCircles', [viewId]);
   }
 
-  /// [rectangleId]의 사각형을 제거합니다.
+  /// Removes the rectangle identified by [rectangleId].
   static void clearRectangle(String viewId, String rectangleId) {
     _call('clearRectangle', [viewId, rectangleId]);
   }
 
-  /// 등록된 모든 사각형을 제거합니다.
+  /// Removes all registered rectangles.
   static void clearAllRectangles(String viewId) {
     _call('clearAllRectangles', [viewId]);
   }
 
-  /// 지도에 원 오버레이를 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [circle], replacing any circle with the same ID.
   static void addCircle(String viewId, Circle circle) {
     final data = {
       'id': circle.circleId,
@@ -387,7 +390,7 @@ class TMapWebBridge {
     _call('addCircle', [viewId, data]);
   }
 
-  /// 지도에 다각형을 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [polygon], replacing any polygon with the same ID.
   static void addPolygon(String viewId, Polygon polygon) {
     final data = {
       'id': polygon.polygonId,
@@ -404,7 +407,7 @@ class TMapWebBridge {
     _call('addPolygon', [viewId, data]);
   }
 
-  /// 지도에 사각형을 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [rect], replacing any rectangle with the same ID.
   static void addRectangle(String viewId, Rectangle rect) {
     final data = {
       'id': rect.rectangleId,
@@ -422,35 +425,35 @@ class TMapWebBridge {
     _call('addRectangle', [viewId, data]);
   }
 
-  /// 지도에 지면 이미지 오버레이를 추가하거나 같은 ID의 항목을 대체합니다.
+  /// Adds [overlay], replacing any ground overlay with the same ID.
   static void addGroundOverlay(String viewId, GroundOverlay overlay) {
     _call('addGroundOverlay', [viewId, overlay.toJson()]);
   }
 
-  /// [id]의 지면 이미지 오버레이를 제거합니다.
+  /// Removes the ground image overlay identified by [id].
   static void clearGroundOverlay(String viewId, String id) {
     _call('clearGroundOverlay', [viewId, id]);
   }
 
-  /// 등록된 모든 지면 이미지 오버레이를 제거합니다.
+  /// Removes all registered ground image overlays.
   static void clearAllGroundOverlays(String viewId) {
     _call('clearAllGroundOverlays', [viewId]);
   }
 
-  /// [type]과 [data]에 따라 지도 시각화 레이어를 생성하거나 대체합니다.
+  /// Creates or replaces a [type] visualization layer from [data].
   static void addVisualization(
       String viewId, String type, Map<String, dynamic> data) {
     _call('addVisualization', [viewId, type, data]);
   }
 
-  /// [type] 유형의 [id] 시각화 레이어를 제거합니다.
+  /// Removes visualization [id] of [type].
   static void removeVisualization(String viewId, String type, String id) {
     _call('removeVisualization', [viewId, type, id]);
   }
 
-  /// [id] 다각형에 WGS84 위경도 [point]가 포함되는지 확인합니다.
+  /// Tests whether polygon [id] contains WGS84 [point].
   ///
-  /// 해당 ID의 다각형이 없으면 false입니다.
+  /// Returns false if the polygon does not exist.
   static bool polygonContains(String viewId, String id, LatLng point) {
     final result = (web.window as JSObject).callMethodVarArgs<JSBoolean?>(
       'tmap_polygonContains'.toJS,
@@ -459,9 +462,9 @@ class TMapWebBridge {
     return result?.toDart ?? false;
   }
 
-  /// [id] 다각형의 SDK 면적 결과를 JSON 문자열로 반환합니다.
+  /// Returns the SDK-computed area of polygon [id] as a JSON string.
   ///
-  /// 해당 ID가 없으면 JSON `null` 문자열을 반환합니다.
+  /// Returns the JSON string "null" when the polygon does not exist.
   static String? polygonAreaJson(String viewId, String id) {
     final result = (web.window as JSObject).callMethodVarArgs<JSString?>(
       'tmap_polygonAreaJson'.toJS,
@@ -470,23 +473,23 @@ class TMapWebBridge {
     return result?.toDart;
   }
 
-  /// [mode]와 [options]로 지도 위 드로잉 세션을 시작합니다.
+  /// Starts a map drawing session using [mode] and [options].
   static void startDrawing(
       String viewId, String mode, Map<String, dynamic> options) {
     _call('startDrawing', [viewId, mode, options]);
   }
 
-  /// 현재 지도에서 생성된 드로잉 항목들을 지웁니다.
+  /// Clears drawing items created on the current map.
   static void clearDrawings(String viewId) {
     _call('clearDrawings', [viewId]);
   }
 
-  /// 현재 지도에 등록된 모든 지원 오버레이를 정리합니다.
+  /// Removes all supported overlays registered on the current map.
   static void clearAll(String viewId) {
     _call('clearAll', [viewId]);
   }
 
-  /// 지도 실시간 교통 정보 레이어의 표시 여부를 설정합니다.
+  /// Sets the real-time map traffic layer visibility to [isVisible].
   static void toggleTraffic(String viewId, bool isVisible) {
     _call('toggleTraffic', [viewId, isVisible]);
   }

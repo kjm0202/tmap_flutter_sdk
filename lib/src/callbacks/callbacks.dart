@@ -4,53 +4,53 @@ import '../models/lat_lng.dart';
 import '../models/lat_lng_bounds.dart';
 import '../tmap_controller.dart';
 
-/// 지도 생성 완료 콜백
+/// Callback invoked after map initialization completes.
 typedef MapCreateCallback = void Function(TMapController controller);
 
-/// 지도 탭 콜백
+/// Callback for a single tap on the map.
 typedef OnMapTap = void Function(LatLng latLng);
 
-/// 지도 더블 탭 콜백
+/// Callback for a double tap on the map.
 typedef OnMapDoubleTap = void Function(LatLng latLng);
 
-/// 지도 롱 탭 (ContextMenu) 콜백
+/// Callback for a long tap (context-menu event) on the map.
 typedef OnMapLongTap = void Function(LatLng latLng);
 
-/// 지도 표면 터치 시작·종료 콜백
+/// Callback for touch-start or touch-end events on the map surface.
 typedef OnMapTouch = void Function(LatLng latLng);
 
-/// 마커 탭 콜백
+/// Callback for a marker tap, with its ID, position, and zoom level.
 typedef OnMarkerTap = void Function(String markerId, LatLng latLng, int zoom);
 
-/// 마커 클러스터 탭 콜백
+/// Callback for a cluster tap, with its center, zoom, and marker IDs.
 typedef OnMarkerClustererTap = void Function(
   LatLng center,
   int zoom,
   List<String> markerIds,
 );
 
-/// 인포윈도우 탭 콜백
+/// Callback for a tap on an info window.
 typedef OnInfoWindowTap = void Function(String infoWindowId, LatLng latLng);
 
-/// 커스텀 오버레이 탭 콜백
+/// Callback for a tap on a custom overlay.
 typedef OnCustomOverlayTap = void Function(
     String customOverlayId, LatLng latLng);
 
-/// 마커 드래그 변경 콜백
+/// Callback for marker drag events, including the [DragType] phase.
 typedef OnMarkerDragChangeCallback = void Function(
   String markerId,
   LatLng latLng,
   DragType dragType,
 );
 
-/// 지도 드래그 상태 변경 콜백
+/// Callback for map drag events, including zoom and [DragType].
 typedef OnDragChangeCallback = void Function(
   LatLng latLng,
   int zoom,
   DragType dragType,
 );
 
-/// 카메라 이동 완료 (Idle) 콜백
+/// Callback fired when the camera becomes idle after movement.
 typedef OnCameraIdle = void Function(
   LatLng center,
   int zoom,
@@ -58,19 +58,21 @@ typedef OnCameraIdle = void Function(
   double pitch,
 );
 
-/// 지도 중심 좌표 변경 콜백
+/// Callback for map center changes, with the new center and zoom.
 typedef OnCenterChangeCallback = void Function(LatLng center, int zoom);
 
-/// 줌 변경 콜백입니다. SDK `ZoomStart`는 [ZoomType.start],
-/// `ZoomEnd`와 단독 `Zoom`은 [ZoomType.end]를 전달합니다.
-/// 제스처 도중의 `Zoom` 이벤트는 전달하지 않습니다.
+/// Callback for map zoom changes with their [ZoomType] phase.
+///
+/// SDK `ZoomStart` reports [ZoomType.start]. `ZoomEnd` and a standalone
+/// `Zoom` (for example from a programmatic zoom) report [ZoomType.end].
+/// `Zoom` events fired during a gesture are not reported.
 typedef OnZoomChangeCallback = void Function(int zoom, ZoomType zoomType);
 
-/// 회전각(Bearing) 변경 콜백
+/// Callback for map bearing changes.
 typedef OnBearingChangeCallback = void Function(double bearing);
 
-/// 기울기(Pitch) 변경 콜백
+/// Callback for map pitch changes.
 typedef OnPitchChangeCallback = void Function(double pitch);
 
-/// 지도 표출 영역(Bounds) 변경 콜백
+/// Callback for changes to the visible map bounds.
 typedef OnBoundsChangeCallback = void Function(LatLngBounds bounds);

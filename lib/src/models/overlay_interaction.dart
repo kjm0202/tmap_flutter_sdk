@@ -1,15 +1,38 @@
 import 'lat_lng.dart';
 
-/// `Tmapv3.Marker#on`으로 구독할 수 있는 마커 이벤트.
-enum MarkerInteractionType { click, drag, dragend, mouseenter, mouseleave }
+/// Marker events available through `Tmapv3.Marker#on`.
+enum MarkerInteractionType {
+  /// Marker click event.
+  click,
 
-/// SDK가 전달한 마커 이벤트의 식별자와 좌표, 카메라 줌.
+  /// Marker drag movement event.
+  drag,
+
+  /// Marker drag completion event.
+  dragend,
+
+  /// Pointer entering the marker.
+  mouseenter,
+
+  /// Pointer leaving the marker.
+  mouseleave
+}
+
+/// A marker event with its identifier, position, and map zoom level.
 class MarkerInteraction {
+  /// Identifier of the marker that emitted the event.
   final String markerId;
+
+  /// Kind of marker event.
   final MarkerInteractionType type;
+
+  /// Marker position at the time of the event.
   final LatLng position;
+
+  /// Map zoom level at the time of the event.
   final int zoom;
 
+  /// Creates an event snapshot for [markerId] and [type].
   const MarkerInteraction({
     required this.markerId,
     required this.type,
@@ -18,16 +41,30 @@ class MarkerInteraction {
   });
 }
 
-/// 마커 클러스터 그룹의 포인터 이벤트.
-enum ClusterInteractionType { mouseenter, mouseleave }
+/// Pointer events available on marker clusters.
+enum ClusterInteractionType {
+  /// Pointer entering a marker cluster.
+  mouseenter,
 
-/// SDK 클러스터 그룹이 전달한 중심·줌·멤버 ID 목록.
+  /// Pointer leaving a marker cluster.
+  mouseleave
+}
+
+/// A cluster event with its center, zoom level, and member marker IDs.
 class ClusterInteraction {
+  /// Kind of pointer event on the cluster.
   final ClusterInteractionType type;
+
+  /// Geographic center of the cluster.
   final LatLng center;
+
+  /// Map zoom level when the cluster event occurred.
   final int zoom;
+
+  /// Identifiers of the markers included in the cluster.
   final List<String> markerIds;
 
+  /// Creates a cluster event snapshot with its center and member identifiers.
   const ClusterInteraction({
     required this.type,
     required this.center,

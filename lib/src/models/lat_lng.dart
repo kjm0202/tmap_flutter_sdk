@@ -2,26 +2,31 @@ import 'dart:math' as math;
 
 import 'point.dart';
 
-/// TMAP 지도 상의 위경도 좌표를 표현하는 클래스입니다.
+/// A geographic coordinate on a TMAP map.
 class LatLng {
-  /// 위도 (Latitude)
+  /// Latitude in degrees.
   final double latitude;
 
-  /// 경도 (Longitude)
+  /// Longitude in degrees.
   final double longitude;
 
+  /// Creates a geographic coordinate from latitude and longitude in degrees.
   const LatLng(this.latitude, this.longitude);
 
   /// Creates a distinct value with the same coordinates.
   LatLng clone() => LatLng(latitude, longitude);
 
-  /// An immutable alternative to the JS SDK's mutating setLatitude.
+  /// Returns a new [LatLng] with [latitude] set to [value].
+  ///
+  /// Unlike the JS SDK's `setLatitude`, the original remains unchanged.
   LatLng withLatitude(double value) => LatLng(value, longitude);
 
-  /// An immutable alternative to the JS SDK's mutating setLongitude.
+  /// Returns a new [LatLng] with [longitude] set to [value].
+  ///
+  /// Unlike the JS SDK's `setLongitude`, the original remains unchanged.
   LatLng withLongitude(double value) => LatLng(latitude, value);
 
-  /// Great-circle distance in metres, matching Tmapv3.LatLng.distanceTo.
+  /// Calculates great-circle distance to [other] in metres.
   ///
   /// The SDK calculates an angular distance via the spherical cosine law,
   /// then converts degrees to nautical miles, statute miles and metres.
@@ -40,7 +45,7 @@ class LatLng {
         1000;
   }
 
-  /// Spherical Web Mercator, returned as eastings/northings in metres.
+  /// Projects this coordinate to spherical Web Mercator in metres.
   ///
   /// Matches the SDK's latitude clamp at +/-89.5 degrees.
   Point toEPSG3857() {
@@ -52,7 +57,7 @@ class LatLng {
     );
   }
 
-  /// Korean central-belt Bessel TM (eastings/northings in metres).
+  /// Projects this coordinate to Korean central-belt Bessel TM in metres.
   ///
   /// The SDK uses a WGS84-to-Bessel three-translation datum approximation,
   /// followed by the central-meridian Transverse Mercator expansion.
@@ -179,6 +184,10 @@ class LatLng {
     return Point(easting, northing);
   }
 
+  /// Parses a geographic coordinate with `latitude`/`longitude` keys.
+  ///
+  /// Also accepts `lat` and `lng` or `lon`; missing values default to zero.
+  /// Values are not clamped or range-checked.
   factory LatLng.fromJson(Map<String, dynamic> json) {
     return LatLng(
       (json['latitude'] as num? ?? json['lat'] as num? ?? 0.0).toDouble(),
@@ -190,6 +199,7 @@ class LatLng {
     );
   }
 
+  /// Returns a map with numeric `latitude` and `longitude` values in degrees.
   Map<String, dynamic> toJson() {
     return {
       'latitude': latitude,
@@ -197,6 +207,7 @@ class LatLng {
     };
   }
 
+  /// Tests geographic coordinate equality by latitude and longitude values.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -205,9 +216,11 @@ class LatLng {
           latitude == other.latitude &&
           longitude == other.longitude;
 
+  /// Hash code derived from [latitude] and [longitude].
   @override
   int get hashCode => latitude.hashCode ^ longitude.hashCode;
 
+  /// Formats the coordinate in `latitude,longitude` order.
   @override
   String toString() => '$latitude,$longitude';
 }

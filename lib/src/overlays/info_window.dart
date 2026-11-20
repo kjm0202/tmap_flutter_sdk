@@ -3,32 +3,35 @@ import '../models/point.dart';
 
 const _keepInfoValue = Object();
 
-/// TMAP 지도 위에 표시되는 HTML 정보창(InfoWindow) 클래스입니다.
+/// An HTML info window displayed on a TMAP map.
 class InfoWindow {
-  /// 정보창 고유 ID
+  /// Unique info window identifier.
   final String infoWindowId;
 
-  /// 정보창 표출 좌표
+  /// Display position in WGS84 latitude and longitude.
   final LatLng position;
 
-  /// 정보창 내용 (HTML 문자열)
+  /// Info window content as an HTML string.
   final String content;
 
-  /// 정보창 모양 타입 (1: 말풍선형, 2: 사각형)
+  /// Window shape (1: speech bubble, 2: rectangle).
   final int type;
 
-  /// 테두리 CSS 스타일 (type이 2일 때 적용, 예: '1px solid #ff0000')
+  /// CSS border style passed to the SDK (e.g., '1px solid #ff0000').
   final String? border;
 
-  /// 오프셋 좌표
+  /// Screen-space offset in pixels.
   final Point? offset;
 
-  /// 앵커 위치 ('top', 'bottom', 'left', 'right', 'auto-top' 등)
+  /// Anchor position, e.g., 'top', 'bottom', 'left', or 'auto-top'.
   final String anchor;
 
-  /// 표시 여부
+  /// Info window visibility flag.
   final bool visible;
 
+  /// Creates a Tmapv3 HTML info window at WGS84 [position].
+  ///
+  /// Defaults to type 2, bottom anchor, and visible; [offset] uses pixels.
   const InfoWindow({
     required this.infoWindowId,
     required this.position,
@@ -40,7 +43,9 @@ class InfoWindow {
     this.visible = true,
   });
 
-  /// 기존 정보창의 ID를 유지한 채 새 속성 값을 만듭니다.
+  /// Returns an info window with updated properties and the same ID.
+  ///
+  /// Passing null for [border] or [offset] clears that property.
   InfoWindow copyWith({
     LatLng? position,
     String? content,
@@ -63,6 +68,10 @@ class InfoWindow {
         visible: visible ?? this.visible,
       );
 
+  /// Serializes the info window ID, position and HTML content for overlay
+  /// change detection.
+  ///
+  /// Includes CSS [border] and pixel [offset] only when non-null.
   Map<String, dynamic> toJson() {
     return {
       'infoWindowId': infoWindowId,

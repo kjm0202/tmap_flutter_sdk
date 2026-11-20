@@ -4,24 +4,48 @@ import '../models/auto_complete_v2_item.dart';
 import '../models/poi_item.dart';
 import '../models/route_info.dart';
 
-/// TData 서비스 요청 타입
+/// A type of TData service request.
 enum TDataRequestType {
+  /// Driving route request.
   routePlan,
+
+  /// Pedestrian route request.
   routePlanPedestrian,
+
+  /// POI keyword search request.
   poiSearch,
+
+  /// POI search around a geographic center.
   poiSearchAround,
+
+  /// Forward geocoding request from an address.
   geoFromAddress,
+
+  /// Reverse geocoding request from geographic coordinates.
   addressFromGeo,
+
+  /// Keyword autocomplete request.
   autoComplete,
 }
 
-/// TData 서비스 응답 래퍼
+/// A TData response with its status and payload.
 class TDataResponse {
+  /// Identifier associated with the request, or an empty string if absent.
   final String requestId;
+
+  /// Raw success flag from the response.
+  ///
+  /// Parsers also reject the response when [error] is non-empty or
+  /// `data.error` is present.
   final bool success;
+
+  /// Error description, if supplied.
   final String? error;
+
+  /// Raw response payload, whose shape depends on the request type.
   final dynamic data;
 
+  /// Creates a response with its request identifier and raw payload.
   const TDataResponse({
     required this.requestId,
     required this.success,
@@ -29,6 +53,9 @@ class TDataResponse {
     this.data,
   });
 
+  /// Parses a TData response envelope with `requestId`, `success`, and data.
+  ///
+  /// Missing identifiers and success flags default to `''` and false.
   factory TDataResponse.fromJson(Map<String, dynamic> json) {
     return TDataResponse(
       requestId: json['requestId'] as String? ?? '',
@@ -43,6 +70,9 @@ class TDataResponse {
       (error != null && error!.isNotEmpty) ||
       (data is Map && (data as Map)['error'] != null);
 
+  /// Returns a route parsed from a successful GeoJSON feature collection.
+  ///
+  /// Returns null if the response failed or [data] is not an object.
   RouteInfo? toRouteInfo() {
     if (_failed) return null;
     if (data is Map<String, dynamic>) {
@@ -51,6 +81,9 @@ class TDataResponse {
     return null;
   }
 
+  /// Returns POIs from `searchPoiInfo.pois.poi` in a successful response.
+  ///
+  /// Returns an empty list on failure or when the POI array is absent.
   List<PoiItem> toPoiList() {
     if (_failed) return [];
     final list = <PoiItem>[];
@@ -73,6 +106,9 @@ class TDataResponse {
     return list;
   }
 
+  /// Returns an address parsed from a successful geocoding payload.
+  ///
+  /// Returns null on failure or when [data] is not a map.
   AddressInfo? toAddressInfo() {
     if (_failed) return null;
     if (data is Map<String, dynamic>) {
@@ -81,6 +117,10 @@ class TDataResponse {
     return null;
   }
 
+  /// Returns keyword suggestions from a successful autocomplete response.
+  ///
+  /// Accepts an `autoComplete` array, `response.suggestions`, or a raw list;
+  /// returns an empty list for failed or unsupported response shapes.
   List<AutoCompleteItem> toAutoCompleteList() {
     if (_failed) return [];
     final list = <AutoCompleteItem>[];
@@ -105,6 +145,10 @@ class TDataResponse {
     return list;
   }
 
+  /// Returns V2 suggestions from a successful autocomplete response.
+  ///
+  /// Reads `suggestions` or `response.suggestions`; skips non-map entries and
+  /// returns an empty list when no supported array is present.
   List<AutoCompleteV2Item> toAutoCompleteV2List() {
     if (_failed) return [];
     final list = <AutoCompleteV2Item>[];

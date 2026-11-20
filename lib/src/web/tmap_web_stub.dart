@@ -14,61 +14,131 @@ import '../overlays/polygon.dart';
 import '../overlays/polyline.dart';
 import '../overlays/rectangle.dart';
 
-/// 모바일 플랫폼용 Web 위젯 스텁
+/// A non-web placeholder for the TMAP web map widget.
+///
+/// Renders an empty [SizedBox] and does not invoke map callbacks.
 class TMapWebWidget extends StatelessWidget {
+  /// Requested initial map center in WGS84 latitude/longitude, or null.
   final LatLng? center;
 
-  /// 초기 영역이며 웹에서 변경 시 새 영역을 표시합니다. 빈 영역은 무시합니다.
+  /// Requested initial bounds, ignored by this non-rendering stub.
   final LatLngBounds? bounds;
 
-  /// SDK 지도 생성 시에만 적용할 이동 제한 영역입니다. 빈 영역은 무시합니다.
+  /// Requested map movement bounds, ignored by this non-rendering stub.
   final LatLngBounds? maxBounds;
+
+  /// Requested initial zoom level; defaults to 16.
   final int zoom;
+
+  /// Requested minimum zoom level; defaults to 0.
   final int minZoom;
+
+  /// Requested maximum zoom level; defaults to 19.
   final int maxZoom;
+
+  /// Requested camera bearing in degrees; defaults to 0.
   final double bearing;
+
+  /// Requested camera pitch in degrees; defaults to 0.
   final double pitch;
 
-  /// 지도 생성 시에만 설정 가능한 최소 기울기(도)입니다.
+  /// Requested minimum camera pitch in degrees, ignored by this stub.
   final double? minPitch;
 
-  /// 지도 생성 시에만 설정 가능한 최대 기울기(도)입니다.
+  /// Requested maximum camera pitch in degrees, ignored by this stub.
   final double? maxPitch;
+
+  /// Requested map style; defaults to [TMapType.road].
   final TMapType mapType;
+
+  /// Requested navigation controls, disabled by default.
   final bool naviControl;
+
+  /// Requested map scale bar, disabled by default.
   final bool scaleBar;
+
+  /// Optional markers that a web map would render.
   final List<Marker>? markers;
+
+  /// Optional marker clusterer configuration.
   final Clusterer? clusterer;
+
+  /// Optional information windows that a web map would render.
   final List<InfoWindow>? infoWindows;
+
+  /// Optional labels that a web map would render.
   final List<Label>? labels;
+
+  /// Optional polylines that a web map would render.
   final List<Polyline>? polylines;
+
+  /// Optional polygons that a web map would render.
   final List<Polygon>? polygons;
+
+  /// Optional circles that a web map would render.
   final List<Circle>? circles;
+
+  /// Optional rectangles that a web map would render.
   final List<Rectangle>? rectangles;
+
+  /// Optional custom overlays that a web map would render.
   final List<CustomOverlay>? customOverlays;
+
+  /// Callback reserved for map creation, receiving a map controller.
   final MapCreateCallback? onMapCreated;
+
+  /// Callback reserved for a map tap at a WGS84 [LatLng].
   final OnMapTap? onMapTap;
+
+  /// Callback reserved for a map double-tap at a WGS84 [LatLng].
   final OnMapDoubleTap? onMapDoubleTap;
+
+  /// Callback reserved for a map long-press at a WGS84 [LatLng].
   final OnMapLongTap? onMapLongTap;
 
-  /// 터치 시작 시 호출되는 SDK 이벤트 콜백입니다.
+  /// Callback reserved for SDK touch-start events.
   final OnMapTouch? onTouchStart;
 
-  /// 터치 종료 시 호출되는 SDK 이벤트 콜백입니다.
+  /// Callback reserved for SDK touch-end events.
   final OnMapTouch? onTouchEnd;
+
+  /// Callback reserved for map drag start, move, and end events.
   final OnDragChangeCallback? onDragChangeCallback;
+
+  /// Callback reserved for map zoom start and end events.
   final OnZoomChangeCallback? onZoomChangeCallback;
+
+  /// Callback reserved for map center and zoom changes.
   final OnCenterChangeCallback? onCenterChangeCallback;
+
+  /// Callback reserved for changes to WGS84 map bounds.
   final OnBoundsChangeCallback? onBoundsChangeCallback;
+
+  /// Callback reserved for bearing changes in degrees.
   final OnBearingChangeCallback? onBearingChangeCallback;
+
+  /// Callback reserved for camera pitch changes in degrees.
   final OnPitchChangeCallback? onPitchChangeCallback;
+
+  /// Callback reserved for camera idle events with camera state.
   final OnCameraIdle? onCameraIdle;
+
+  /// Callback reserved for taps on a marker with its ID and position.
   final OnMarkerTap? onMarkerTap;
+
+  /// Callback reserved for marker drag start, move, and end events.
   final OnMarkerDragChangeCallback? onMarkerDragChangeCallback;
+
+  /// Callback reserved for cluster taps, including member marker IDs.
   final OnMarkerClustererTap? onMarkerClustererTap;
+
+  /// Callback reserved for information window taps.
   final OnInfoWindowTap? onInfoWindowTap;
+
+  /// Callback reserved for custom overlay taps.
   final OnCustomOverlayTap? onCustomOverlayTap;
 
+  /// Creates a non-rendering placeholder with the requested map settings.
   const TMapWebWidget({
     super.key,
     this.center,
@@ -113,6 +183,7 @@ class TMapWebWidget extends StatelessWidget {
     this.onCustomOverlayTap,
   });
 
+  /// Returns an empty [SizedBox] without initializing a Tmapv3 map.
   @override
   Widget build(BuildContext context) {
     return const SizedBox.shrink();

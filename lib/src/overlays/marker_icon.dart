@@ -1,20 +1,23 @@
 import '../models/point.dart';
 import '../models/size.dart';
 
-/// 마커 아이콘 설정 클래스
+/// Configuration for an image-based or HTML marker icon.
 class MarkerIcon {
-  /// 아이콘 이미지 URL 또는 로컬 웹 경로
+  /// Icon image URL or local web path.
   final String? iconUrl;
 
-  /// 아이콘 크기 (너비, 높이)
+  /// Icon size in pixels (width, height).
   final Size? size;
 
-  /// 아이콘 앵커 포인트 오프셋
+  /// Icon anchor-point offset in pixels.
   final Point? offset;
 
-  /// HTML 기반 마커 렌더링을 위한 HTML 문자열 (iconUrl 대신 사용 가능)
+  /// HTML markup for an icon, usable instead of [iconUrl].
   final String? iconHtml;
 
+  /// Creates an optional image or HTML marker icon configuration.
+  ///
+  /// The [size] and [offset] describe pixel dimensions and offsets.
   const MarkerIcon({
     this.iconUrl,
     this.size,
@@ -22,6 +25,9 @@ class MarkerIcon {
     this.iconHtml,
   });
 
+  /// Returns supplied image URL, pixel size, offset, and HTML as JSON.
+  ///
+  /// Omits optional entries whose value is null.
   Map<String, dynamic> toJson() {
     return {
       if (iconUrl != null) 'iconUrl': iconUrl,

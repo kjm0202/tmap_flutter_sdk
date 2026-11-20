@@ -34,7 +34,7 @@ import 'utils/hex_color.dart';
 import 'web/tmap_web_bridge_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_bridge.dart';
 
-/// TMAP 지도를 제어하는 컨트롤러 클래스입니다.
+/// Controls a TMAP map on mobile WebView and Flutter Web platforms.
 class TMapController {
   final WebViewController? _webViewController;
   final String? _webViewId;
@@ -46,7 +46,9 @@ class TMapController {
   final Map<ClusterInteractionType, Set<void Function(ClusterInteraction)>>
       _clusterListeners = {};
 
-  /// 모바일 WebViewController 반환
+  /// The mobile [WebViewController].
+  ///
+  /// Throws [UnsupportedError] when used on Flutter Web.
   WebViewController get webViewController {
     final controller = _webViewController;
     if (controller != null) return controller;
@@ -58,12 +60,12 @@ class TMapController {
   String? _lastLoadedBaseUrl;
   String? _currentDocId;
 
-  /// 모바일(WebView) 컨트롤러 생성자
+  /// Creates a controller backed by a mobile [WebViewController].
   TMapController(WebViewController webViewController)
       : _webViewController = webViewController,
         _webViewId = null;
 
-  /// Web(DOM) 컨트롤러 생성자
+  /// Creates a controller for the web map identified by [viewId].
   TMapController.fromWeb(String viewId)
       : _webViewController = null,
         _webViewId = viewId;
@@ -95,10 +97,10 @@ class TMapController {
   }
 
   // ========================================
-  // 지도 기본 제어
+  // Basic map controls.
   // ========================================
 
-  /// 지도의 중심 좌표를 이동합니다.
+  /// Sets the map center to [center] in WGS84 latitude/longitude.
   Future<void> setCenter(LatLng center) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -110,7 +112,7 @@ class TMapController {
     );
   }
 
-  /// 줌 레벨을 설정합니다 (0~19).
+  /// Sets the map zoom level to [zoom] (normally 0–19).
   Future<void> setZoom(int zoom) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -156,48 +158,50 @@ class TMapController {
     return value.toDouble();
   }
 
-  /// 현재 지도의 중심 좌표를 SDK로부터 읽습니다.
+  /// Returns the current map center reported by the SDK.
   Future<LatLng> getCenter() async =>
       LatLng.fromJson(await _readMap('getCenter'));
 
-  /// 현재 화면에서 보이는 지도 경계를 반환합니다.
+  /// Returns the geographic bounds currently visible on the map.
   Future<LatLngBounds> getBounds() async =>
       LatLngBounds.fromJson(await _readMap('getBounds'));
 
-  /// 현재 줌을 반환합니다. 애니메이션 중에는 소수점 줌일 수 있습니다.
+  /// Returns the current zoom level, which can be fractional during animation.
   Future<double> getZoom() => _getNumber('getZoom');
 
-  /// SDK 지도에 설정된 최소 허용 줌 레벨을 반환합니다.
+  /// Returns the minimum zoom level allowed by the SDK map.
   ///
-  /// 현재 카메라 줌은 [getZoom]으로 확인합니다.
+  /// Use [getZoom] to read the current camera zoom level.
   Future<double> getMinZoom() => _getNumber('getMinZoom');
 
-  /// SDK 지도에 설정된 최대 허용 줌 레벨을 반환합니다.
+  /// Returns the maximum zoom level allowed by the SDK map.
   ///
-  /// [setZoomLimit]으로 변경한 값이 반영되며 현재 카메라 줌과는 다릅니다.
+  /// Reflects updates made by [setZoomLimit], not the current camera zoom.
   Future<double> getMaxZoom() => _getNumber('getMaxZoom');
 
-  /// 현재 지도 회전각을 도(degrees) 단위로 반환합니다.
+  /// Returns the current map bearing in degrees.
   Future<double> getBearing() => _getNumber('getBearing');
 
-  /// 현재 지도 기울기를 도(degrees) 단위로 반환합니다.
+  /// Returns the current camera pitch in degrees.
   Future<double> getPitch() => _getNumber('getPitch');
 
-  /// 지도상 위경도를 지도 컨테이너 기준 화면 픽셀로 변환합니다.
+  /// Converts WGS84 [position] into pixels relative to the map container.
   Future<Point> realToScreen(LatLng position) async => Point.fromJson(
         await _readMap('realToScreen', position.toJson()),
       );
 
-  /// 지도 컨테이너 기준 화면 픽셀을 위경도로 변환합니다.
+  /// Converts map-container pixel coordinates to WGS84 latitude/longitude.
   Future<LatLng> screenToReal(Point pixel) async => LatLng.fromJson(
         await _readMap('screenToReal', pixel.toJson()),
       );
 
-  /// 지도 SDK가 사용 중인 화면 크기를 픽셀로 반환합니다.
+  /// Returns the SDK map viewport size in pixels.
   Future<tmap_size.Size> screenSize() async =>
       tmap_size.Size.fromJson(await _readMap('screenSize'));
 
-  /// 최소/최대 허용 줌을 변경합니다.
+  /// Sets the allowed zoom range from [minZoom] to [maxZoom].
+  ///
+  /// Throws [ArgumentError] when [minZoom] exceeds [maxZoom].
   Future<void> setZoomLimit(int minZoom, int maxZoom) async {
     if (minZoom > maxZoom) {
       throw ArgumentError.value(minZoom, 'minZoom', 'Must be <= maxZoom');
@@ -210,7 +214,9 @@ class TMapController {
     await _runJs('setZoomLimit($minZoom, $maxZoom);');
   }
 
-  /// SDK 고유의 Bessel 및 KATEC 좌표 변환용 내부 전달 함수입니다.
+  /// Forwards a Bessel or KATEC projection conversion to the SDK.
+  ///
+  /// Passes [method] and [args] to the platform bridge and parses its result.
   Future<Map<String, dynamic>> convertProjection(
       String method, Map<String, dynamic> args) async {
     final viewId = _webViewId;
@@ -225,7 +231,7 @@ class TMapController {
     return _parseJsData(response, method);
   }
 
-  /// 1레벨 확대합니다.
+  /// Increases the map zoom by one level.
   Future<void> zoomIn() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -235,7 +241,7 @@ class TMapController {
     await _runJs('zoomIn();');
   }
 
-  /// 1레벨 축소합니다.
+  /// Decreases the map zoom by one level.
   Future<void> zoomOut() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -245,7 +251,9 @@ class TMapController {
     await _runJs('zoomOut();');
   }
 
-  /// 전체 맵이 보이도록 최대 영역으로 축소합니다.
+  /// Zooms to the SDK's maximum extent.
+  ///
+  /// Falls back to the minimum allowed zoom when the SDK lacks this method.
   Future<void> zoomToMaxExtent() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -255,7 +263,7 @@ class TMapController {
     await _runJs('zoomToMaxExtent();');
   }
 
-  /// 지정 좌표로 지도를 부드럽게 패닝 이동합니다.
+  /// Pans the map to WGS84 [target].
   Future<void> panTo(LatLng target) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -267,7 +275,7 @@ class TMapController {
     );
   }
 
-  /// 화면 픽셀 거리(x, y)만큼 지도를 이동합니다.
+  /// Pans the map by [x] and [y] pixels in screen coordinates.
   Future<void> panBy(int x, int y) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -277,7 +285,7 @@ class TMapController {
     await _runJs('panBy($x, $y);');
   }
 
-  /// 지도 회전 각도를 설정합니다 (0 ~ 360도).
+  /// Sets the map bearing in degrees (0–360).
   Future<void> setBearing(double bearing) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -287,7 +295,7 @@ class TMapController {
     await _runJs('setBearing($bearing);');
   }
 
-  /// 지도 기울기 각도를 설정합니다 (0 ~ 60도).
+  /// Sets the camera pitch in degrees (0–60).
   Future<void> setPitch(double pitch) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -297,7 +305,7 @@ class TMapController {
     await _runJs('setPitch($pitch);');
   }
 
-  /// 지도 타입을 설정합니다.
+  /// Sets the map style to [mapType].
   Future<void> setMapType(TMapType mapType) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -307,7 +315,9 @@ class TMapController {
     await _runJs("setMapType('${mapType.value}');");
   }
 
-  /// 주어진 영역이 화면에 맞게 보이도록 지도를 조정합니다.
+  /// Fits [bounds] into the map viewport.
+  ///
+  /// The optional [padding] specifies the inset from the edges in pixels.
   Future<void> fitBounds(LatLngBounds bounds, {int? padding}) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -320,7 +330,7 @@ class TMapController {
     );
   }
 
-  /// 지도 크기 재계산 (리사이즈/레이아웃 복구)
+  /// Recalculates the map layout after its container is resized.
   Future<void> relayout() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -330,7 +340,7 @@ class TMapController {
     await _runJs('relayout();');
   }
 
-  /// 지도 옵션(줌 제한, 컨트롤 표시 여부 등)을 업데이트합니다.
+  /// Updates runtime map [options], such as zoom limits and control visibility.
   Future<void> updateMapOptions(Map<String, dynamic> options) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -340,7 +350,7 @@ class TMapController {
     await _runJs('updateMapOptions(${jsonEncode(options)});');
   }
 
-  /// HTML 문자열을 웹뷰에 다시 로드합니다.
+  /// Loads [htmlString] into the mobile WebView with an optional [baseUrl].
   Future<void> reloadHtml(String htmlString, {String? baseUrl}) async {
     final controller = _webViewController;
     if (controller != null) {
@@ -358,7 +368,9 @@ class TMapController {
     }
   }
 
-  /// 웹뷰를 새로고침합니다.
+  /// Reloads the mobile WebView, restoring a previously loaded HTML document.
+  ///
+  /// Uses a normal WebView reload when the stored document marker is absent.
   Future<void> reload() async {
     final controller = _webViewController;
     if (controller != null) {
@@ -392,10 +404,12 @@ class TMapController {
   }
 
   // ========================================
-  // 마커 제어
+  // Marker controls.
   // ========================================
 
-  /// 한 마커의 SDK 이벤트를 구독합니다. 등록 후에도 마커 교체가 가능합니다.
+  /// Registers [listener] for [type] events from [markerId].
+  ///
+  /// The subscription remains active if the marker is replaced.
   void onMarkerEvent(String markerId, MarkerInteractionType type,
       void Function(MarkerInteraction) listener) {
     _markerListeners
@@ -404,7 +418,7 @@ class TMapController {
         .add(listener);
   }
 
-  /// 이전에 등록한 마커 이벤트 핸들러를 해제합니다.
+  /// Unregisters a previously added [listener] for [markerId] and [type].
   void offMarkerEvent(String markerId, MarkerInteractionType type,
       void Function(MarkerInteraction) listener) {
     final byType = _markerListeners[markerId];
@@ -413,7 +427,7 @@ class TMapController {
     if (byType?.isEmpty ?? false) _markerListeners.remove(markerId);
   }
 
-  /// 브리지에서 전달된 마커 이벤트를 Dart 구독자에게 전달합니다.
+  /// Dispatches a bridge [event] to matching Dart marker listeners.
   void dispatchMarkerInteraction(MarkerInteraction event) {
     final listeners = _markerListeners[event.markerId]?[event.type];
     if (listeners == null) return;
@@ -431,7 +445,7 @@ class TMapController {
     }
   }
 
-  /// 지도에 마커를 추가합니다.
+  /// Adds [marker] to the map.
   Future<void> addMarker(Marker marker) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -441,14 +455,14 @@ class TMapController {
     await _runJs('addMarker(${jsonEncode(marker.toJson())});');
   }
 
-  /// 여러 마커를 일괄 추가합니다.
+  /// Adds each marker in [markers] to the map sequentially.
   Future<void> addMarkers(List<Marker> markers) async {
     for (final marker in markers) {
       await addMarker(marker);
     }
   }
 
-  /// 특정 마커를 제거합니다.
+  /// Removes the marker identified by [markerId].
   Future<void> clearMarker(String markerId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -458,7 +472,7 @@ class TMapController {
     await _runJs('clearMarker(${jsonEncode(markerId)});');
   }
 
-  /// 모든 마커를 제거합니다.
+  /// Removes all map markers.
   Future<void> clearAllMarkers() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -469,16 +483,16 @@ class TMapController {
   }
 
   // ========================================
-  // 마커 클러스터러 제어
+  // Marker clusterer controls.
   // ========================================
 
-  /// 클러스터 그룹의 포인터 이벤트를 구독합니다.
+  /// Registers [listener] for cluster interaction events of [type].
   void onClusterEvent(
       ClusterInteractionType type, void Function(ClusterInteraction) listener) {
     _clusterListeners.putIfAbsent(type, () => {}).add(listener);
   }
 
-  /// 클러스터 그룹의 포인터 이벤트 구독을 해제합니다.
+  /// Unregisters [listener] from cluster interaction events of [type].
   void offClusterEvent(
       ClusterInteractionType type, void Function(ClusterInteraction) listener) {
     _clusterListeners[type]?.remove(listener);
@@ -487,7 +501,7 @@ class TMapController {
     }
   }
 
-  /// 브리지에서 전달된 클러스터 이벤트를 Dart 구독자에게 전달합니다.
+  /// Dispatches a bridge cluster [event] to subscribed Dart listeners.
   void dispatchClusterInteraction(ClusterInteraction event) {
     for (final listener in _clusterListeners[event.type]?.toList() ??
         <void Function(ClusterInteraction)>[]) {
@@ -504,7 +518,7 @@ class TMapController {
     }
   }
 
-  /// 마커 클러스터러를 추가/활성화합니다.
+  /// Adds or activates a marker [clusterer] on the map.
   Future<void> addMarkerClusterer(Clusterer clusterer) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -520,7 +534,7 @@ class TMapController {
     );
   }
 
-  /// 클러스터러를 유지하면서 현재 멤버를 모두 제거합니다.
+  /// Clears all cluster members while retaining the clusterer.
   Future<void> clearClusterMarkers() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -530,7 +544,7 @@ class TMapController {
     await _runJs('clearClusterMarkers();');
   }
 
-  /// 마커 클러스터러를 제거합니다.
+  /// Removes the marker clusterer from the map.
   Future<void> clearMarkerClusterer() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -541,10 +555,10 @@ class TMapController {
   }
 
   // ========================================
-  // 정보창 (InfoWindow) & 라벨 제어
+  // Information window and label controls.
   // ========================================
 
-  /// 정보창을 추가합니다.
+  /// Adds [infoWindow] to the map.
   Future<void> addInfoWindow(InfoWindow infoWindow) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -562,7 +576,7 @@ class TMapController {
     );
   }
 
-  /// 특정 정보창을 제거합니다.
+  /// Removes the information window identified by [infoWindowId].
   Future<void> clearInfoWindow(String infoWindowId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -572,7 +586,7 @@ class TMapController {
     await _runJs("clearInfoWindow('$infoWindowId');");
   }
 
-  /// 모든 정보창을 제거합니다.
+  /// Removes all information windows from the map.
   Future<void> clearAllInfoWindows() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -582,7 +596,7 @@ class TMapController {
     await _runJs('clearAllInfoWindows();');
   }
 
-  /// 텍스트 라벨을 추가합니다.
+  /// Adds a text [label] to the map.
   Future<void> addLabel(Label label) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -599,7 +613,7 @@ class TMapController {
     );
   }
 
-  /// 특정 텍스트 라벨을 제거합니다.
+  /// Removes the text label identified by [labelId].
   Future<void> clearLabel(String labelId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -609,7 +623,7 @@ class TMapController {
     await _runJs("clearLabel('$labelId');");
   }
 
-  /// 모든 텍스트 라벨을 제거합니다.
+  /// Removes all text labels from the map.
   Future<void> clearAllLabels() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -620,10 +634,10 @@ class TMapController {
   }
 
   // ========================================
-  // 도형 오버레이 제어
+  // Shape overlay controls.
   // ========================================
 
-  /// 폴리라인(선)을 추가합니다.
+  /// Adds [polyline] to the map.
   Future<void> addPolyline(Polyline polyline) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -641,7 +655,7 @@ class TMapController {
     );
   }
 
-  /// 특정 폴리라인을 제거합니다.
+  /// Removes the polyline identified by [polylineId].
   Future<void> clearPolyline(String polylineId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -651,7 +665,7 @@ class TMapController {
     await _runJs("clearPolyline('$polylineId');");
   }
 
-  /// 다각형을 추가합니다.
+  /// Adds [polygon] to the map.
   Future<void> addPolygon(Polygon polygon) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -672,7 +686,7 @@ class TMapController {
     );
   }
 
-  /// 특정 다각형을 제거합니다.
+  /// Removes the polygon identified by [polygonId].
   Future<void> clearPolygon(String polygonId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -682,7 +696,7 @@ class TMapController {
     await _runJs("clearPolygon('$polygonId');");
   }
 
-  /// 원을 추가합니다.
+  /// Adds [circle] to the map.
   Future<void> addCircle(Circle circle) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -701,7 +715,7 @@ class TMapController {
     );
   }
 
-  /// 특정 원을 제거합니다.
+  /// Removes the circle identified by [circleId].
   Future<void> clearCircle(String circleId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -711,7 +725,7 @@ class TMapController {
     await _runJs("clearCircle('$circleId');");
   }
 
-  /// 사각형을 추가합니다.
+  /// Adds [rectangle] to the map.
   Future<void> addRectangle(Rectangle rectangle) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -732,7 +746,7 @@ class TMapController {
     );
   }
 
-  /// 특정 사각형을 제거합니다.
+  /// Removes the rectangle identified by [rectangleId].
   Future<void> clearRectangle(String rectangleId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -778,7 +792,7 @@ class TMapController {
   }
 
   // ========================================
-  // 데이터 시각화 (DotMap, SquareMap, HeatMap)
+  // Data visualizations (DotMap, SquareMap, HeatMap).
   // ========================================
 
   Future<void> _addVisualization(String type, Map<String, dynamic> data) async {
@@ -981,7 +995,7 @@ class TMapController {
     if (parsed is Map) handler(Map<String, dynamic>.from(parsed));
   }
 
-  /// 커스텀 HTML 오버레이를 추가합니다.
+  /// Adds a custom HTML [overlay] to the map.
   Future<void> addCustomOverlay(CustomOverlay overlay) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -997,7 +1011,7 @@ class TMapController {
     );
   }
 
-  /// 특정 커스텀 오버레이를 제거합니다.
+  /// Removes the custom overlay identified by [customOverlayId].
   Future<void> clearCustomOverlay(String customOverlayId) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1007,7 +1021,7 @@ class TMapController {
     await _runJs("clearCustomOverlay('$customOverlayId');");
   }
 
-  /// 모든 폴리라인을 제거합니다.
+  /// Removes all polylines from the map.
   Future<void> clearAllPolylines() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1017,7 +1031,7 @@ class TMapController {
     await _runJs('clearAllPolylines();');
   }
 
-  /// 모든 폴리라인과 다각형을 일괄 제거합니다.
+  /// Removes all polylines and polygons from the map.
   Future<void> clearAllPolylinesAndPolygons() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1028,7 +1042,7 @@ class TMapController {
     await _runJs('clearAllPolylines(); clearAllPolygons();');
   }
 
-  /// 모든 다각형을 제거합니다.
+  /// Removes all polygons from the map.
   Future<void> clearAllPolygons() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1038,7 +1052,7 @@ class TMapController {
     await _runJs('clearAllPolygons();');
   }
 
-  /// 모든 원을 제거합니다.
+  /// Removes all circles from the map.
   Future<void> clearAllCircles() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1048,7 +1062,7 @@ class TMapController {
     await _runJs('clearAllCircles();');
   }
 
-  /// 모든 사각형을 제거합니다.
+  /// Removes all rectangles from the map.
   Future<void> clearAllRectangles() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1058,7 +1072,7 @@ class TMapController {
     await _runJs('clearAllRectangles();');
   }
 
-  /// 모든 커스텀 오버레이를 제거합니다.
+  /// Removes all custom overlays from the map.
   Future<void> clearAllCustomOverlays() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1068,7 +1082,7 @@ class TMapController {
     await _runJs('clearAllCustomOverlays();');
   }
 
-  /// 지도 위의 모든 오버레이/도형/마커를 일괄 삭제합니다.
+  /// Removes all supported map overlays, shapes, and markers.
   Future<void> clearAll() async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1079,10 +1093,10 @@ class TMapController {
   }
 
   // ========================================
-  // 편의 메서드: 단일 도형 그리기
+  // Convenience methods for drawing individual shapes.
   // ========================================
 
-  /// 폴리라인을 빠르게 그립니다.
+  /// Creates and adds a polyline with a generated ID.
   Future<void> drawPolyline({
     required List<LatLng> points,
     Color? strokeColor,
@@ -1101,7 +1115,7 @@ class TMapController {
     await addPolyline(polyline);
   }
 
-  /// 다각형을 빠르게 그립니다.
+  /// Creates and adds a polygon with a generated ID.
   Future<void> drawPolygon({
     required List<LatLng> points,
     Color? fillColor,
@@ -1122,7 +1136,7 @@ class TMapController {
     await addPolygon(polygon);
   }
 
-  /// 원을 빠르게 그립니다.
+  /// Creates and adds a circle with a generated ID.
   Future<void> drawCircle({
     required LatLng center,
     required double radius,
@@ -1145,7 +1159,7 @@ class TMapController {
     await addCircle(circle);
   }
 
-  /// 사각형을 빠르게 그립니다.
+  /// Creates and adds a rectangle with a generated ID.
   Future<void> drawRectangle({
     required LatLngBounds bounds,
     Color? fillColor,
@@ -1167,10 +1181,10 @@ class TMapController {
   }
 
   // ========================================
-  // 교통 정보
+  // Traffic information.
   // ========================================
 
-  /// 지도 위 실시간 교통정보 표시를 On/Off 합니다.
+  /// Sets the visibility of the real-time traffic layer on the map.
   Future<void> toggleTrafficInfo(bool isVisible) async {
     final viewId = _webViewId;
     if (viewId != null) {
@@ -1181,10 +1195,10 @@ class TMapController {
   }
 
   // ========================================
-  // TData OpenAPI 연동
+  // TData OpenAPI integration.
   // ========================================
 
-  /// 자동차 경로 탐색 (TData OpenAPI)
+  /// Requests a driving route from the TData OpenAPI.
   Future<RouteInfo?> getRoutePlan({
     required LatLng start,
     required LatLng end,
@@ -1197,7 +1211,9 @@ class TMapController {
     );
   }
 
-  /// 보행자 경로 탐색 (TData OpenAPI)
+  /// Requests a pedestrian route from the TData OpenAPI.
+  ///
+  /// Uses Korean default names for the start and end points.
   Future<RouteInfo?> getRoutePlanPedestrian({
     required LatLng start,
     required LatLng end,
@@ -1214,7 +1230,7 @@ class TMapController {
     );
   }
 
-  /// POI 명칭/키워드 검색 (TData OpenAPI)
+  /// Searches for points of interest by [keyword] through the TData OpenAPI.
   Future<List<PoiItem>> searchPoi({
     required String keyword,
     LatLng? center,
@@ -1231,7 +1247,9 @@ class TMapController {
     );
   }
 
-  /// 주변 특정 업종/키워드 POI 검색 (TData OpenAPI)
+  /// Searches for nearby points of interest by optional [category].
+  ///
+  /// Uses [center] as the search origin for the TData OpenAPI.
   Future<List<PoiItem>> searchPoiAround({
     required LatLng center,
     String? category,
@@ -1248,14 +1266,14 @@ class TMapController {
     );
   }
 
-  /// 주소로 위경도 좌표 검색 (지오코딩)
+  /// Geocodes [address] to WGS84 latitude/longitude coordinates.
   Future<LatLng?> getGeoFromAddress({
     required String address,
   }) {
     return TDataService.getGeoFromAddress(address: address);
   }
 
-  /// 위경도 좌표로 주소 검색 (역지오코딩)
+  /// Reverse-geocodes WGS84 [latLng] to an address.
   Future<AddressInfo?> getAddressFromGeo({
     required LatLng latLng,
     String addressType = 'A04',
@@ -1264,7 +1282,7 @@ class TMapController {
         point: latLng, addressType: addressType);
   }
 
-  /// POI 검색어 자동완성 (TData OpenAPI)
+  /// Gets POI keyword completions from the TData OpenAPI.
   Future<List<AutoCompleteItem>> getAutoCompleteSearch({
     required String keyword,
   }) {

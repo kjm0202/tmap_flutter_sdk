@@ -1,17 +1,20 @@
-/// TMAP 지도 타입 정의
+/// Map style types supported by TMAP.
 enum TMapType {
-  /// 일반 도로 지도
+  /// Standard road map.
   road('ROAD'),
 
-  /// 위성 + 일반 지도 (하이브리드)
+  /// Hybrid map combining satellite imagery and road details.
   hybrid('HYBRID'),
 
-  /// 공공 지도
+  /// Public map style.
   public('PUBLIC'),
 
-  /// 야간 지도
+  /// Night map style.
   night('NIGHT');
 
+  /// Uppercase map type identifier passed to Tmapv3.
   final String value;
+
+  /// Associates the map type with its SDK identifier [value].
   const TMapType(this.value);
 }

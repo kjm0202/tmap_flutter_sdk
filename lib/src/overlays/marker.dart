@@ -5,53 +5,56 @@ import 'marker_icon.dart';
 
 const _keepMarkerValue = Object();
 
-/// TMAP 지도 위에 표출되는 마커 클래스입니다.
+/// A marker displayed on a TMAP map.
 class Marker {
-  /// 마커 고유 ID
+  /// Unique marker identifier.
   final String markerId;
 
-  /// 마커의 위경도 좌표
+  /// Marker position in WGS84 latitude and longitude.
   final LatLng position;
 
-  /// 마커 아이콘 설정
+  /// Optional marker icon configuration.
   final MarkerIcon? icon;
 
-  /// 마커 배경 색상 (icon이 없을 경우 핀 색상)
+  /// Marker color, used as the pin color when [icon] is absent.
   final Color? color;
 
-  /// 마커 툴팁 제목
+  /// Marker tooltip title.
   final String? title;
 
-  /// 마커 라벨 텍스트
+  /// Text displayed in the marker label.
   final String? label;
 
-  /// 라벨 배경 색상
+  /// Marker label background color.
   final Color? labelBackgroundColor;
 
-  /// 라벨 글자 색상
+  /// Marker label text color.
   final Color? labelTextColor;
 
-  /// 마커 투명도 (0.0 ~ 1.0)
+  /// Marker opacity, from 0.0 (transparent) to 1.0 (opaque).
   final double opacity;
 
-  /// 표시 여부
+  /// Marker visibility flag.
   final bool visible;
 
-  /// 드래그 가능 여부
+  /// Marker draggability flag.
   final bool draggable;
 
-  /// z-index 순서
+  /// Display order (z-index).
   final int zIndex;
 
-  /// 앵커 위치 ('top-left', 'center', 'bottom', 등)
+  /// Icon anchor position, e.g., 'top-left', 'center', or 'bottom'.
   final String anchor;
 
-  /// SDK 컨텍스트 메뉴 설정. JSON으로 변환 가능한 옵션을 전달합니다.
+  /// SDK context-menu options supplied as a JSON-encodable map.
   final Map<String, dynamic>? contextMenu;
 
-  /// SDK `titleOption`에 전달되는 제목 스타일 설정.
+  /// Title style options passed to the SDK's `titleOption` property.
   final Map<String, dynamic>? titleStyle;
 
+  /// Creates a Tmapv3 marker at WGS84 [position] with identifier [markerId].
+  ///
+  /// Defaults to visible, not draggable, and anchored at the bottom.
   const Marker({
     required this.markerId,
     required this.position,
@@ -70,9 +73,9 @@ class Marker {
     this.titleStyle,
   });
 
-  /// 변경할 속성만 지정하여 새 마커 값을 만듭니다.
+  /// Returns a marker with selected properties updated and the same ID.
   ///
-  /// 지도에 반영하려면 [TMapController.addMarker]에 반환 값을 전달합니다.
+  /// Pass the result to [TMapController.addMarker] to update the map.
   Marker copyWith({
     LatLng? position,
     Object? icon = _keepMarkerValue,
@@ -119,6 +122,10 @@ class Marker {
             : titleStyle as Map<String, dynamic>?,
       );
 
+  /// Returns the marker bridge payload with coordinates and display options.
+  ///
+  /// Omits nullable properties when absent, converts colors to CSS hex,
+  /// and serializes [titleStyle] under the `titleOption` key.
   Map<String, dynamic> toJson() {
     return {
       'markerId': markerId,

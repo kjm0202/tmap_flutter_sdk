@@ -483,7 +483,7 @@
     }
   };
 
-  // 마커 추가
+  // Add markers
   window.tmap_addMarker = function(viewId, m) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -522,7 +522,7 @@
     }
   }
 
-  // 클러스터러
+  // Marker clusters
   window.tmap_addClusterer = function(viewId, clusterData) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -708,7 +708,7 @@
     }
   }
 
-  // 인포윈도우
+  // Info windows
   window.tmap_addInfoWindow = function(viewId, iw) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -810,7 +810,7 @@
     }
   };
 
-  // 라벨 (Label)
+  // Labels
   window.tmap_addLabel = function(viewId, l) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -894,7 +894,7 @@
     }
   }
 
-  // 커스텀 오버레이 (CustomOverlay)
+  // Custom overlays
   window.tmap_addCustomOverlay = function(viewId, co) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -996,7 +996,7 @@
     }
   };
 
-  // 폴리라인
+  // Polylines
   window.tmap_addPolyline = function(viewId, p) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
@@ -1040,7 +1040,7 @@
     }
   };
 
-  // 도형: Circle, Polygon, Rectangle
+  // Shapes: Circle, Polygon, Rectangle
   window.tmap_addCircle = function(viewId, c) {
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
