@@ -23,6 +23,7 @@ import '../overlays/polygon.dart';
 import '../overlays/polyline.dart';
 import '../overlays/rectangle.dart';
 import '../tmap_controller.dart';
+import '../utils/bounds_on_ready.dart';
 import '../utils/overlay_snapshot.dart';
 import 'tmap_web_bridge.dart';
 import 'tmap_web_loader.dart';
@@ -141,6 +142,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
   final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isInitializing = false;
   bool _isMapInitialized = false;
+  LatLngBounds? _boundsAtCreation;
 
   @override
   void initState() {
@@ -205,6 +207,11 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
         setState(() => _isMapInitialized = true);
         _overlaySnapshot.clear();
         _syncAllOverlays();
+        final pendingBounds =
+            boundsToApplyOnReady(_boundsAtCreation, widget.bounds);
+        if (pendingBounds != null) {
+          TMapWebBridge.fitBounds(_viewId, pendingBounds, null);
+        }
         widget.onMapCreated?.call(_controller);
       }.toJS;
       callbacks.setProperty('onMapCreated'.toJS, onMapCreatedFn);
@@ -444,11 +451,13 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onDrawingComplete'.toJS, onDrawingCompleteFn);
 
+      final boundsAtCreation = widget.bounds;
+      _boundsAtCreation = boundsAtCreation;
       TMapWebBridge.initMap(
         viewId: _viewId,
         containerId: _containerId,
         center: widget.center,
-        bounds: widget.bounds,
+        bounds: boundsAtCreation,
         maxBounds: widget.maxBounds,
         zoom: widget.zoom,
         minZoom: widget.minZoom,

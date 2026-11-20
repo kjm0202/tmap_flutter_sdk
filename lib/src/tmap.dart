@@ -29,6 +29,7 @@ import 'overlays/polygon.dart';
 import 'overlays/polyline.dart';
 import 'overlays/rectangle.dart';
 import 'tmap_controller.dart';
+import 'utils/bounds_on_ready.dart';
 import 'utils/overlay_snapshot.dart';
 import 'web/tmap_web_stub.dart'
     if (dart.library.js_interop) 'web/tmap_web_widget.dart';
@@ -224,6 +225,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
   late final TMapController _mapController;
   final OverlaySnapshot _overlaySnapshot = OverlaySnapshot();
   bool _isMapReady = false;
+  LatLngBounds? _boundsAtCreation;
   ScrollPosition? _iosScrollPosition;
   ScrollNotificationObserverState? _iosScrollObserver;
   String? _iosGuardDesired;
@@ -603,13 +605,15 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'mobile_tdata.js',
     ]);
     if (!mounted) return;
+    final boundsAtCreation = widget.bounds;
+    _boundsAtCreation = boundsAtCreation;
     final config = {
       'appKey': AuthRepository.instance.appKey,
       'iosScrollableGuard': defaultTargetPlatform == TargetPlatform.iOS,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
-      if (widget.bounds != null && !widget.bounds!.isEmpty)
-        'bounds': widget.bounds!.toJson(),
+      if (boundsAtCreation != null && !boundsAtCreation.isEmpty)
+        'bounds': boundsAtCreation.toJson(),
       if (widget.maxBounds != null && !widget.maxBounds!.isEmpty)
         'maxBounds': widget.maxBounds!.toJson(),
       'mapType': widget.mapType.value,
@@ -775,7 +779,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
     controller
       ..addJavaScriptChannel(
         'onMapCreated',
-        onMessageReceived: (JavaScriptMessage result) {
+        onMessageReceived: (JavaScriptMessage result) async {
           if (!mounted) return;
           _isMapReady = true;
           _iosGuardDocumentEpoch++;
@@ -783,6 +787,17 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           _updateIosScrollGuard();
           _overlaySnapshot.clear();
           _syncOverlays();
+          final pendingBounds =
+              boundsToApplyOnReady(_boundsAtCreation, widget.bounds);
+          if (pendingBounds != null) {
+            try {
+              await _mapController.fitBounds(pendingBounds);
+            } catch (e) {
+              developer.log('Error applying pending map bounds: $e',
+                  name: 'TMap');
+            }
+            if (!mounted) return;
+          }
           final onMapCreated = widget.onMapCreated;
           if (onMapCreated != null) {
             onMapCreated(_mapController);
