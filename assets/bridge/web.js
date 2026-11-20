@@ -104,10 +104,10 @@
           customOverlays: {},
           customOverlayListeners: {},
           polylines: {},
-          polygons: {},
+          polygons: Object.create(null),
           circles: {},
           rectangles: {},
-          groundOverlays: {},
+          groundOverlays: Object.create(null),
           visualizations: {},
           drawingSession: null,
           clusterer: null,
@@ -569,11 +569,11 @@
 
       if (m.draggable && typeof bindTmapMarkerDrag === 'function') {
         try {
-          state.clusterDragListeners[id] = bindTmapMarkerDrag(marker, state.map, function(lat, lng, phase) {
+          state.clusterDragListeners[id] = bindTmapMarkerDrag(marker, state.map, function(lat, lng, phase, zoom) {
             if (state.disposed || !state.clusterer || currentGeneration !== state.clusterGeneration) return;
             if (currentClusterer && state.clusterer !== currentClusterer) return;
             var dragCb = state.callbacks.onMarkerDrag || state.callbacks.onMarkerDragChangeCallback;
-            if (dragCb) dragCb(id, lat, lng, phase);
+            if (dragCb) dragCb(id, lat, lng, phase, zoom);
           });
         } catch (_) {}
       }
@@ -1066,7 +1066,9 @@
     var state = window.tmap_instances[viewId];
     if (!state || !state.map) return;
 
-    if (state.polygons[p.id]) state.polygons[p.id].setMap(null);
+    if (Object.prototype.hasOwnProperty.call(state.polygons, p.id)) {
+      state.polygons[p.id].setMap(null);
+    }
 
     var paths = (p.points || []).map(function(pt) {
       return new Tmapv3.LatLng(pt.lat, pt.lng);
@@ -1151,13 +1153,15 @@
 
   window.tmap_polygonContains = function(viewId, id, lat, lng) {
     var state = window.tmap_instances[viewId];
-    var shape = state && state.polygons[id];
+    var shape = state && Object.prototype.hasOwnProperty.call(state.polygons, id)
+      ? state.polygons[id] : null;
     return !!(shape && shape.contains(new Tmapv3.LatLng(lat, lng)));
   };
 
   window.tmap_polygonAreaJson = function(viewId, id) {
     var state = window.tmap_instances[viewId];
-    var shape = state && state.polygons[id];
+    var shape = state && Object.prototype.hasOwnProperty.call(state.polygons, id)
+      ? state.polygons[id] : null;
     return JSON.stringify(shape ? shape.getArea() : null);
   };
 

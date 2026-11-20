@@ -242,7 +242,7 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
 
       if (isDraggable && typeof bindTmapMarkerDrag === 'function') {
         try {
-          clusterMarkerDragListeners[currentId] = bindTmapMarkerDrag(currentMarker, map, function(lat, lng, phase) {
+          clusterMarkerDragListeners[currentId] = bindTmapMarkerDrag(currentMarker, map, function(lat, lng, phase, zoom) {
             if (currentGeneration !== clusterGeneration || !markerCluster) return;
             if (currentInstance && markerCluster !== currentInstance) return;
             if (window.onMarkerDragChangeCallback) {
@@ -250,7 +250,8 @@ function addMarkerClusterer(markersData, maxClusterZoom, minClusterCount, gridSi
                 markerId: currentId,
                 latitude: lat,
                 longitude: lng,
-                dragType: phase
+                dragType: phase,
+                zoom: zoom
               }));
             }
           });
@@ -430,7 +431,7 @@ function addPolyline(polylineId, pointsJson, strokeColor, strokeOpacity, strokeW
 function addPolygon(polygonId, pointsJson, fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth, zIndex) {
   if (!map) return;
 
-  if (polygons[polygonId]) {
+  if (Object.prototype.hasOwnProperty.call(polygons, polygonId)) {
     polygons[polygonId].setMap(null);
     delete polygons[polygonId];
   }
@@ -549,11 +550,13 @@ function clearAllVisualizations() {
 }
 
 function polygonContains(id, lat, lng) {
-  return !!(polygons[id] && polygons[id].contains(new Tmapv3.LatLng(lat, lng)));
+  return !!(Object.prototype.hasOwnProperty.call(polygons, id) &&
+    polygons[id].contains(new Tmapv3.LatLng(lat, lng)));
 }
 
 function polygonAreaJson(id) {
-  return JSON.stringify(polygons[id] ? polygons[id].getArea() : null);
+  return JSON.stringify(Object.prototype.hasOwnProperty.call(polygons, id)
+    ? polygons[id].getArea() : null);
 }
 
 function startDrawing(mode, options) {
@@ -658,7 +661,7 @@ function clearPolyline(id) {
 }
 
 function clearPolygon(id) {
-  if (polygons[id]) {
+  if (Object.prototype.hasOwnProperty.call(polygons, id)) {
     polygons[id].setMap(null);
     delete polygons[id];
   }
@@ -705,12 +708,8 @@ function clearAllPolylines() {
 }
 
 function clearAllPolygons() {
-  for (var id in polygons) {
-    if (polygons.hasOwnProperty(id)) {
-      polygons[id].setMap(null);
-    }
-  }
-  polygons = {};
+  Object.keys(polygons).forEach(clearPolygon);
+  polygons = Object.create(null);
 }
 
 function clearAllCircles() {

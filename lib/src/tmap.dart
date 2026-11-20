@@ -100,10 +100,15 @@ class TMap extends StatefulWidget {
   /// 초기 지도 중심 좌표
   final LatLng? center;
 
-  /// 초기 지도에 표시할 영역
+  /// 초기 지도에 표시할 영역입니다.
+  ///
+  /// 값이 변경되면 [TMapController.fitBounds]로 새 영역을 표시합니다.
+  /// [LatLngBounds.empty]와 null은 지도 영역 설정에서 제외됩니다.
   final LatLngBounds? bounds;
 
-  /// 지도가 벗어나지 못하게 제한할 영역
+  /// 지도 이동을 제한할 영역입니다. SDK에서 생성할 때만 설정할 수 있습니다.
+  ///
+  /// null과 [LatLngBounds.empty]는 제한을 설정하지 않습니다.
   final LatLngBounds? maxBounds;
 
   /// 초기 줌 레벨 (0 ~ 19)
@@ -121,8 +126,10 @@ class TMap extends StatefulWidget {
   /// 초기 기울기 각도 (0 ~ 60도)
   final double pitch;
 
-  /// SDK에서 허용하는 최소/최대 기울기
+  /// SDK에서 허용하는 최소 기울기(도)입니다. 생성 시에만 적용됩니다.
   final double? minPitch;
+
+  /// SDK에서 허용하는 최대 기울기(도)입니다. 생성 시에만 적용됩니다.
   final double? maxPitch;
 
   /// 지도 타입
@@ -570,7 +577,8 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
           if (!enabled) return;
 
           if (Math.abs(raw - $baseline) < 1e-4 && !cam.isMoving()) {
-            var maxZoom = Math.min(${widget.maxZoom}, t.getMaxZoom());
+            var maxZoom = t && typeof t.getMaxZoom === 'function' ? t.getMaxZoom() : NaN;
+            if (!Number.isFinite(maxZoom)) maxZoom = ${widget.maxZoom};
             if (raw < maxZoom) {
               var target = Math.min(raw + 1, maxZoom);
               var pivot = t.screenPointToLngLat({x: $x, y: $y});
@@ -600,8 +608,10 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'iosScrollableGuard': defaultTargetPlatform == TargetPlatform.iOS,
       'centerLat': widget.center?.latitude ?? 37.5665,
       'centerLng': widget.center?.longitude ?? 126.9780,
-      if (widget.bounds != null) 'bounds': widget.bounds!.toJson(),
-      if (widget.maxBounds != null) 'maxBounds': widget.maxBounds!.toJson(),
+      if (widget.bounds != null && !widget.bounds!.isEmpty)
+        'bounds': widget.bounds!.toJson(),
+      if (widget.maxBounds != null && !widget.maxBounds!.isEmpty)
+        'maxBounds': widget.maxBounds!.toJson(),
       'mapType': widget.mapType.value,
       'zoom': widget.zoom,
       'minZoom': widget.minZoom,
@@ -615,8 +625,6 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
       'hasOnMapTap': widget.onMapTap != null,
       'hasOnMapDoubleTap': widget.onMapDoubleTap != null,
       'hasOnMapLongTap': widget.onMapLongTap != null,
-      'hasOnTouchStart': widget.onTouchStart != null,
-      'hasOnTouchEnd': widget.onTouchEnd != null,
       'hasOnDragChangeCallback': widget.onDragChangeCallback != null,
       'hasOnZoomChangeCallback': widget.onZoomChangeCallback != null,
       'hasOnCameraIdle': widget.onCameraIdle != null,
@@ -661,6 +669,11 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
 
     if (widget.pitch != oldWidget.pitch) {
       _mapController.setPitch(widget.pitch);
+    }
+    if (widget.bounds != oldWidget.bounds &&
+        widget.bounds != null &&
+        !widget.bounds!.isEmpty) {
+      _mapController.fitBounds(widget.bounds!);
     }
 
     if (widget.mapType != oldWidget.mapType) {
@@ -911,7 +924,7 @@ class _TMapState extends State<TMap> with WidgetsBindingObserver {
                   ? MarkerInteractionType.drag
                   : MarkerInteractionType.dragend,
               position: latLng,
-              zoom: widget.zoom,
+              zoom: (json['zoom'] as num? ?? widget.zoom).round(),
             ));
           }
           final onMarkerDragChange = widget.onMarkerDragChangeCallback;

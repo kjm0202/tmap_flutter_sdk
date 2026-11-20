@@ -144,7 +144,8 @@ function bindTmapMarkerDrag(marker, map, callback) {
     var lat = latitudeOf(pos);
     var lng = longitudeOf(pos);
     if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
-      callback(lat, lng, phase);
+      var zoom = map && typeof map.getZoom === 'function' ? Math.round(map.getZoom()) : 16;
+      callback(lat, lng, phase, zoom);
     }
   }
 
@@ -404,9 +405,9 @@ const tmapBridge = {
 
     if (data.draggable && callbacks && (callbacks.drag || callbacks.onMarkerDrag)) {
       const dragCb = callbacks.drag || callbacks.onMarkerDrag;
-      const binding = bindTmapMarkerDrag(marker, map, (lat, lng, phase) => {
+      const binding = bindTmapMarkerDrag(marker, map, (lat, lng, phase, zoom) => {
         if (markers[id] !== marker) return;
-        dragCb(id, lat, lng, phase);
+        dragCb(id, lat, lng, phase, zoom);
       });
       if (dragListeners) {
         dragListeners[id] = binding;

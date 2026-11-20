@@ -3,10 +3,10 @@ var markers = Object.create(null);
 var infoWindows = {};
 var labels = {};
 var polylines = {};
-var polygons = {};
+var polygons = Object.create(null);
 var circles = {};
 var rectangles = {};
-var groundOverlays = {};
+var groundOverlays = Object.create(null);
 var visualizations = {};
 var drawingSession = null;
 var customOverlays = {};
@@ -221,26 +221,22 @@ function initTmap() {
     bindMapEvent("LongTap", handleLongTap);
   }
 
-  if (config.hasOnTouchStart) {
-    bindMapEvent('TouchStart', function(event) {
-      var coordinate = extractEventLatLng(event);
-      if (coordinate && window.onTouchStart) {
-        onTouchStart.postMessage(JSON.stringify({
-          latitude: coordinate.lat, longitude: coordinate.lng
-        }));
-      }
-    });
-  }
-  if (config.hasOnTouchEnd) {
-    bindMapEvent('TouchEnd', function(event) {
-      var coordinate = extractEventLatLng(event);
-      if (coordinate && window.onTouchEnd) {
-        onTouchEnd.postMessage(JSON.stringify({
-          latitude: coordinate.lat, longitude: coordinate.lng
-        }));
-      }
-    });
-  }
+  bindMapEvent('TouchStart', function(event) {
+    var coordinate = extractEventLatLng(event);
+    if (coordinate && window.onTouchStart) {
+      onTouchStart.postMessage(JSON.stringify({
+        latitude: coordinate.lat, longitude: coordinate.lng
+      }));
+    }
+  });
+  bindMapEvent('TouchEnd', function(event) {
+    var coordinate = extractEventLatLng(event);
+    if (coordinate && window.onTouchEnd) {
+      onTouchEnd.postMessage(JSON.stringify({
+        latitude: coordinate.lat, longitude: coordinate.lng
+      }));
+    }
+  });
 
   var hasDrag = (typeof config !== 'undefined' && config.hasOnDragChangeCallback) || typeof dragStart !== 'undefined' || typeof dragMove !== 'undefined' || typeof dragEnd !== 'undefined';
   if (hasDrag) {
@@ -585,9 +581,9 @@ function addMarker(data) {
     };
   }
   if ((config.hasMarkerDragCallback || window.onMarkerDragChangeCallback) && data.draggable) {
-    callbacks.drag = (markerId, latitude, longitude, dragType) => {
+    callbacks.drag = (markerId, latitude, longitude, dragType, zoom) => {
       if (window.onMarkerDragChangeCallback) {
-        onMarkerDragChangeCallback.postMessage(JSON.stringify({markerId, latitude, longitude, dragType}));
+        onMarkerDragChangeCallback.postMessage(JSON.stringify({markerId, latitude, longitude, dragType, zoom}));
       }
     };
   }
@@ -664,7 +660,8 @@ function installAndroidTouchZoomRecovery(map, container, maxZoom) {
         pending = null;
         var interactive = vsmMap.getInteractive();
         if (!cam.isMoving() && Math.abs(map.getZoom() - scheduled.start) < 0.001 && interactive.zoom && interactive.touch && interactive.doubleClick) {
-          var limit = Math.min(maxZoom, (typeof ray.getMaxZoom === 'function') ? ray.getMaxZoom() : maxZoom);
+          var sdkMaxZoom = typeof ray.getMaxZoom === 'function' ? ray.getMaxZoom() : null;
+          var limit = Number.isFinite(sdkMaxZoom) ? sdkMaxZoom : maxZoom;
           if (limit > scheduled.start) {
             cam.easeTo({
               zoom: Math.min(scheduled.start + 1, limit),

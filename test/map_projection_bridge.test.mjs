@@ -109,6 +109,7 @@ test('mobile map constructor forwards bounds and pitch limits; SDK gestures reac
     constructor(_containerId, options) {
       this.options = options;
       this.listeners = {};
+      this.operations = [];
       SDKMap.created = this;
     }
     on(name, callback) { (this.listeners[name] ??= []).push(callback); }
@@ -116,7 +117,7 @@ test('mobile map constructor forwards bounds and pitch limits; SDK gestures reac
     setZoomLimit(min, max) { this.minZoom = min; this.maxZoom = max; }
     setInteractive(options) { this.interactive = options; }
     vsmMap() { return {getInteractive: () => ({touch: true})}; }
-    fitBounds(bounds) { this.fittedBounds = bounds; }
+    fitBounds(bounds) { this.operations.push('fitBounds'); this.fittedBounds = bounds; }
     getZoom() { return this.options.zoom; }
   }
 
@@ -136,7 +137,10 @@ test('mobile map constructor forwards bounds and pitch limits; SDK gestures reac
     },
     navigator: {userAgent: 'iPhone'},
     document: {getElementById: () => ({})},
-    onMapCreated: postTo('created'),
+    onMapCreated: {postMessage(message) {
+      SDKMap.created.operations.push('ready');
+      messages.created.push(message);
+    }},
     onTouchStart: postTo('start'),
     onTouchEnd: postTo('end'),
     onMapLongTap: postTo('context'),
@@ -159,6 +163,7 @@ test('mobile map constructor forwards bounds and pitch limits; SDK gestures reac
   assert.equal(map.options.maxBounds.northEast.lng(), 127.3);
 
   map.emit('ConfigLoad');
+  assert.deepEqual(map.operations, ['fitBounds', 'ready']);
   assert.equal(messages.created.length, 1);
   assert.ok(map.fittedBounds instanceof LatLngBounds);
   assert.equal(map.fittedBounds.northEast.lng(), 126.99);

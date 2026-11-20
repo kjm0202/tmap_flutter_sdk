@@ -30,14 +30,24 @@ import 'tmap_web_loader.dart';
 /// Flutter Web 전용 네이티브 TMAP DOM 렌더링 위젯
 class TMapWebWidget extends StatefulWidget {
   final LatLng? center;
+
+  /// 지도에 표시할 영역입니다. 변경하면 [TMapWebBridge.fitBounds]로 적용됩니다.
+  ///
+  /// null과 [LatLngBounds.empty]는 초기 설정 및 변경에서 제외됩니다.
   final LatLngBounds? bounds;
+
+  /// 지도 이동 제한 영역입니다. SDK 지도 생성 시에만 적용됩니다.
   final LatLngBounds? maxBounds;
   final int zoom;
   final int minZoom;
   final int maxZoom;
   final double bearing;
   final double pitch;
+
+  /// 최소 기울기(도)입니다. 생성 시에만 적용됩니다.
   final double? minPitch;
+
+  /// 최대 기울기(도)입니다. 생성 시에만 적용됩니다.
   final double? maxPitch;
   final TMapType mapType;
   final bool naviControl;
@@ -55,7 +65,11 @@ class TMapWebWidget extends StatefulWidget {
   final OnMapTap? onMapTap;
   final OnMapDoubleTap? onMapDoubleTap;
   final OnMapLongTap? onMapLongTap;
+
+  /// SDK 터치 시작 시 최신 콜백을 호출합니다.
   final OnMapTouch? onTouchStart;
+
+  /// SDK 터치 종료 시 최신 콜백을 호출합니다.
   final OnMapTouch? onTouchEnd;
   final OnDragChangeCallback? onDragChangeCallback;
   final OnZoomChangeCallback? onZoomChangeCallback;
@@ -213,18 +227,22 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onMapLongTap'.toJS, onMapLongTapFn);
 
-      callbacks.setProperty('onTouchStart'.toJS,
+      callbacks.setProperty(
+          'onTouchStart'.toJS,
           ((JSNumber lat, JSNumber lng) {
-        if (mounted) {
-          widget.onTouchStart?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
-        }
-      }).toJS);
-      callbacks.setProperty('onTouchEnd'.toJS,
+            if (mounted) {
+              widget.onTouchStart
+                  ?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+            }
+          }).toJS);
+      callbacks.setProperty(
+          'onTouchEnd'.toJS,
           ((JSNumber lat, JSNumber lng) {
-        if (mounted) {
-          widget.onTouchEnd?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
-        }
-      }).toJS);
+            if (mounted) {
+              widget.onTouchEnd
+                  ?.call(LatLng(lat.toDartDouble, lng.toDartDouble));
+            }
+          }).toJS);
 
       final onDragChangeFn =
           (JSNumber lat, JSNumber lng, JSNumber zoom, JSString? phase) {
@@ -314,8 +332,8 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
       }.toJS;
       callbacks.setProperty('onMarkerTap'.toJS, onMarkerTapFn);
 
-      final onMarkerDragFn =
-          (JSString id, JSNumber lat, JSNumber lng, JSString? phase) {
+      final onMarkerDragFn = (JSString id, JSNumber lat, JSNumber lng,
+          JSString? phase, JSNumber zoom) {
         if (!mounted) return;
         final phaseStr = phase?.toDart;
         if (phaseStr == 'move' || phaseStr == 'end') {
@@ -325,7 +343,7 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
                 ? MarkerInteractionType.drag
                 : MarkerInteractionType.dragend,
             position: LatLng(lat.toDartDouble, lng.toDartDouble),
-            zoom: widget.zoom,
+            zoom: zoom.toDartInt,
           ));
         }
         final dragType = phaseStr == 'start'
@@ -470,6 +488,11 @@ class _TMapWebWidgetState extends State<TMapWebWidget> {
     }
     if (widget.pitch != oldWidget.pitch) {
       TMapWebBridge.setPitch(_viewId, widget.pitch);
+    }
+    if (widget.bounds != oldWidget.bounds &&
+        widget.bounds != null &&
+        !widget.bounds!.isEmpty) {
+      TMapWebBridge.fitBounds(_viewId, widget.bounds!, null);
     }
     if (widget.mapType != oldWidget.mapType) {
       TMapWebBridge.setMapType(_viewId, widget.mapType);

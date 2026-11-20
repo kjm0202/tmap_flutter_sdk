@@ -136,8 +136,8 @@ class TMapController {
     return Map<String, dynamic>.from(decoded);
   }
 
-  Future<Map<String, dynamic>> _readMap(
-      String name, [Map<String, dynamic> args = const {}]) async {
+  Future<Map<String, dynamic>> _readMap(String name,
+      [Map<String, dynamic> args = const {}]) async {
     final viewId = _webViewId;
     final Object? response;
     if (viewId != null) {
@@ -157,7 +157,8 @@ class TMapController {
   }
 
   /// 현재 지도의 중심 좌표를 SDK로부터 읽습니다.
-  Future<LatLng> getCenter() async => LatLng.fromJson(await _readMap('getCenter'));
+  Future<LatLng> getCenter() async =>
+      LatLng.fromJson(await _readMap('getCenter'));
 
   /// 현재 화면에서 보이는 지도 경계를 반환합니다.
   Future<LatLngBounds> getBounds() async =>
@@ -166,12 +167,20 @@ class TMapController {
   /// 현재 줌을 반환합니다. 애니메이션 중에는 소수점 줌일 수 있습니다.
   Future<double> getZoom() => _getNumber('getZoom');
 
+  /// SDK 지도에 설정된 최소 허용 줌 레벨을 반환합니다.
+  ///
+  /// 현재 카메라 줌은 [getZoom]으로 확인합니다.
   Future<double> getMinZoom() => _getNumber('getMinZoom');
 
+  /// SDK 지도에 설정된 최대 허용 줌 레벨을 반환합니다.
+  ///
+  /// [setZoomLimit]으로 변경한 값이 반영되며 현재 카메라 줌과는 다릅니다.
   Future<double> getMaxZoom() => _getNumber('getMaxZoom');
 
+  /// 현재 지도 회전각을 도(degrees) 단위로 반환합니다.
   Future<double> getBearing() => _getNumber('getBearing');
 
+  /// 현재 지도 기울기를 도(degrees) 단위로 반환합니다.
   Future<double> getPitch() => _getNumber('getPitch');
 
   /// 지도상 위경도를 지도 컨테이너 기준 화면 픽셀로 변환합니다.
@@ -409,7 +418,16 @@ class TMapController {
     final listeners = _markerListeners[event.markerId]?[event.type];
     if (listeners == null) return;
     for (final listener in listeners.toList()) {
-      listener(event);
+      try {
+        listener(event);
+      } catch (error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'tmap_flutter_sdk',
+          context: ErrorDescription('while dispatching a marker interaction'),
+        ));
+      }
     }
   }
 
@@ -473,7 +491,16 @@ class TMapController {
   void dispatchClusterInteraction(ClusterInteraction event) {
     for (final listener in _clusterListeners[event.type]?.toList() ??
         <void Function(ClusterInteraction)>[]) {
-      listener(event);
+      try {
+        listener(event);
+      } catch (error, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'tmap_flutter_sdk',
+          context: ErrorDescription('while dispatching a cluster interaction'),
+        ));
+      }
     }
   }
 

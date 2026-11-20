@@ -33,9 +33,11 @@ class LatLngBounds {
         math.max(southWest.longitude, northEast.longitude),
       );
 
+  /// 북서쪽 모서리 좌표입니다. 각 축을 정규화한 후 계산합니다.
   LatLng get northWest =>
       LatLng(normalizedNorthEast.latitude, normalizedSouthWest.longitude);
 
+  /// 남동쪽 모서리 좌표입니다. 각 축을 정규화한 후 계산합니다.
   LatLng get southEast =>
       LatLng(normalizedSouthWest.latitude, normalizedNorthEast.longitude);
 
@@ -45,6 +47,9 @@ class LatLngBounds {
   /// Distance along the west edge in metres, not degrees.
   double get height => isEmpty ? 0 : northWest.distanceTo(normalizedSouthWest);
 
+  /// [LatLngBounds.empty]로 생성한 아직 확장하지 않은 경계인지 여부입니다.
+  ///
+  /// (0, 0) 한 점으로 만든 일반 경계는 비어 있지 않습니다.
   bool get isEmpty => _explicitlyEmpty;
 
   /// Returns a new envelope that includes [coordinate].
@@ -87,6 +92,7 @@ class LatLngBounds {
   }
 
   factory LatLngBounds.fromJson(Map<String, dynamic> json) {
+    if (json['empty'] == true) return const LatLngBounds.empty();
     final swJson = json['southWest'] as Map<String, dynamic>? ??
         json['_sw'] as Map<String, dynamic>? ??
         <String, dynamic>{};
@@ -101,6 +107,7 @@ class LatLngBounds {
   }
 
   Map<String, dynamic> toJson() {
+    if (isEmpty) return {'empty': true};
     return {
       'southWest': southWest.toJson(),
       'northEast': northEast.toJson(),
