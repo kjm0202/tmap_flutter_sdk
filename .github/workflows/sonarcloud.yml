@@ -42,7 +42,7 @@ jobs:
       - name: Run JavaScript bridge tests with coverage
         run: |
           mkdir -p coverage
-          node --import ./tool/bridge_coverage_preload.mjs \
+          node --import ./test/support/bridge_coverage_preload.mjs \
             --test --experimental-test-coverage \
             --test-coverage-include='assets/bridge/*.js' \
             --test-reporter=spec --test-reporter=lcov \

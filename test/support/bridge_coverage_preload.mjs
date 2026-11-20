@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
-const bridgeDirectory = fileURLToPath(new URL('../assets/bridge/', import.meta.url));
+const bridgeDirectory = fileURLToPath(new URL('../../assets/bridge/', import.meta.url));
 const sourcePaths = new Map();
 for (const name of readdirSync(bridgeDirectory)) {
   if (!name.endsWith('.js')) continue;
