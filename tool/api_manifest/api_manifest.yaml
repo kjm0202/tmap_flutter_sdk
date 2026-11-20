@@ -363,7 +363,7 @@ entries:
     status: done
     dart: TMap.onZoomChangeCallback
     tests:
-      - "example/test_driver/bridge/map_display_scenario.dart::zoom change callback received ZoomType enum on zoomIn"
+      - "example/test_driver/bridge/map_display_scenario.dart::zoomIn callback received ZoomType.end"
     reason: "JS Map events are delivered through typed TMap callbacks instead of an event-name listener."
 
   # Marker

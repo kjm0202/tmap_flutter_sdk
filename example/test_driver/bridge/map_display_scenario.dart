@@ -270,7 +270,8 @@ Future<void> _testTrafficLayer() async {
     await Future<void>.delayed(const Duration(milliseconds: 300));
     final stillDetached = await _isTrafficDetached(controller);
     if (!stillDetached) {
-      throw StateError('Stale traffic refresh observed after traffic was toggled off');
+      throw StateError(
+          'Stale traffic refresh observed after traffic was toggled off');
     }
 
     // Traffic ON again: lines re-populate and re-attach with new object identities and geometry
@@ -303,8 +304,12 @@ Future<void> _testCameraPoseAndControls() async {
   var boundsChangeCount = 0;
   LatLngBounds? lastBounds;
 
-  var zoomChangeCount = 0;
   final recordedZoomTypes = <ZoomType>[];
+  bool zoomPhasesInOrder() {
+    final firstEnd = recordedZoomTypes.indexOf(ZoomType.end);
+    return firstEnd >= 0 &&
+        !recordedZoomTypes.skip(firstEnd + 1).contains(ZoomType.start);
+  }
 
   var bearingChangeCount = 0;
   double? lastBearing;
@@ -334,7 +339,6 @@ Future<void> _testCameraPoseAndControls() async {
         lastBounds = bounds;
       },
       onZoomChangeCallback: (zoom, zoomType) {
-        zoomChangeCount++;
         recordedZoomTypes.add(zoomType);
       },
       onBearingChangeCallback: (bearing) {
@@ -395,7 +399,10 @@ Future<void> _testCameraPoseAndControls() async {
     );
     await expectLive(
       'pitch callback received updated pitch',
-      () async => pitchChangeCount > 0 && lastPitch != null && (lastPitch! - 40.0).abs() < 2.0,
+      () async =>
+          pitchChangeCount > 0 &&
+          lastPitch != null &&
+          (lastPitch! - 40.0).abs() < 2.0,
     );
 
     // Bearing change: 20 -> 60
@@ -413,7 +420,10 @@ Future<void> _testCameraPoseAndControls() async {
     );
     await expectLive(
       'bearing callback received updated bearing',
-      () async => bearingChangeCount > 0 && lastBearing != null && (lastBearing! - 60.0).abs() < 2.0,
+      () async =>
+          bearingChangeCount > 0 &&
+          lastBearing != null &&
+          (lastBearing! - 60.0).abs() < 2.0,
     );
 
     // Center change
@@ -442,7 +452,7 @@ Future<void> _testCameraPoseAndControls() async {
           (lastCenter!.longitude - _destinationLandmark.longitude).abs() < 0.01,
     );
 
-    // Zoom in & Zoom out with ZoomType enum (start/end)
+    // Programmatic zooms may emit only Zoom, so ZoomType.start is optional.
     recordedZoomTypes.clear();
     await controller.zoomIn();
     await expectLive(
@@ -456,11 +466,15 @@ Future<void> _testCameraPoseAndControls() async {
       ),
     );
     await expectLive(
-      'zoom change callback received ZoomType enum on zoomIn',
-      () async =>
-          zoomChangeCount > 0 &&
-          (recordedZoomTypes.contains(ZoomType.end) || recordedZoomTypes.contains(ZoomType.start)),
+      'zoomIn callback received ZoomType.end',
+      () async => recordedZoomTypes.contains(ZoomType.end),
     );
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (!zoomPhasesInOrder()) {
+      throw StateError(
+        'zoomIn reported end before a later start: $recordedZoomTypes',
+      );
+    }
 
     recordedZoomTypes.clear();
     await controller.zoomOut();
@@ -475,11 +489,15 @@ Future<void> _testCameraPoseAndControls() async {
       ),
     );
     await expectLive(
-      'zoom change callback received ZoomType enum on zoomOut',
-      () async =>
-          zoomChangeCount > 0 &&
-          (recordedZoomTypes.contains(ZoomType.end) || recordedZoomTypes.contains(ZoomType.start)),
+      'zoomOut callback received ZoomType.end',
+      () async => recordedZoomTypes.contains(ZoomType.end),
     );
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (!zoomPhasesInOrder()) {
+      throw StateError(
+        'zoomOut reported end before a later start: $recordedZoomTypes',
+      );
+    }
 
     // Bounds getter and bounds callback
     await expectLive(
@@ -561,7 +579,8 @@ Future<void> testMapDisplay() async {
 
   await stage('map styles (ROAD, HYBRID, PUBLIC, NIGHT)', _testMapStyles);
   await stage('traffic layer (on/off/on and detachment)', _testTrafficLayer);
-  await stage('camera pose, pitch, bearing, zoom extent, relayout', _testCameraPoseAndControls);
+  await stage('camera pose, pitch, bearing, zoom extent, relayout',
+      _testCameraPoseAndControls);
 
   if (failures.isNotEmpty) {
     throw StateError('Map display scenario failures:\n${failures.join('\n')}');
