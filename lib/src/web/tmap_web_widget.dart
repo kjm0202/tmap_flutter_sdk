@@ -33,8 +33,9 @@ class TMapWebWidget extends StatefulWidget {
   /// Map center in WGS84 latitude/longitude, or null to omit the option.
   ///
   /// Non-null changes after the map is initialized call
-  /// [TMapWebBridge.setCenter]. Changes made while initialization is pending
-  /// are not applied.
+  /// [TMapWebBridge.setCenter]. Changes made while the SDK script loads are
+  /// included in the options passed to [TMapWebBridge.initMap]; changes made
+  /// after that call and before the map reports creation are not applied.
   final LatLng? center;
 
   /// Geographic bounds displayed by the map.
@@ -79,8 +80,9 @@ class TMapWebWidget extends StatefulWidget {
   ///
   /// "Later changes" for [zoom], [minZoom], [maxZoom], [bearing], [pitch],
   /// [mapType], [naviControl] and this field mean changes made after the map
-  /// is initialized; changes made while initialization is pending are not
-  /// applied.
+  /// is initialized. Changes made while the SDK script loads are included in
+  /// the options passed to [TMapWebBridge.initMap]; changes made after that
+  /// call and before the map reports creation are not applied.
   final bool scaleBar;
 
   /// Map markers, or null for none, synchronized by marker ID and JSON.
