@@ -1,0 +1,34 @@
+name: SonarQube Cloud
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  sonar:
+    # Secrets are not available to pull requests from forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so new-code detection and blame work.
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          # Keep in sync with .fvmrc.
+          flutter-version: 3.27.4
+          cache: true
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Run tests with coverage
+        run: flutter test --coverage
+      - name: SonarQube Cloud scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - ".*"
+  path_filters:
+    # Frozen SDK audit tooling and generated audit output.
+    - "!tool/sdk_audit/**"
+    - "!docs/sdk-audit/**"
+    - "!**/pubspec.lock"
+    - "!coverage/**"
+  path_instructions:
+    - path: "lib/**/*.dart"
+      instructions: >-
+        Public Flutter plugin API wrapping the TMAP Vector JS SDK (Tmapv3).
+        Flag breaking changes to exported classes, missing dartdoc on public
+        members, unawaited futures, and Dart/JS bridge message shapes that do
+        not match assets/bridge.
+    - path: "assets/bridge/**/*.js"
+      instructions: >-
+        JS bridge loaded into a WebView next to the Tmapv3 SDK. Check that
+        message names and payloads match the Dart side under lib/, that SDK
+        objects are released, and that no app key or secret is logged.
+    - path: "test/**"
+      instructions: >-
+        Tests must not need a real TMAP app key or network access.
+chat:
+  auto_reply: true
