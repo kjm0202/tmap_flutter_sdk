@@ -27,7 +27,7 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           # Keep in sync with .fvmrc.
           flutter-version: 3.27.4
@@ -36,7 +36,20 @@ jobs:
         run: flutter pub get
       - name: Run tests with coverage
         run: flutter test --coverage
-      - uses: SonarSource/sonarqube-auth-action@v1.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Run JavaScript bridge tests with coverage
+        run: |
+          mkdir -p coverage
+          node --import ./tool/bridge_coverage_preload.mjs \
+            --test --experimental-test-coverage \
+            --test-coverage-include='assets/bridge/*.js' \
+            --test-reporter=spec --test-reporter=lcov \
+            --test-reporter-destination=stdout \
+            --test-reporter-destination=coverage/js-lcov.info \
+            test/*.mjs
+      - uses: SonarSource/sonarqube-auth-action@b372e2c2930aadfcc4f4399446da1e12772709ad # v1.2
         id: auth
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
